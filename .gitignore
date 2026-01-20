@@ -416,3 +416,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+*.AssemblyReference.cache
+*.dll
+bin/
+obj/
+.vs/
