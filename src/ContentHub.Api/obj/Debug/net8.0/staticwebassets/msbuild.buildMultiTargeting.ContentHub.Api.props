@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\ContentHub.Api.props" />
+</Project>

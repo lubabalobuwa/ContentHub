@@ -1,0 +1,11 @@
+C:\tmp\ContentHub\src\ContentHub.Domain\bin\Debug\net8.0\ContentHub.Domain.deps.json
+C:\tmp\ContentHub\src\ContentHub.Domain\bin\Debug\net8.0\ContentHub.Domain.dll
+C:\tmp\ContentHub\src\ContentHub.Domain\bin\Debug\net8.0\ContentHub.Domain.pdb
+C:\tmp\ContentHub\src\ContentHub.Domain\obj\Debug\net8.0\ContentHub.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\ContentHub\src\ContentHub.Domain\obj\Debug\net8.0\ContentHub.Domain.AssemblyInfoInputs.cache
+C:\tmp\ContentHub\src\ContentHub.Domain\obj\Debug\net8.0\ContentHub.Domain.AssemblyInfo.cs
+C:\tmp\ContentHub\src\ContentHub.Domain\obj\Debug\net8.0\ContentHub.Domain.csproj.CoreCompileInputs.cache
+C:\tmp\ContentHub\src\ContentHub.Domain\obj\Debug\net8.0\ContentHub.Domain.dll
+C:\tmp\ContentHub\src\ContentHub.Domain\obj\Debug\net8.0\refint\ContentHub.Domain.dll
+C:\tmp\ContentHub\src\ContentHub.Domain\obj\Debug\net8.0\ContentHub.Domain.pdb
+C:\tmp\ContentHub\src\ContentHub.Domain\obj\Debug\net8.0\ref\ContentHub.Domain.dll

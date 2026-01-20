@@ -1,0 +1,199 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\tmp\\ContentHub\\src\\ContentHub.Infrastructure\\ContentHub.Infrastructure.csproj": {}
+  },
+  "projects": {
+    "C:\\tmp\\ContentHub\\src\\ContentHub.Application\\ContentHub.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\tmp\\ContentHub\\src\\ContentHub.Application\\ContentHub.Application.csproj",
+        "projectName": "ContentHub.Application",
+        "projectPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Application\\ContentHub.Application.csproj",
+        "packagesPath": "C:\\Users\\Lubabalo Buwa\\.nuget\\packages\\",
+        "outputPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Lubabalo Buwa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\tmp\\ContentHub\\src\\ContentHub.Domain\\ContentHub.Domain.csproj": {
+                "projectPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Domain\\ContentHub.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\tmp\\ContentHub\\src\\ContentHub.Domain\\ContentHub.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\tmp\\ContentHub\\src\\ContentHub.Domain\\ContentHub.Domain.csproj",
+        "projectName": "ContentHub.Domain",
+        "projectPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Domain\\ContentHub.Domain.csproj",
+        "packagesPath": "C:\\Users\\Lubabalo Buwa\\.nuget\\packages\\",
+        "outputPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Lubabalo Buwa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\tmp\\ContentHub\\src\\ContentHub.Infrastructure\\ContentHub.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\tmp\\ContentHub\\src\\ContentHub.Infrastructure\\ContentHub.Infrastructure.csproj",
+        "projectName": "ContentHub.Infrastructure",
+        "projectPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Infrastructure\\ContentHub.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\Lubabalo Buwa\\.nuget\\packages\\",
+        "outputPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Lubabalo Buwa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\tmp\\ContentHub\\src\\ContentHub.Application\\ContentHub.Application.csproj": {
+                "projectPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Application\\ContentHub.Application.csproj"
+              },
+              "C:\\tmp\\ContentHub\\src\\ContentHub.Domain\\ContentHub.Domain.csproj": {
+                "projectPath": "C:\\tmp\\ContentHub\\src\\ContentHub.Domain\\ContentHub.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
