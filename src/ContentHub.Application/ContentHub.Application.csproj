@@ -10,4 +10,9 @@
     <ProjectReference Include="..\ContentHub.Domain\ContentHub.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Content\Queries\" />
+    <Folder Include="Users\" />
+  </ItemGroup>
+
 </Project>
