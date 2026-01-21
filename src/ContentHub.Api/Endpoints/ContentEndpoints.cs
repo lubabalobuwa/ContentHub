@@ -18,8 +18,8 @@ namespace ContentHub.Api.Endpoints
                 var result = await handler.HandleAsync(command);
 
                 return result.IsSuccess 
-                    ? Results.Created($"/api/content", null) 
-                    : Results.BadRequest(result.Error);
+                    ? Results.Created($"/api/content", new { messahe = "Content created successfully" }) 
+                    : Results.BadRequest(new { error = result.Error });
             });
 
             return app;

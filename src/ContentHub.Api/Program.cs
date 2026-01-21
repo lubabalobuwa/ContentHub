@@ -1,4 +1,5 @@
 using ContentHub.Api.Endpoints;
+using ContentHub.Api.Middleware;
 using ContentHub.Application.Content.Commands.CreateContent;
 using ContentHub.Infrastructure;
 
@@ -18,6 +19,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapHealthChecks("/health");
 app.MapContentEndpoints();

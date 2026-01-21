@@ -24,6 +24,10 @@ namespace ContentHub.Application.Content.Commands.CreateContent
 
         public async Task<Result> HandleAsync(CreateContentCommand command)
         {
+            var validation = CreateContentValidator.Validate(command);
+            if (!validation.IsSuccess)
+                return validation;
+
             var user = await _userRepository.GetByIdAsync(command.AuthorId);
 
             if (user is null)
