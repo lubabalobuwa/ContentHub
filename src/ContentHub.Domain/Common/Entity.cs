@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContentHub.Domain.Entities
+namespace ContentHub.Domain.Common
 {
-    public class Post
+    public abstract class Entity
     {
+        public Guid Id { get; protected set; } = Guid.NewGuid();
     }
 }

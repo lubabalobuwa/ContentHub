@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContentHub.Domain.DomainEvents
+namespace ContentHub.Domain.Users
 {
-    public class PostPublished
+    public enum UserRole
     {
+        Reader,
+        Author,
+        Admin
     }
 }

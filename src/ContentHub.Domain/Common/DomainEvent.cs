@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContentHub.Domain.Entities
+namespace ContentHub.Domain.Common
 {
-    public class User
+    public abstract class DomainEvent
     {
+        public DateTime OccurredOn { get; } = DateTime.UtcNow;
     }
 }

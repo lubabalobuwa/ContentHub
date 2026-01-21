@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContentHub.Domain.DomainEvents
+namespace ContentHub.Domain.Common
 {
-    public class CommentCreated
+    internal class ValueObject
     {
     }
 }

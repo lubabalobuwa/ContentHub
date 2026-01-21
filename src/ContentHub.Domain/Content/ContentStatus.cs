@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContentHub.Domain.Entities
+namespace ContentHub.Domain.Content
 {
-    public class Comment
+    public enum ContentStatus
     {
+        Draft,
+        Published,
+        Archived
     }
 }
