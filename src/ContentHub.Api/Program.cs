@@ -1,3 +1,5 @@
+using ContentHub.Api.Endpoints;
+using ContentHub.Application.Content.Commands.CreateContent;
 using ContentHub.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddScoped<CreateContentHandler>();
 
 var app = builder.Build();
 
@@ -17,5 +20,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapHealthChecks("/health");
+app.MapContentEndpoints();
 
 app.Run();

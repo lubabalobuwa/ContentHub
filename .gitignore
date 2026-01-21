@@ -421,3 +421,4 @@ FodyWeavers.xsd
 bin/
 obj/
 .vs/
+appsettings.json
