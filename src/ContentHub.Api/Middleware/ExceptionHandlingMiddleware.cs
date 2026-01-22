@@ -20,7 +20,8 @@
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 await context.Response.WriteAsJsonAsync(new
                 {
-                    error = "An unexpected error occurred."
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace
                 });
             }
         }

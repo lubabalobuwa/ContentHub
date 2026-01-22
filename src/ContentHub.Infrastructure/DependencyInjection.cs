@@ -21,6 +21,7 @@ namespace ContentHub.Infrastructure
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IContentRepository, ContentRepository>();
+            services.AddScoped<IContentReadRepository, ContentReadRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

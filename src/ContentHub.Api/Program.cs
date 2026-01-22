@@ -1,6 +1,6 @@
 using ContentHub.Api.Endpoints;
 using ContentHub.Api.Middleware;
-using ContentHub.Application.Content.Commands.CreateContent;
+using ContentHub.Application;
 using ContentHub.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +9,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddScoped<CreateContentHandler>();
 
 var app = builder.Build();
 
