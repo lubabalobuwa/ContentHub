@@ -1,4 +1,5 @@
 ﻿using ContentHub.Application.Common.Interfaces;
+using ContentHub.Application.Messaging;
 using ContentHub.Infrastructure.Messaging;
 using ContentHub.Infrastructure.Persistence;
 using ContentHub.Infrastructure.Persistence.Repositories;
@@ -24,8 +25,7 @@ namespace ContentHub.Infrastructure
             services.AddScoped<IContentReadRepository, ContentReadRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
+            services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
 
             return services;
         }

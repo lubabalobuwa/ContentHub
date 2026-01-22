@@ -1,6 +1,7 @@
 ﻿using ContentHub.Api.Contracts.Requests;
 using ContentHub.Api.Contracts.Responses;
 using ContentHub.Application.Content.Commands.CreateContent;
+using ContentHub.Application.Content.Commands.PublishContent;
 using ContentHub.Application.Content.Queries.GetContentById;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,15 @@ namespace ContentHub.Api.Endpoints
                         x.Body,
                         x.Status.ToString())
                 ));
+            });
+
+            app.MapPost("/api/content/{id:guid}/publish", async (Guid id, [FromServices] PublishContentHandler handler) =>
+            {
+                var result = await handler.HandleAsync(new PublishContentCommand(id));
+
+                return result.IsSuccess
+                    ? Results.Ok(new { message = "Content published." })
+                    : Results.BadRequest(new { error = result.Error });
             });
 
             return app;

@@ -1,4 +1,5 @@
 ﻿using ContentHub.Application.Content.Commands.CreateContent;
+using ContentHub.Application.Content.Commands.PublishContent;
 using ContentHub.Application.Content.Queries.GetContentById;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ namespace ContentHub.Application
             services.AddScoped<CreateContentHandler>();
             services.AddScoped<GetContentByIdHandler>();
             services.AddScoped<GetPublishedContentHandler>();
+            services.AddScoped<PublishContentHandler>();
 
             return services;
         }

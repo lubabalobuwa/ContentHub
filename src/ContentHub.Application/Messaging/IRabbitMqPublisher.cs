@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContentHub.Infrastructure.Messaging
+namespace ContentHub.Application.Messaging
 {
     public interface IRabbitMqPublisher
     {

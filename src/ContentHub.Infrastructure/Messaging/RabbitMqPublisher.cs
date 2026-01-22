@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using ContentHub.Application.Messaging;
+using RabbitMQ.Client;
 using System.Text;
 
 namespace ContentHub.Infrastructure.Messaging
