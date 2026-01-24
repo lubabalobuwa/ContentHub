@@ -2,7 +2,6 @@ using ContentHub.Worker;
 using ContentHub.Worker.Consumers;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddHostedService<ContentPublishedConsumer>();
 

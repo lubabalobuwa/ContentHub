@@ -23,23 +23,18 @@ namespace ContentHub.Worker.Consumers
             autoDelete: false);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.ReceivedAsync += async (_, ea) =>
+            consumer.ReceivedAsync += async (sender, ea) =>
             {
                 var message = Encoding.UTF8.GetString(ea.Body.ToArray());
 
                 Console.WriteLine($"Content published event received: {message}");
 
-                await Task.CompletedTask;
+                await ((AsyncEventingBasicConsumer)sender).Channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
             };
 
-            consumer.ReceivedAsync += async (_, ea) =>
-            {
-                var message = Encoding.UTF8.GetString(ea.Body.ToArray());
+            await channel.BasicConsumeAsync("content.published", autoAck: false, consumer);
 
-                Console.WriteLine($"Content published event received: {message}");
-
-                await Task.CompletedTask;
-            };
+            await Task.CompletedTask;
         }
     }
 }
