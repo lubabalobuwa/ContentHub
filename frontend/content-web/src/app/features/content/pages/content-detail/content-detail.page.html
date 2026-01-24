@@ -1,0 +1,37 @@
+<section class="page">
+  <header class="header">
+    <a class="link" routerLink="/">← Back</a>
+  </header>
+
+  <ng-container *ngIf="content$ | async as content; else loading">
+    <ng-container *ngIf="content; else notFound">
+      <div class="card">
+        <h1>{{ content.title }}</h1>
+        <p class="meta">Status: {{ content.status }}</p>
+
+        <div class="actions">
+          <button
+            class="btn"
+            [disabled]="isPublishing || content.status === 'Published'"
+            (click)="publish(content.id)">
+            {{ isPublishing ? 'Publishing…' : 'Publish' }}
+          </button>
+        </div>
+
+        <p class="error" *ngIf="error">{{ error }}</p>
+
+        <article class="body">
+          {{ content.body }}
+        </article>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #loading>
+    <p class="muted">Loading…</p>
+  </ng-template>
+
+  <ng-template #notFound>
+    <p class="muted">Content not found.</p>
+  </ng-template>
+</section>
