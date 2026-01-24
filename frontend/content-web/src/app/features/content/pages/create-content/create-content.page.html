@@ -1,0 +1,29 @@
+<section class="page">
+  <header class="header">
+    <a class="link" routerLink="/">← Back</a>
+    <h1>Create Content</h1>
+  </header>
+
+  <div class="card">
+    <label class="label">
+      Title
+      <input class="input" type="text" [(ngModel)]="title" placeholder="e.g. My first post" />
+    </label>
+
+    <label class="label">
+      Body
+      <textarea class="textarea" [(ngModel)]="body" rows="10" placeholder="Write something..."></textarea>
+    </label>
+
+    <label class="label">
+      AuthorId (GUID)
+      <input class="input" type="text" [(ngModel)]="authorId" placeholder="Paste a valid GUID" />
+    </label>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <button class="btn" (click)="submit()" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Saving…' : 'Create' }}
+    </button>
+  </div>
+</section>
