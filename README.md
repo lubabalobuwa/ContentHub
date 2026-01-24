@@ -17,4 +17,6 @@ The solution follows Clean Architecture, with clear separation between:
 - API
 
 ## Status
-?? Work in progress
+Work in progress
+
+User creation endpoint is for demo purposes; auth/registration will be added later.

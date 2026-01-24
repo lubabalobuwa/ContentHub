@@ -35,6 +35,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapHealthChecks("/health");
 app.MapContentEndpoints();
+app.MapUserEndpoints();
 app.UseCors("FrontendPolicy");
 
 app.Run();
