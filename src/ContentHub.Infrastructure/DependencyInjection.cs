@@ -7,6 +7,8 @@ using ContentHub.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
+using System;
 
 namespace ContentHub.Infrastructure
 {
@@ -16,6 +18,18 @@ namespace ContentHub.Infrastructure
         {
             services.AddDbContext<ContentHubDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddSingleton<IConnection>(_ =>
+            {
+                var connectionString = configuration.GetValue<string>("RabbitMq:ConnectionString")
+                    ?? "amqp://guest:guest@localhost:5672";
+                var factory = new ConnectionFactory
+                {
+                    Uri = new Uri(connectionString)
+                };
+
+                return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+            });
 
             services.AddScoped<IContentRepository, ContentRepository>();
             services.AddScoped<IContentReadRepository, ContentReadRepository>();

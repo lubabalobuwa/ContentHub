@@ -55,7 +55,7 @@ var sqlConnection = builder.Configuration.GetConnectionString("DefaultConnection
 
 builder.Services.AddHealthChecks()
     .AddSqlServer(sqlConnection, name: "sqlserver")
-    .AddRabbitMQ(rabbitMqConnection, name: "rabbitmq");
+    .AddRabbitMQ(name: "rabbitmq");
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

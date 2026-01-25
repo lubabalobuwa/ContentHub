@@ -6,15 +6,16 @@ namespace ContentHub.Infrastructure.Messaging
 {
     public class RabbitMqPublisher : IRabbitMqPublisher
     {
+        private readonly IConnection _connection;
+
+        public RabbitMqPublisher(IConnection connection)
+        {
+            _connection = connection;
+        }
+
         public async Task PublishAsync(string queue, string message)
         {
-            var factory = new ConnectionFactory
-            {
-                HostName = "localhost"
-            };
-
-            await using var connection = await factory.CreateConnectionAsync();
-            await using var channel = await connection.CreateChannelAsync();
+            await using var channel = await _connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(
                 queue: queue,
