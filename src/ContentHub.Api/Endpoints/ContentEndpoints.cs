@@ -126,7 +126,7 @@ namespace ContentHub.Api.Endpoints
                 [FromServices] ICurrentUserService currentUser) =>
             {
                 if (authorId == Guid.Empty)
-                    return Results.BadRequest(new { error = "AuthorId is required." });
+                    return ApiResults.ValidationProblem("AuthorId is required.");
 
                 if (!currentUser.IsAuthenticated || currentUser.UserId is null)
                     return Results.Unauthorized();
@@ -174,7 +174,7 @@ namespace ContentHub.Api.Endpoints
                 [FromServices] ICurrentUserService currentUser) =>
             {
                 if (authorId == Guid.Empty)
-                    return Results.BadRequest(new { error = "AuthorId is required." });
+                    return ApiResults.ValidationProblem("AuthorId is required.");
 
                 if (!currentUser.IsAuthenticated || currentUser.UserId is null)
                     return Results.Unauthorized();
@@ -253,7 +253,7 @@ namespace ContentHub.Api.Endpoints
                 "Forbidden." => Results.Forbid(),
                 "Content not found." => Results.NotFound(),
                 "Author not found." => Results.NotFound(),
-                _ => Results.BadRequest(new { error })
+                _ => ApiResults.ValidationProblem(error)
             };
         }
     }

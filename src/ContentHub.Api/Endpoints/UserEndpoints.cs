@@ -24,7 +24,7 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Created($"/api/users/{result.Value}", new { id = result.Value })
-                    : Results.BadRequest(new { error = result.Error });
+                    : ApiResults.ValidationProblem(result.Error);
             });
 
             group.MapPost("/auth/login", async (
@@ -60,7 +60,7 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Password reset successfully." })
-                    : Results.BadRequest(new { error = result.Error });
+                    : ApiResults.ValidationProblem(result.Error);
             }).RequireAuthorization();
 
             group.MapGet("/users/me", async (

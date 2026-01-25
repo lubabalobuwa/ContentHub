@@ -20,3 +20,11 @@ The solution follows Clean Architecture, with clear separation between:
 Work in progress
 
 User creation endpoint is for demo purposes; auth/registration will be added later.
+
+## API Notes
+Content list/detail responses use `ContentSummaryDto` (mapped to `ContentSummaryResponse`) with:
+- `id`
+- `title`
+- `body`
+- `status` (Draft/Published/Archived)
+- `rowVersion` (Base64 string for optimistic concurrency)
