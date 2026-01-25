@@ -23,7 +23,9 @@ namespace ContentHub.Api.Endpoints
     {
         public static IEndpointRouteBuilder MapContentEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapPost("/api/content", async (
+            var group = app.MapGroup("/api/content").WithTags("Content");
+
+            group.MapPost("", async (
                 [FromBody] CreateContentRequest request,
                 CreateContentHandler handler,
                 ICurrentUserService currentUser) =>
@@ -39,11 +41,11 @@ namespace ContentHub.Api.Endpoints
                 var result = await handler.HandleAsync(command);
 
                 return result.IsSuccess
-                    ? Results.Created($"/api/content", new { message = "Content created successfully" })
+                    ? Results.Created("/api/content", new { message = "Content created successfully" })
                     : Results.BadRequest(new { error = result.Error });
             }).RequireAuthorization();
 
-            app.MapPut("/api/content/{id:guid}", async (Guid id, [FromBody] UpdateContentRequest request, UpdateContentHandler handler) =>
+            group.MapPut("/{id:guid}", async (Guid id, [FromBody] UpdateContentRequest request, UpdateContentHandler handler) =>
             {
                 var command = new UpdateContentCommand(id, request.Title, request.Body, request.RowVersion);
                 var result = await handler.HandleAsync(command);
@@ -53,7 +55,7 @@ namespace ContentHub.Api.Endpoints
                     : Results.BadRequest(new { error = result.Error });
             }).RequireAuthorization();
 
-            app.MapGet("/api/content/{id:guid}", async (
+            group.MapGet("/{id:guid}", async (
                 Guid id,
                 [FromServices] GetContentByIdHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
@@ -81,7 +83,7 @@ namespace ContentHub.Api.Endpoints
                 ));
             });
 
-            app.MapGet("/api/content", async ([FromServices] GetPublishedContentHandler handler) =>
+            group.MapGet("", async ([FromServices] GetPublishedContentHandler handler) =>
             {
                 var content = await handler.HandleAsync();
 
@@ -96,7 +98,7 @@ namespace ContentHub.Api.Endpoints
             });
 
             // TODO: Remove global drafts/archived endpoints once auth is enforced.
-            app.MapGet("/api/content/drafts", async (
+            group.MapGet("/drafts", async (
                 [FromServices] GetDraftContentHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
             {
@@ -118,7 +120,7 @@ namespace ContentHub.Api.Endpoints
                 ));
             }).RequireAuthorization();
 
-            app.MapGet("/api/content/authors/{authorId:guid}/drafts", async (
+            group.MapGet("/authors/{authorId:guid}/drafts", async (
                 Guid authorId,
                 [FromServices] GetDraftContentByAuthorHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
@@ -144,7 +146,7 @@ namespace ContentHub.Api.Endpoints
                 ));
             }).RequireAuthorization();
 
-            app.MapGet("/api/content/archived", async (
+            group.MapGet("/archived", async (
                 [FromServices] GetArchivedContentHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
             {
@@ -166,7 +168,7 @@ namespace ContentHub.Api.Endpoints
                 ));
             }).RequireAuthorization();
 
-            app.MapGet("/api/content/authors/{authorId:guid}/archived", async (
+            group.MapGet("/authors/{authorId:guid}/archived", async (
                 Guid authorId,
                 [FromServices] GetArchivedContentByAuthorHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
@@ -192,7 +194,7 @@ namespace ContentHub.Api.Endpoints
                 ));
             }).RequireAuthorization();
 
-            app.MapPost("/api/content/{id:guid}/publish", async (
+            group.MapPost("/{id:guid}/publish", async (
                 Guid id,
                 [FromBody] ConcurrencyRequest request,
                 [FromServices] PublishContentHandler handler) =>
@@ -204,7 +206,7 @@ namespace ContentHub.Api.Endpoints
                     : Results.BadRequest(new { error = result.Error });
             }).RequireAuthorization();
 
-            app.MapPost("/api/content/{id:guid}/archive", async (
+            group.MapPost("/{id:guid}/archive", async (
                 Guid id,
                 [FromBody] ConcurrencyRequest request,
                 [FromServices] ArchiveContentHandler handler) =>
@@ -216,7 +218,7 @@ namespace ContentHub.Api.Endpoints
                     : Results.BadRequest(new { error = result.Error });
             }).RequireAuthorization();
 
-            app.MapPost("/api/content/{id:guid}/restore", async (
+            group.MapPost("/{id:guid}/restore", async (
                 Guid id,
                 [FromBody] ConcurrencyRequest request,
                 [FromServices] RestoreContentHandler handler) =>
@@ -228,7 +230,7 @@ namespace ContentHub.Api.Endpoints
                     : Results.BadRequest(new { error = result.Error });
             }).RequireAuthorization();
 
-            app.MapDelete("/api/content/{id:guid}", async (
+            group.MapDelete("/{id:guid}", async (
                 Guid id,
                 [FromBody] ConcurrencyRequest request,
                 [FromServices] DeleteContentHandler handler) =>

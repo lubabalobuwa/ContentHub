@@ -11,7 +11,9 @@ namespace ContentHub.Api.Endpoints
     {
         public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapPost("/api/users", async (
+            var group = app.MapGroup("/api").WithTags("Users");
+
+            group.MapPost("/users", async (
                 [FromBody] CreateUserRequest request,
                 [FromServices] CreateUserHandler handler) =>
             {
@@ -23,7 +25,7 @@ namespace ContentHub.Api.Endpoints
                     : Results.BadRequest(new { error = result.Error });
             });
 
-            app.MapPost("/api/auth/login", async (
+            group.MapPost("/auth/login", async (
                 [FromBody] LoginRequest request,
                 [FromServices] AuthenticateUserHandler handler) =>
             {
@@ -35,7 +37,7 @@ namespace ContentHub.Api.Endpoints
                     : Results.Unauthorized();
             });
 
-            app.MapPost("/api/auth/reset-password", async (
+            group.MapPost("/auth/reset-password", async (
                 [FromBody] ResetPasswordRequest request,
                 [FromServices] ResetPasswordHandler handler,
                 [FromServices] IConfiguration config) =>
