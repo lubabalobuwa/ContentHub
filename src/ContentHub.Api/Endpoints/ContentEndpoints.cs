@@ -42,7 +42,7 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Created("/api/content", new { message = "Content created successfully" })
-                    : Results.BadRequest(new { error = result.Error });
+                    : MapFailure(result.Error);
             }).RequireAuthorization();
 
             group.MapPut("/{id:guid}", async (Guid id, [FromBody] UpdateContentRequest request, UpdateContentHandler handler) =>
@@ -52,7 +52,7 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content updated successfully" })
-                    : Results.BadRequest(new { error = result.Error });
+                    : MapFailure(result.Error);
             }).RequireAuthorization();
 
             group.MapGet("/{id:guid}", async (
@@ -203,7 +203,7 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content published." })
-                    : Results.BadRequest(new { error = result.Error });
+                    : MapFailure(result.Error);
             }).RequireAuthorization();
 
             group.MapPost("/{id:guid}/archive", async (
@@ -215,7 +215,7 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content archived." })
-                    : Results.BadRequest(new { error = result.Error });
+                    : MapFailure(result.Error);
             }).RequireAuthorization();
 
             group.MapPost("/{id:guid}/restore", async (
@@ -227,7 +227,7 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content restored." })
-                    : Results.BadRequest(new { error = result.Error });
+                    : MapFailure(result.Error);
             }).RequireAuthorization();
 
             group.MapDelete("/{id:guid}", async (
@@ -239,10 +239,22 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content deleted." })
-                    : Results.BadRequest(new { error = result.Error });
+                    : MapFailure(result.Error);
             }).RequireAuthorization();
 
             return app;
+        }
+
+        private static IResult MapFailure(string error)
+        {
+            return error switch
+            {
+                "Unauthorized." => Results.Unauthorized(),
+                "Forbidden." => Results.Forbid(),
+                "Content not found." => Results.NotFound(),
+                "Author not found." => Results.NotFound(),
+                _ => Results.BadRequest(new { error })
+            };
         }
     }
 }
