@@ -33,6 +33,8 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+
+    options.SchemaFilter<ContentHub.Api.Swagger.RowVersionSchemaFilter>();
 });
 builder.Services.AddHealthChecks();
 
