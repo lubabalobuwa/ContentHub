@@ -72,6 +72,7 @@ namespace ContentHub.Api.Endpoints
                 ));
             });
 
+            // TODO: Remove global drafts/archived endpoints once auth is enforced.
             app.MapGet("/api/content/drafts", async ([FromServices] GetDraftContentHandler handler) =>
             {
                 var content = await handler.HandleAsync();
@@ -87,6 +88,9 @@ namespace ContentHub.Api.Endpoints
 
             app.MapGet("/api/content/authors/{authorId:guid}/drafts", async (Guid authorId, [FromServices] GetDraftContentByAuthorHandler handler) =>
             {
+                if (authorId == Guid.Empty)
+                    return Results.BadRequest(new { error = "AuthorId is required." });
+
                 var content = await handler.HandleAsync(new GetDraftContentByAuthorQuery(authorId));
 
                 return Results.Ok(content.Select(x =>
@@ -113,6 +117,9 @@ namespace ContentHub.Api.Endpoints
 
             app.MapGet("/api/content/authors/{authorId:guid}/archived", async (Guid authorId, [FromServices] GetArchivedContentByAuthorHandler handler) =>
             {
+                if (authorId == Guid.Empty)
+                    return Results.BadRequest(new { error = "AuthorId is required." });
+
                 var content = await handler.HandleAsync(new GetArchivedContentByAuthorQuery(authorId));
 
                 return Results.Ok(content.Select(x =>
