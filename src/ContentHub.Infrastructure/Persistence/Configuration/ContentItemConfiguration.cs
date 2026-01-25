@@ -24,6 +24,15 @@ namespace ContentHub.Infrastructure.Persistence.Configuration
 
             builder.Property(x => x.Status)
                 .IsRequired();
+
+            builder.Property(x => x.CreatedAtUtc)
+                .IsRequired();
+
+            builder.Property(x => x.UpdatedAtUtc)
+                .IsRequired();
+
+            builder.Property(x => x.ArchivedAtUtc)
+                .IsRequired(false);
         }
     }
 }

@@ -10,6 +10,8 @@ namespace ContentHub.Application.Common.Interfaces
     public interface IContentReadRepository
     {
         Task<ContentItem> GetByIdAsync(Guid id);
+        Task<IReadOnlyList<ContentItem>> GetArchivedAsync();
+        Task<IReadOnlyList<ContentItem>> GetDraftsAsync();
         Task<IReadOnlyList<ContentItem>> GetPublishedAsync();
     }
 }

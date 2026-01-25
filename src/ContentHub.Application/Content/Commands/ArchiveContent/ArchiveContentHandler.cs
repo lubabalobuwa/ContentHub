@@ -1,6 +1,7 @@
 using ContentHub.Application.Common;
 using ContentHub.Application.Common.Interfaces;
 using ContentHub.Domain.Content;
+using System;
 using System.Threading.Tasks;
 
 namespace ContentHub.Application.Content.Commands.ArchiveContent
@@ -29,7 +30,7 @@ namespace ContentHub.Application.Content.Commands.ArchiveContent
             if (content.Status == ContentStatus.Archived)
                 return Result.Failure("Content is already archived.");
 
-            content.Archive();
+            content.Archive(DateTime.UtcNow);
 
             await _unitOfWork.CommitAsync();
 

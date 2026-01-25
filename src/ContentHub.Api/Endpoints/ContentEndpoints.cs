@@ -4,8 +4,11 @@ using ContentHub.Application.Content.Commands.ArchiveContent;
 using ContentHub.Application.Content.Commands.CreateContent;
 using ContentHub.Application.Content.Commands.DeleteContent;
 using ContentHub.Application.Content.Commands.PublishContent;
+using ContentHub.Application.Content.Commands.RestoreContent;
 using ContentHub.Application.Content.Commands.UpdateContent;
+using ContentHub.Application.Content.Queries.GetArchivedContent;
 using ContentHub.Application.Content.Queries.GetContentById;
+using ContentHub.Application.Content.Queries.GetDraftContent;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
 using Microsoft.AspNetCore.Mvc;
 
@@ -67,6 +70,32 @@ namespace ContentHub.Api.Endpoints
                 ));
             });
 
+            app.MapGet("/api/content/drafts", async ([FromServices] GetDraftContentHandler handler) =>
+            {
+                var content = await handler.HandleAsync();
+
+                return Results.Ok(content.Select(x =>
+                    new ContentSummaryResponse(
+                        x.Id,
+                        x.Title,
+                        x.Body,
+                        x.Status.ToString())
+                ));
+            });
+
+            app.MapGet("/api/content/archived", async ([FromServices] GetArchivedContentHandler handler) =>
+            {
+                var content = await handler.HandleAsync();
+
+                return Results.Ok(content.Select(x =>
+                    new ContentSummaryResponse(
+                        x.Id,
+                        x.Title,
+                        x.Body,
+                        x.Status.ToString())
+                ));
+            });
+
             app.MapPost("/api/content/{id:guid}/publish", async (Guid id, [FromServices] PublishContentHandler handler) =>
             {
                 var result = await handler.HandleAsync(new PublishContentCommand(id));
@@ -82,6 +111,15 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content archived." })
+                    : Results.BadRequest(new { error = result.Error });
+            });
+
+            app.MapPost("/api/content/{id:guid}/restore", async (Guid id, [FromServices] RestoreContentHandler handler) =>
+            {
+                var result = await handler.HandleAsync(new RestoreContentCommand(id));
+
+                return result.IsSuccess
+                    ? Results.Ok(new { message = "Content restored." })
                     : Results.BadRequest(new { error = result.Error });
             });
 

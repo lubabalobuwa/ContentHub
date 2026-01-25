@@ -34,7 +34,7 @@ namespace ContentHub.Application.Content.Commands.CreateContent
                 return Result.Failure("Author not found.");
 
             var content = new ContentItem(
-                command.Title, command.Body, command.AuthorId);
+                command.Title, command.Body, command.AuthorId, DateTime.UtcNow);
 
             await _contentRepository.AddAsync(content);
             await _unitOfWork.CommitAsync();

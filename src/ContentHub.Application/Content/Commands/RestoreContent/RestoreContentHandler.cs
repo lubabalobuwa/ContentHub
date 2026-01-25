@@ -4,22 +4,22 @@ using ContentHub.Domain.Content;
 using System;
 using System.Threading.Tasks;
 
-namespace ContentHub.Application.Content.Commands.UpdateContent
+namespace ContentHub.Application.Content.Commands.RestoreContent
 {
-    public class UpdateContentHandler
+    public class RestoreContentHandler
     {
         private readonly IContentRepository _contentRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateContentHandler(IContentRepository contentRepository, IUnitOfWork unitOfWork)
+        public RestoreContentHandler(IContentRepository contentRepository, IUnitOfWork unitOfWork)
         {
             _contentRepository = contentRepository;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result> HandleAsync(UpdateContentCommand command)
+        public async Task<Result> HandleAsync(RestoreContentCommand command)
         {
-            var validation = UpdateContentValidator.Validate(command);
+            var validation = RestoreContentValidator.Validate(command);
             if (!validation.IsSuccess)
                 return validation;
 
@@ -27,10 +27,10 @@ namespace ContentHub.Application.Content.Commands.UpdateContent
             if (content is null)
                 return Result.Failure("Content not found.");
 
-            if (content.Status == ContentStatus.Archived)
-                return Result.Failure("Archived content cannot be updated.");
+            if (content.Status != ContentStatus.Archived)
+                return Result.Failure("Only archived content can be restored.");
 
-            content.Update(command.Title, command.Body, DateTime.UtcNow);
+            content.Restore(DateTime.UtcNow);
 
             await _unitOfWork.CommitAsync();
 

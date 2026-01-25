@@ -31,7 +31,7 @@ namespace ContentHub.Application.Content.Commands.PublishContent
             if (content is null)
                 return Result.Failure("Content not found.");
 
-            content.Publish();
+            content.Publish(DateTime.UtcNow);
 
             await _unitOfWork.CommitAsync();
 
