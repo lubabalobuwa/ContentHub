@@ -1,6 +1,6 @@
 using ContentHub.Application.Common.Interfaces;
-using ContentHub.Domain.Content;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ContentHub.Application.Content.Queries.GetDraftContentByAuthor
@@ -14,9 +14,16 @@ namespace ContentHub.Application.Content.Queries.GetDraftContentByAuthor
             _repository = repository;
         }
 
-        public async Task<IReadOnlyList<ContentItem>> HandleAsync(GetDraftContentByAuthorQuery query)
+        public async Task<IReadOnlyList<ContentSummaryDto>> HandleAsync(GetDraftContentByAuthorQuery query)
         {
-            return await _repository.GetDraftsByAuthorAsync(query.AuthorId);
+            var content = await _repository.GetDraftsByAuthorAsync(query.AuthorId);
+
+            return content.Select(x => new ContentSummaryDto(
+                x.Id,
+                x.Title,
+                x.Body,
+                x.Status,
+                x.RowVersion)).ToList();
         }
     }
 }

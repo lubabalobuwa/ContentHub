@@ -11,21 +11,24 @@ namespace ContentHub.Application.Content.Commands.ArchiveContent
     {
         private readonly IContentRepository _contentRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IValidator<ArchiveContentCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
 
         public ArchiveContentHandler(
             IContentRepository contentRepository,
             ICurrentUserService currentUserService,
+            IValidator<ArchiveContentCommand> validator,
             IUnitOfWork unitOfWork)
         {
             _contentRepository = contentRepository;
             _currentUserService = currentUserService;
+            _validator = validator;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Result> HandleAsync(ArchiveContentCommand command)
         {
-            var validation = ArchiveContentValidator.Validate(command);
+            var validation = _validator.Validate(command);
             if (!validation.IsSuccess)
                 return validation;
 

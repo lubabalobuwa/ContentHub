@@ -1,6 +1,6 @@
 using ContentHub.Application.Common.Interfaces;
-using ContentHub.Domain.Content;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ContentHub.Application.Content.Queries.GetArchivedContentByAuthor
@@ -14,9 +14,16 @@ namespace ContentHub.Application.Content.Queries.GetArchivedContentByAuthor
             _repository = repository;
         }
 
-        public async Task<IReadOnlyList<ContentItem>> HandleAsync(GetArchivedContentByAuthorQuery query)
+        public async Task<IReadOnlyList<ContentSummaryDto>> HandleAsync(GetArchivedContentByAuthorQuery query)
         {
-            return await _repository.GetArchivedByAuthorAsync(query.AuthorId);
+            var content = await _repository.GetArchivedByAuthorAsync(query.AuthorId);
+
+            return content.Select(x => new ContentSummaryDto(
+                x.Id,
+                x.Title,
+                x.Body,
+                x.Status,
+                x.RowVersion)).ToList();
         }
     }
 }

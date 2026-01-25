@@ -1,15 +1,11 @@
-﻿using ContentHub.Application.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 
 namespace ContentHub.Application.Content.Commands.CreateContent
 {
-    public static class CreateContentValidator
+    public class CreateContentValidator : IValidator<CreateContentCommand>
     {
-        public static Result Validate(CreateContentCommand command)
+        public Result Validate(CreateContentCommand command)
         {
             if (string.IsNullOrWhiteSpace(command.Title))
                 return Result.Failure("Title is required.");

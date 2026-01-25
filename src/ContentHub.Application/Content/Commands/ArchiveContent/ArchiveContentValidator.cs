@@ -1,11 +1,12 @@
 using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 using System;
 
 namespace ContentHub.Application.Content.Commands.ArchiveContent
 {
-    public static class ArchiveContentValidator
+    public class ArchiveContentValidator : IValidator<ArchiveContentCommand>
     {
-        public static Result Validate(ArchiveContentCommand command)
+        public Result Validate(ArchiveContentCommand command)
         {
             if (command.ContentId == Guid.Empty)
                 return Result.Failure("ContentId is required.");

@@ -1,11 +1,12 @@
 using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 using System;
 
 namespace ContentHub.Application.Content.Commands.DeleteContent
 {
-    public static class DeleteContentValidator
+    public class DeleteContentValidator : IValidator<DeleteContentCommand>
     {
-        public static Result Validate(DeleteContentCommand command)
+        public Result Validate(DeleteContentCommand command)
         {
             if (command.ContentId == Guid.Empty)
                 return Result.Failure("ContentId is required.");

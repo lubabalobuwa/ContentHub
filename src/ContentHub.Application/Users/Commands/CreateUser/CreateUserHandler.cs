@@ -14,28 +14,26 @@ namespace ContentHub.Application.Users.Commands.CreateUser
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IValidator<CreateUserCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateUserHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
+        public CreateUserHandler(
+            IUserRepository userRepository,
+            IPasswordHasher passwordHasher,
+            IValidator<CreateUserCommand> validator,
+            IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _validator = validator;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Result<Guid>> HandleAsync(CreateUserCommand command)
         {
-            if (string.IsNullOrWhiteSpace(command.Email))
-                return Result<Guid>.Failure("Email is required.");
-
-            if (string.IsNullOrWhiteSpace(command.DisplayName))
-                return Result<Guid>.Failure("DisplayName is required.");
-
-            if (string.IsNullOrWhiteSpace(command.Password))
-                return Result<Guid>.Failure("Password is required.");
-
-            if (command.Password.Length < 8)
-                return Result<Guid>.Failure("Password must be at least 8 characters.");
+            var validation = _validator.Validate(command);
+            if (!validation.IsSuccess)
+                return Result<Guid>.Failure(validation.Error);
 
             var email = command.Email.Trim().ToLowerInvariant();
             var existingUser = await _userRepository.GetByEmailAsync(email);

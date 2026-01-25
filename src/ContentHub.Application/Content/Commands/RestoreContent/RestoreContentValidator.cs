@@ -1,11 +1,12 @@
 using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 using System;
 
 namespace ContentHub.Application.Content.Commands.RestoreContent
 {
-    public static class RestoreContentValidator
+    public class RestoreContentValidator : IValidator<RestoreContentCommand>
     {
-        public static Result Validate(RestoreContentCommand command)
+        public Result Validate(RestoreContentCommand command)
         {
             if (command.ContentId == Guid.Empty)
                 return Result.Failure("ContentId is required.");

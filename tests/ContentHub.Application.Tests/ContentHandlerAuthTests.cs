@@ -21,7 +21,7 @@ namespace ContentHub.Application.Tests
             var content = CreateContent(Guid.NewGuid());
             var repo = new FakeContentRepository(content);
             var currentUser = new FakeCurrentUserService(null, null, false);
-            var handler = new UpdateContentHandler(repo, currentUser, new FakeUnitOfWork());
+            var handler = new UpdateContentHandler(repo, currentUser, new UpdateContentValidator(), new FakeUnitOfWork());
 
             var result = await handler.HandleAsync(new UpdateContentCommand(content.Id, "Title", "Body", RowVersion()));
 
@@ -36,7 +36,7 @@ namespace ContentHub.Application.Tests
             var content = CreateContent(authorId);
             var repo = new FakeContentRepository(content);
             var currentUser = new FakeCurrentUserService(Guid.NewGuid(), UserRole.Author, true);
-            var handler = new UpdateContentHandler(repo, currentUser, new FakeUnitOfWork());
+            var handler = new UpdateContentHandler(repo, currentUser, new UpdateContentValidator(), new FakeUnitOfWork());
 
             var result = await handler.HandleAsync(new UpdateContentCommand(content.Id, "Title", "Body", RowVersion()));
 
@@ -52,7 +52,7 @@ namespace ContentHub.Application.Tests
             var repo = new FakeContentRepository(content);
             var currentUser = new FakeCurrentUserService(Guid.NewGuid(), UserRole.Admin, true);
             var unitOfWork = new FakeUnitOfWork();
-            var handler = new UpdateContentHandler(repo, currentUser, unitOfWork);
+            var handler = new UpdateContentHandler(repo, currentUser, new UpdateContentValidator(), unitOfWork);
 
             var result = await handler.HandleAsync(new UpdateContentCommand(content.Id, "New", "Body", RowVersion()));
 
@@ -67,7 +67,7 @@ namespace ContentHub.Application.Tests
             var content = CreateContent(authorId);
             var repo = new FakeContentRepository(content);
             var currentUser = new FakeCurrentUserService(Guid.NewGuid(), UserRole.Author, true);
-            var handler = new ArchiveContentHandler(repo, currentUser, new FakeUnitOfWork());
+            var handler = new ArchiveContentHandler(repo, currentUser, new ArchiveContentValidator(), new FakeUnitOfWork());
 
             var result = await handler.HandleAsync(new ArchiveContentCommand(content.Id, RowVersion()));
 
@@ -83,7 +83,7 @@ namespace ContentHub.Application.Tests
             var repo = new FakeContentRepository(content);
             var currentUser = new FakeCurrentUserService(Guid.NewGuid(), UserRole.Admin, true);
             var unitOfWork = new FakeUnitOfWork();
-            var handler = new DeleteContentHandler(repo, currentUser, unitOfWork);
+            var handler = new DeleteContentHandler(repo, currentUser, new DeleteContentValidator(), unitOfWork);
 
             var result = await handler.HandleAsync(new DeleteContentCommand(content.Id, RowVersion()));
 
@@ -98,7 +98,7 @@ namespace ContentHub.Application.Tests
             var content = CreateContent(authorId);
             var repo = new FakeContentRepository(content);
             var currentUser = new FakeCurrentUserService(Guid.NewGuid(), UserRole.Author, true);
-            var handler = new PublishContentHandler(repo, currentUser, new FakeUnitOfWork(), new FakePublisher());
+            var handler = new PublishContentHandler(repo, currentUser, new PublishContentValidator(), new FakeUnitOfWork(), new FakePublisher());
 
             var result = await handler.HandleAsync(new PublishContentCommand(content.Id, RowVersion()));
 
@@ -114,7 +114,7 @@ namespace ContentHub.Application.Tests
             content.Archive(DateTime.UtcNow);
             var repo = new FakeContentRepository(content);
             var currentUser = new FakeCurrentUserService(Guid.NewGuid(), UserRole.Author, true);
-            var handler = new RestoreContentHandler(repo, currentUser, new FakeUnitOfWork());
+            var handler = new RestoreContentHandler(repo, currentUser, new RestoreContentValidator(), new FakeUnitOfWork());
 
             var result = await handler.HandleAsync(new RestoreContentCommand(content.Id, RowVersion()));
 

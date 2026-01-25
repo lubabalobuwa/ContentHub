@@ -11,21 +11,24 @@ namespace ContentHub.Application.Content.Commands.UpdateContent
     {
         private readonly IContentRepository _contentRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IValidator<UpdateContentCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
 
         public UpdateContentHandler(
             IContentRepository contentRepository,
             ICurrentUserService currentUserService,
+            IValidator<UpdateContentCommand> validator,
             IUnitOfWork unitOfWork)
         {
             _contentRepository = contentRepository;
             _currentUserService = currentUserService;
+            _validator = validator;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Result> HandleAsync(UpdateContentCommand command)
         {
-            var validation = UpdateContentValidator.Validate(command);
+            var validation = _validator.Validate(command);
             if (!validation.IsSuccess)
                 return validation;
 

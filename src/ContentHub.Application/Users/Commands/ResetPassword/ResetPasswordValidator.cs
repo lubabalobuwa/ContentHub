@@ -1,10 +1,11 @@
 using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 
 namespace ContentHub.Application.Users.Commands.ResetPassword
 {
-    public static class ResetPasswordValidator
+    public class ResetPasswordValidator : IValidator<ResetPasswordCommand>
     {
-        public static Result Validate(ResetPasswordCommand command)
+        public Result Validate(ResetPasswordCommand command)
         {
             if (string.IsNullOrWhiteSpace(command.Email))
                 return Result.Failure("Email is required.");

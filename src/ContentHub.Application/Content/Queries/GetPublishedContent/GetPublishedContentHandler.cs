@@ -1,9 +1,6 @@
-﻿using ContentHub.Application.Common.Interfaces;
-using ContentHub.Domain.Content;
-using System;
+using ContentHub.Application.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ContentHub.Application.Content.Queries.GetPublishedContent
@@ -17,9 +14,16 @@ namespace ContentHub.Application.Content.Queries.GetPublishedContent
             _repository = repository;
         }
 
-        public async Task<IReadOnlyList<ContentItem>> HandleAsync()
+        public async Task<IReadOnlyList<ContentSummaryDto>> HandleAsync()
         {
-            return await _repository.GetPublishedAsync();
+            var content = await _repository.GetPublishedAsync();
+
+            return content.Select(x => new ContentSummaryDto(
+                x.Id,
+                x.Title,
+                x.Body,
+                x.Status,
+                x.RowVersion)).ToList();
         }
     }
 }

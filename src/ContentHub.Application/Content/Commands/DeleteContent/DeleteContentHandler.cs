@@ -10,21 +10,24 @@ namespace ContentHub.Application.Content.Commands.DeleteContent
     {
         private readonly IContentRepository _contentRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IValidator<DeleteContentCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
 
         public DeleteContentHandler(
             IContentRepository contentRepository,
             ICurrentUserService currentUserService,
+            IValidator<DeleteContentCommand> validator,
             IUnitOfWork unitOfWork)
         {
             _contentRepository = contentRepository;
             _currentUserService = currentUserService;
+            _validator = validator;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Result> HandleAsync(DeleteContentCommand command)
         {
-            var validation = DeleteContentValidator.Validate(command);
+            var validation = _validator.Validate(command);
             if (!validation.IsSuccess)
                 return validation;
 

@@ -15,23 +15,26 @@ namespace ContentHub.Application.Content.Commands.CreateContent
         private readonly IContentRepository _contentRepository;
         private readonly IUserRepository _userRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IValidator<CreateContentCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
 
         public CreateContentHandler(
             IContentRepository contentRepository,
             IUserRepository userRepository,
             ICurrentUserService currentUserService,
+            IValidator<CreateContentCommand> validator,
             IUnitOfWork unitOfWork)
         {
             _contentRepository = contentRepository;
             _userRepository = userRepository;
             _currentUserService = currentUserService;
+            _validator = validator;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Result> HandleAsync(CreateContentCommand command)
         {
-            var validation = CreateContentValidator.Validate(command);
+            var validation = _validator.Validate(command);
             if (!validation.IsSuccess)
                 return validation;
 

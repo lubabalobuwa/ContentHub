@@ -1,10 +1,11 @@
 using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 
 namespace ContentHub.Application.Users.Commands.AuthenticateUser
 {
-    public static class AuthenticateUserValidator
+    public class AuthenticateUserValidator : IValidator<AuthenticateUserCommand>
     {
-        public static Result Validate(AuthenticateUserCommand command)
+        public Result Validate(AuthenticateUserCommand command)
         {
             if (string.IsNullOrWhiteSpace(command.Email))
                 return Result.Failure("Email is required.");

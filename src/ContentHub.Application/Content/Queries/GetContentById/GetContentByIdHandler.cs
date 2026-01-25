@@ -1,9 +1,5 @@
-﻿using ContentHub.Application.Common.Interfaces;
+using ContentHub.Application.Common.Interfaces;
 using ContentHub.Domain.Content;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ContentHub.Application.Content.Queries.GetContentById
@@ -17,9 +13,18 @@ namespace ContentHub.Application.Content.Queries.GetContentById
             _repository = repository;
         }
 
-        public async Task<ContentItem> HandleAsync(GetContentByIdQuery query)
+        public async Task<ContentSummaryDto?> HandleAsync(GetContentByIdQuery query)
         {
-            return await _repository.GetByIdAsync(query.ContentId);
+            var content = await _repository.GetByIdAsync(query.ContentId);
+            if (content is null)
+                return null;
+
+            return new ContentSummaryDto(
+                content.Id,
+                content.Title,
+                content.Body,
+                content.Status,
+                content.RowVersion);
         }
     }
 }

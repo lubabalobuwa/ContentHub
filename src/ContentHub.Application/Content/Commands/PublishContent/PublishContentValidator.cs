@@ -1,11 +1,12 @@
 using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 using System;
 
 namespace ContentHub.Application.Content.Commands.PublishContent
 {
-    public static class PublishContentValidator
+    public class PublishContentValidator : IValidator<PublishContentCommand>
     {
-        public static Result Validate(PublishContentCommand command)
+        public Result Validate(PublishContentCommand command)
         {
             if (command.ContentId == Guid.Empty)
                 return Result.Failure("ContentId is required.");

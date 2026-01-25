@@ -10,6 +10,7 @@ using ContentHub.Application.Content.Queries.GetContentById;
 using ContentHub.Application.Content.Queries.GetDraftContent;
 using ContentHub.Application.Content.Queries.GetDraftContentByAuthor;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
+using ContentHub.Application.Common.Interfaces;
 using ContentHub.Application.Users.Commands.AuthenticateUser;
 using ContentHub.Application.Users.Commands.CreateUser;
 using ContentHub.Application.Users.Commands.ResetPassword;
@@ -35,10 +36,21 @@ namespace ContentHub.Application
             services.AddScoped<RestoreContentHandler>();
             services.AddScoped<UpdateContentHandler>();
             
+            services.AddScoped<IValidator<CreateContentCommand>, CreateContentValidator>();
+            services.AddScoped<IValidator<UpdateContentCommand>, UpdateContentValidator>();
+            services.AddScoped<IValidator<ArchiveContentCommand>, ArchiveContentValidator>();
+            services.AddScoped<IValidator<DeleteContentCommand>, DeleteContentValidator>();
+            services.AddScoped<IValidator<RestoreContentCommand>, RestoreContentValidator>();
+            services.AddScoped<IValidator<PublishContentCommand>, PublishContentValidator>();
+
             services.AddScoped<AuthenticateUserHandler>();
             services.AddScoped<CreateUserHandler>();
             services.AddScoped<ResetPasswordHandler>();
             services.AddScoped<GetUserProfileHandler>();
+
+            services.AddScoped<IValidator<AuthenticateUserCommand>, AuthenticateUserValidator>();
+            services.AddScoped<IValidator<CreateUserCommand>, CreateUserValidator>();
+            services.AddScoped<IValidator<ResetPasswordCommand>, ResetPasswordValidator>();
 
             return services;
         }

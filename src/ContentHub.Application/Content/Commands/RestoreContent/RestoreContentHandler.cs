@@ -11,21 +11,24 @@ namespace ContentHub.Application.Content.Commands.RestoreContent
     {
         private readonly IContentRepository _contentRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IValidator<RestoreContentCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
 
         public RestoreContentHandler(
             IContentRepository contentRepository,
             ICurrentUserService currentUserService,
+            IValidator<RestoreContentCommand> validator,
             IUnitOfWork unitOfWork)
         {
             _contentRepository = contentRepository;
             _currentUserService = currentUserService;
+            _validator = validator;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Result> HandleAsync(RestoreContentCommand command)
         {
-            var validation = RestoreContentValidator.Validate(command);
+            var validation = _validator.Validate(command);
             if (!validation.IsSuccess)
                 return validation;
 

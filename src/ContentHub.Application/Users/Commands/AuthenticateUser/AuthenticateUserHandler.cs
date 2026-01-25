@@ -9,20 +9,23 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly ITokenService _tokenService;
+        private readonly IValidator<AuthenticateUserCommand> _validator;
 
         public AuthenticateUserHandler(
             IUserRepository userRepository,
             IPasswordHasher passwordHasher,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            IValidator<AuthenticateUserCommand> validator)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _tokenService = tokenService;
+            _validator = validator;
         }
 
         public async Task<Result<AuthenticateUserResult>> HandleAsync(AuthenticateUserCommand command)
         {
-            var validation = AuthenticateUserValidator.Validate(command);
+            var validation = _validator.Validate(command);
             if (!validation.IsSuccess)
                 return Result<AuthenticateUserResult>.Failure(validation.Error);
 
