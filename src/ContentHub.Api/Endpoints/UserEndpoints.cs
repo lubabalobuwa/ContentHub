@@ -42,11 +42,18 @@ namespace ContentHub.Api.Endpoints
             group.MapPost("/auth/reset-password", async (
                 [FromBody] ResetPasswordRequest request,
                 [FromServices] ResetPasswordHandler handler,
-                [FromServices] IConfiguration config) =>
+                [FromServices] IConfiguration config,
+                [FromServices] ICurrentUserService currentUser) =>
             {
-                var resetKey = config["Auth:ResetKey"];
-                if (string.IsNullOrWhiteSpace(resetKey) || request.ResetKey != resetKey)
+                var enabled = config.GetValue<bool>("Auth:EnableResetPassword");
+                if (!enabled)
+                    return Results.NotFound();
+
+                if (!currentUser.IsAuthenticated || currentUser.UserId is null)
                     return Results.Unauthorized();
+
+                if (currentUser.Role != ContentHub.Domain.Users.UserRole.Admin)
+                    return Results.Forbid();
 
                 var result = await handler.HandleAsync(
                     new ResetPasswordCommand(request.Email, request.NewPassword));
@@ -54,7 +61,7 @@ namespace ContentHub.Api.Endpoints
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Password reset successfully." })
                     : Results.BadRequest(new { error = result.Error });
-            });
+            }).RequireAuthorization();
 
             group.MapGet("/users/me", async (
                 [FromServices] ICurrentUserService currentUser,
