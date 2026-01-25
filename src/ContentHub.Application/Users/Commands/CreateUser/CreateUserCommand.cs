@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ContentHub.Application.Users.Commands.CreateUser
 {
-    public record CreateUserCommand(string Email, string DisplayName);
+    public record CreateUserCommand(string Email, string DisplayName, string Password);
 }

@@ -23,6 +23,11 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
             return await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+        }
+
         public async Task AddAsync(User user)
         {
             await _dbContext.Users.AddAsync(user);

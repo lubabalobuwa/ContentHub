@@ -13,11 +13,13 @@ namespace ContentHub.Application.Users.Commands.CreateUser
     public class CreateUserHandler
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateUserHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+        public CreateUserHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
             _unitOfWork = unitOfWork;
         }
 
@@ -29,7 +31,19 @@ namespace ContentHub.Application.Users.Commands.CreateUser
             if (string.IsNullOrWhiteSpace(command.DisplayName))
                 return Result<Guid>.Failure("DisplayName is required.");
 
-            var user = new User(command.Email.Trim(), command.DisplayName.Trim(), UserRole.Author);
+            if (string.IsNullOrWhiteSpace(command.Password))
+                return Result<Guid>.Failure("Password is required.");
+
+            if (command.Password.Length < 8)
+                return Result<Guid>.Failure("Password must be at least 8 characters.");
+
+            var email = command.Email.Trim().ToLowerInvariant();
+            var existingUser = await _userRepository.GetByEmailAsync(email);
+            if (existingUser is not null)
+                return Result<Guid>.Failure("Email is already registered.");
+
+            var passwordHash = _passwordHasher.Hash(command.Password);
+            var user = new User(email, command.DisplayName.Trim(), UserRole.Author, passwordHash);
 
             await _userRepository.AddAsync(user);
             await _unitOfWork.CommitAsync();

@@ -10,6 +10,7 @@ using ContentHub.Application.Content.Queries.GetContentById;
 using ContentHub.Application.Content.Queries.GetDraftContent;
 using ContentHub.Application.Content.Queries.GetDraftContentByAuthor;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
+using ContentHub.Application.Users.Commands.AuthenticateUser;
 using ContentHub.Application.Users.Commands.CreateUser;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,6 +33,7 @@ namespace ContentHub.Application
             services.AddScoped<RestoreContentHandler>();
             services.AddScoped<UpdateContentHandler>();
             
+            services.AddScoped<AuthenticateUserHandler>();
             services.AddScoped<CreateUserHandler>();
 
             return services;

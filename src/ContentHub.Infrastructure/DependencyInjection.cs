@@ -1,16 +1,12 @@
-﻿using ContentHub.Application.Common.Interfaces;
+using ContentHub.Application.Common.Interfaces;
 using ContentHub.Application.Messaging;
+using ContentHub.Infrastructure.Authentication;
 using ContentHub.Infrastructure.Messaging;
 using ContentHub.Infrastructure.Persistence;
 using ContentHub.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ContentHub.Infrastructure
 {
@@ -23,9 +19,13 @@ namespace ContentHub.Infrastructure
 
             services.AddScoped<IContentRepository, ContentRepository>();
             services.AddScoped<IContentReadRepository, ContentReadRepository>();
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
+
+            services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 
             return services;
         }

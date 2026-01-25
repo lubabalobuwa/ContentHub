@@ -1,8 +1,7 @@
-﻿namespace ContentHub.Api.Contracts.Requests
+namespace ContentHub.Api.Contracts.Requests
 {
     public record CreateContentRequest(
         string Title,
-        string Body,
-        Guid AuthorId
+        string Body
     );
 }

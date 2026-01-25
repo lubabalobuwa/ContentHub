@@ -2,6 +2,7 @@
 {
     public record CreateUserRequest(
         string Email, 
-        string DisplayName
+        string DisplayName,
+        string Password
     );
 }
