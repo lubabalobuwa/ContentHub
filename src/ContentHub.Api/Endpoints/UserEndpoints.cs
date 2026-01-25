@@ -1,8 +1,10 @@
 using ContentHub.Api.Contracts.Requests;
 using ContentHub.Api.Contracts.Responses;
+using ContentHub.Application.Common.Interfaces;
 using ContentHub.Application.Users.Commands.AuthenticateUser;
 using ContentHub.Application.Users.Commands.CreateUser;
 using ContentHub.Application.Users.Commands.ResetPassword;
+using ContentHub.Application.Users.Queries.GetUserProfile;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentHub.Api.Endpoints
@@ -53,6 +55,24 @@ namespace ContentHub.Api.Endpoints
                     ? Results.Ok(new { message = "Password reset successfully." })
                     : Results.BadRequest(new { error = result.Error });
             });
+
+            group.MapGet("/users/me", async (
+                [FromServices] ICurrentUserService currentUser,
+                [FromServices] GetUserProfileHandler handler) =>
+            {
+                if (!currentUser.IsAuthenticated || currentUser.UserId is null)
+                    return Results.Unauthorized();
+
+                var profile = await handler.HandleAsync(new GetUserProfileQuery(currentUser.UserId.Value));
+                if (profile is null)
+                    return Results.NotFound();
+
+                return Results.Ok(new UserProfileResponse(
+                    profile.Id,
+                    profile.Email,
+                    profile.DisplayName,
+                    profile.Role));
+            }).RequireAuthorization();
 
             return app;
         }

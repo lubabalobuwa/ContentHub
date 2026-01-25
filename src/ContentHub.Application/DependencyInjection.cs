@@ -13,6 +13,7 @@ using ContentHub.Application.Content.Queries.GetPublishedContent;
 using ContentHub.Application.Users.Commands.AuthenticateUser;
 using ContentHub.Application.Users.Commands.CreateUser;
 using ContentHub.Application.Users.Commands.ResetPassword;
+using ContentHub.Application.Users.Queries.GetUserProfile;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ContentHub.Application
@@ -37,6 +38,7 @@ namespace ContentHub.Application
             services.AddScoped<AuthenticateUserHandler>();
             services.AddScoped<CreateUserHandler>();
             services.AddScoped<ResetPasswordHandler>();
+            services.AddScoped<GetUserProfileHandler>();
 
             return services;
         }
