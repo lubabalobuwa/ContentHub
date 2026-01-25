@@ -7,9 +7,22 @@ using ContentHub.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Events;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+        .Enrich.FromLogContext()
+        .Enrich.WithProperty("Application", "ContentHub.Api")
+        .WriteTo.Console();
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -36,7 +49,13 @@ builder.Services.AddSwaggerGen(options =>
 
     options.SchemaFilter<ContentHub.Api.Swagger.RowVersionSchemaFilter>();
 });
-builder.Services.AddHealthChecks();
+var rabbitMqConnection = builder.Configuration.GetValue<string>("RabbitMq:ConnectionString")
+    ?? "amqp://guest:guest@localhost:5672";
+var sqlConnection = builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
+
+builder.Services.AddHealthChecks()
+    .AddSqlServer(sqlConnection, name: "sqlserver")
+    .AddRabbitMQ(rabbitMqConnection, name: "rabbitmq");
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -85,6 +104,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();

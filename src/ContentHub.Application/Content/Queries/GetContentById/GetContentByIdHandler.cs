@@ -21,6 +21,7 @@ namespace ContentHub.Application.Content.Queries.GetContentById
 
             return new ContentSummaryDto(
                 content.Id,
+                content.AuthorId,
                 content.Title,
                 content.Body,
                 content.Status,

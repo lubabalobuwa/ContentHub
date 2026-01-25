@@ -20,6 +20,7 @@ namespace ContentHub.Application.Content.Queries.GetArchivedContent
 
             return content.Select(x => new ContentSummaryDto(
                 x.Id,
+                x.AuthorId,
                 x.Title,
                 x.Body,
                 x.Status,

@@ -28,3 +28,17 @@ Content list/detail responses use `ContentSummaryDto` (mapped to `ContentSummary
 - `body`
 - `status` (Draft/Published/Archived)
 - `rowVersion` (Base64 string for optimistic concurrency)
+
+Validation errors use ProblemDetails with an `errors` dictionary, for example:
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "error": [
+      "AuthorId is required."
+    ]
+  }
+}
+```
