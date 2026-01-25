@@ -16,6 +16,7 @@ namespace ContentHub.Domain.Content
         public DateTime CreatedAtUtc { get; private set; }
         public DateTime UpdatedAtUtc { get; private set; }
         public DateTime? ArchivedAtUtc { get; private set; }
+        public byte[] RowVersion { get; private set; } = Array.Empty<byte>();
 
         private ContentItem() { }
 

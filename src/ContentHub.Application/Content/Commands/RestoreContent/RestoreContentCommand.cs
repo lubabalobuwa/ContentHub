@@ -2,5 +2,5 @@ using System;
 
 namespace ContentHub.Application.Content.Commands.RestoreContent
 {
-    public record RestoreContentCommand(Guid ContentId);
+    public record RestoreContentCommand(Guid ContentId, string RowVersion);
 }

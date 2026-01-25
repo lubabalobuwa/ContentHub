@@ -45,7 +45,7 @@ namespace ContentHub.Api.Endpoints
 
             app.MapPut("/api/content/{id:guid}", async (Guid id, [FromBody] UpdateContentRequest request, UpdateContentHandler handler) =>
             {
-                var command = new UpdateContentCommand(id, request.Title, request.Body);
+                var command = new UpdateContentCommand(id, request.Title, request.Body, request.RowVersion);
                 var result = await handler.HandleAsync(command);
 
                 return result.IsSuccess
@@ -76,7 +76,8 @@ namespace ContentHub.Api.Endpoints
                     content.Id,
                     content.Title,
                     content.Body,
-                    content.Status.ToString()
+                    content.Status.ToString(),
+                    Convert.ToBase64String(content.RowVersion)
                 ));
             });
 
@@ -89,7 +90,8 @@ namespace ContentHub.Api.Endpoints
                         x.Id,
                         x.Title,
                         x.Body,
-                        x.Status.ToString())
+                        x.Status.ToString(),
+                        Convert.ToBase64String(x.RowVersion))
                 ));
             });
 
@@ -111,7 +113,8 @@ namespace ContentHub.Api.Endpoints
                         x.Id,
                         x.Title,
                         x.Body,
-                        x.Status.ToString())
+                        x.Status.ToString(),
+                        Convert.ToBase64String(x.RowVersion))
                 ));
             }).RequireAuthorization();
 
@@ -136,7 +139,8 @@ namespace ContentHub.Api.Endpoints
                         x.Id,
                         x.Title,
                         x.Body,
-                        x.Status.ToString())
+                        x.Status.ToString(),
+                        Convert.ToBase64String(x.RowVersion))
                 ));
             }).RequireAuthorization();
 
@@ -157,7 +161,8 @@ namespace ContentHub.Api.Endpoints
                         x.Id,
                         x.Title,
                         x.Body,
-                        x.Status.ToString())
+                        x.Status.ToString(),
+                        Convert.ToBase64String(x.RowVersion))
                 ));
             }).RequireAuthorization();
 
@@ -182,40 +187,53 @@ namespace ContentHub.Api.Endpoints
                         x.Id,
                         x.Title,
                         x.Body,
-                        x.Status.ToString())
+                        x.Status.ToString(),
+                        Convert.ToBase64String(x.RowVersion))
                 ));
             }).RequireAuthorization();
 
-            app.MapPost("/api/content/{id:guid}/publish", async (Guid id, [FromServices] PublishContentHandler handler) =>
+            app.MapPost("/api/content/{id:guid}/publish", async (
+                Guid id,
+                [FromBody] ConcurrencyRequest request,
+                [FromServices] PublishContentHandler handler) =>
             {
-                var result = await handler.HandleAsync(new PublishContentCommand(id));
+                var result = await handler.HandleAsync(new PublishContentCommand(id, request.RowVersion));
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content published." })
                     : Results.BadRequest(new { error = result.Error });
             }).RequireAuthorization();
 
-            app.MapPost("/api/content/{id:guid}/archive", async (Guid id, [FromServices] ArchiveContentHandler handler) =>
+            app.MapPost("/api/content/{id:guid}/archive", async (
+                Guid id,
+                [FromBody] ConcurrencyRequest request,
+                [FromServices] ArchiveContentHandler handler) =>
             {
-                var result = await handler.HandleAsync(new ArchiveContentCommand(id));
+                var result = await handler.HandleAsync(new ArchiveContentCommand(id, request.RowVersion));
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content archived." })
                     : Results.BadRequest(new { error = result.Error });
             }).RequireAuthorization();
 
-            app.MapPost("/api/content/{id:guid}/restore", async (Guid id, [FromServices] RestoreContentHandler handler) =>
+            app.MapPost("/api/content/{id:guid}/restore", async (
+                Guid id,
+                [FromBody] ConcurrencyRequest request,
+                [FromServices] RestoreContentHandler handler) =>
             {
-                var result = await handler.HandleAsync(new RestoreContentCommand(id));
+                var result = await handler.HandleAsync(new RestoreContentCommand(id, request.RowVersion));
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content restored." })
                     : Results.BadRequest(new { error = result.Error });
             }).RequireAuthorization();
 
-            app.MapDelete("/api/content/{id:guid}", async (Guid id, [FromServices] DeleteContentHandler handler) =>
+            app.MapDelete("/api/content/{id:guid}", async (
+                Guid id,
+                [FromBody] ConcurrencyRequest request,
+                [FromServices] DeleteContentHandler handler) =>
             {
-                var result = await handler.HandleAsync(new DeleteContentCommand(id));
+                var result = await handler.HandleAsync(new DeleteContentCommand(id, request.RowVersion));
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content deleted." })

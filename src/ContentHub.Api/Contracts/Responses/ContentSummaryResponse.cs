@@ -4,6 +4,7 @@
         Guid Id,
         string Title,
         string Body,
-        string Status
+        string Status,
+        string RowVersion
     );
 }

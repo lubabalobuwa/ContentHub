@@ -33,6 +33,9 @@ namespace ContentHub.Infrastructure.Persistence.Configuration
 
             builder.Property(x => x.ArchivedAtUtc)
                 .IsRequired(false);
+
+            builder.Property(x => x.RowVersion)
+                .IsRowVersion();
         }
     }
 }

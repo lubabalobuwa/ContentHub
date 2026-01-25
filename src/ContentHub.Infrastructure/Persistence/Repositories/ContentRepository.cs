@@ -33,5 +33,10 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
         {
             _dbContext.ContentItems.Remove(contentItem);
         }
+
+        public void SetOriginalRowVersion(ContentItem contentItem, byte[] rowVersion)
+        {
+            _dbContext.Entry(contentItem).Property(x => x.RowVersion).OriginalValue = rowVersion;
+        }
     }
 }

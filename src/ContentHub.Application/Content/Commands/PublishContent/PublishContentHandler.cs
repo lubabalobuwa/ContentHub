@@ -28,9 +28,16 @@ namespace ContentHub.Application.Content.Commands.PublishContent
 
         public async Task<Result> HandleAsync(PublishContentCommand command)
         {
+            var validation = PublishContentValidator.Validate(command);
+            if (!validation.IsSuccess)
+                return validation;
+
             var content = await _contentRepository.GetByIdAsync(command.ContentId);
             if (content is null)
                 return Result.Failure("Content not found.");
+
+            var rowVersion = Convert.FromBase64String(command.RowVersion);
+            _contentRepository.SetOriginalRowVersion(content, rowVersion);
 
             if (!_currentUserService.IsAuthenticated || _currentUserService.UserId is null)
                 return Result.Failure("Unauthorized.");

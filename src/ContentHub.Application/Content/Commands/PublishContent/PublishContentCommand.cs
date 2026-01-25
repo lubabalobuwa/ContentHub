@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ContentHub.Application.Content.Commands.PublishContent
 {
-    public record PublishContentCommand(Guid ContentId); 
+    public record PublishContentCommand(Guid ContentId, string RowVersion); 
 }

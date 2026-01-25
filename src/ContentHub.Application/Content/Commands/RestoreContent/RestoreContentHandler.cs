@@ -33,6 +33,9 @@ namespace ContentHub.Application.Content.Commands.RestoreContent
             if (content is null)
                 return Result.Failure("Content not found.");
 
+            var rowVersion = Convert.FromBase64String(command.RowVersion);
+            _contentRepository.SetOriginalRowVersion(content, rowVersion);
+
             if (!_currentUserService.IsAuthenticated || _currentUserService.UserId is null)
                 return Result.Failure("Unauthorized.");
 
