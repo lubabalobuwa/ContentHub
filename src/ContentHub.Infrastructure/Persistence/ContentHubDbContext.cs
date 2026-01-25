@@ -13,7 +13,6 @@ namespace ContentHub.Infrastructure.Persistence
     {
         public ContentHubDbContext(DbContextOptions<ContentHubDbContext> options) : base(options) 
         {
-            Database.EnsureCreated();
         }
 
         public DbSet<ContentItem> ContentItems => Set<ContentItem>();

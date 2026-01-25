@@ -7,8 +7,10 @@ using ContentHub.Application.Content.Commands.PublishContent;
 using ContentHub.Application.Content.Commands.RestoreContent;
 using ContentHub.Application.Content.Commands.UpdateContent;
 using ContentHub.Application.Content.Queries.GetArchivedContent;
+using ContentHub.Application.Content.Queries.GetArchivedContentByAuthor;
 using ContentHub.Application.Content.Queries.GetContentById;
 using ContentHub.Application.Content.Queries.GetDraftContent;
+using ContentHub.Application.Content.Queries.GetDraftContentByAuthor;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
 using Microsoft.AspNetCore.Mvc;
 
@@ -83,9 +85,35 @@ namespace ContentHub.Api.Endpoints
                 ));
             });
 
+            app.MapGet("/api/content/authors/{authorId:guid}/drafts", async (Guid authorId, [FromServices] GetDraftContentByAuthorHandler handler) =>
+            {
+                var content = await handler.HandleAsync(new GetDraftContentByAuthorQuery(authorId));
+
+                return Results.Ok(content.Select(x =>
+                    new ContentSummaryResponse(
+                        x.Id,
+                        x.Title,
+                        x.Body,
+                        x.Status.ToString())
+                ));
+            });
+
             app.MapGet("/api/content/archived", async ([FromServices] GetArchivedContentHandler handler) =>
             {
                 var content = await handler.HandleAsync();
+
+                return Results.Ok(content.Select(x =>
+                    new ContentSummaryResponse(
+                        x.Id,
+                        x.Title,
+                        x.Body,
+                        x.Status.ToString())
+                ));
+            });
+
+            app.MapGet("/api/content/authors/{authorId:guid}/archived", async (Guid authorId, [FromServices] GetArchivedContentByAuthorHandler handler) =>
+            {
+                var content = await handler.HandleAsync(new GetArchivedContentByAuthorQuery(authorId));
 
                 return Results.Ok(content.Select(x =>
                     new ContentSummaryResponse(

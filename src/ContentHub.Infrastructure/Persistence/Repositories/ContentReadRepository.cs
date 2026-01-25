@@ -34,11 +34,29 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IReadOnlyList<ContentItem>> GetArchivedByAuthorAsync(Guid authorId)
+        {
+            return await _dbContext.ContentItems
+                .AsNoTracking()
+                .Where(x => x.Status == ContentStatus.Archived && x.AuthorId == authorId)
+                .OrderByDescending(x => x.Id)
+                .ToListAsync();
+        }
+
         public async Task<IReadOnlyList<ContentItem>> GetDraftsAsync()
         {
             return await _dbContext.ContentItems
                 .AsNoTracking()
                 .Where(x => x.Status == ContentStatus.Draft)
+                .OrderByDescending(x => x.Id)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<ContentItem>> GetDraftsByAuthorAsync(Guid authorId)
+        {
+            return await _dbContext.ContentItems
+                .AsNoTracking()
+                .Where(x => x.Status == ContentStatus.Draft && x.AuthorId == authorId)
                 .OrderByDescending(x => x.Id)
                 .ToListAsync();
         }

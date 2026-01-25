@@ -11,7 +11,9 @@ namespace ContentHub.Application.Common.Interfaces
     {
         Task<ContentItem> GetByIdAsync(Guid id);
         Task<IReadOnlyList<ContentItem>> GetArchivedAsync();
+        Task<IReadOnlyList<ContentItem>> GetArchivedByAuthorAsync(Guid authorId);
         Task<IReadOnlyList<ContentItem>> GetDraftsAsync();
+        Task<IReadOnlyList<ContentItem>> GetDraftsByAuthorAsync(Guid authorId);
         Task<IReadOnlyList<ContentItem>> GetPublishedAsync();
     }
 }
