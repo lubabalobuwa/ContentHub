@@ -11,5 +11,6 @@ namespace ContentHub.Application.Common.Interfaces
     {
         Task AddAsync(ContentItem contentItem);
         Task<ContentItem?> GetByIdAsync(Guid id);
+        void Remove(ContentItem contentItem);
     }
 }

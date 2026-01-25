@@ -1,7 +1,10 @@
 ﻿using ContentHub.Api.Contracts.Requests;
 using ContentHub.Api.Contracts.Responses;
+using ContentHub.Application.Content.Commands.ArchiveContent;
 using ContentHub.Application.Content.Commands.CreateContent;
+using ContentHub.Application.Content.Commands.DeleteContent;
 using ContentHub.Application.Content.Commands.PublishContent;
+using ContentHub.Application.Content.Commands.UpdateContent;
 using ContentHub.Application.Content.Queries.GetContentById;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +26,16 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess 
                     ? Results.Created($"/api/content", new { messahe = "Content created successfully" }) 
+                    : Results.BadRequest(new { error = result.Error });
+            });
+
+            app.MapPut("/api/content/{id:guid}", async (Guid id, [FromBody] UpdateContentRequest request, UpdateContentHandler handler) =>
+            {
+                var command = new UpdateContentCommand(id, request.Title, request.Body);
+                var result = await handler.HandleAsync(command);
+
+                return result.IsSuccess
+                    ? Results.Ok(new { message = "Content updated successfully" })
                     : Results.BadRequest(new { error = result.Error });
             });
 
@@ -60,6 +73,24 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Content published." })
+                    : Results.BadRequest(new { error = result.Error });
+            });
+
+            app.MapPost("/api/content/{id:guid}/archive", async (Guid id, [FromServices] ArchiveContentHandler handler) =>
+            {
+                var result = await handler.HandleAsync(new ArchiveContentCommand(id));
+
+                return result.IsSuccess
+                    ? Results.Ok(new { message = "Content archived." })
+                    : Results.BadRequest(new { error = result.Error });
+            });
+
+            app.MapDelete("/api/content/{id:guid}", async (Guid id, [FromServices] DeleteContentHandler handler) =>
+            {
+                var result = await handler.HandleAsync(new DeleteContentCommand(id));
+
+                return result.IsSuccess
+                    ? Results.Ok(new { message = "Content deleted." })
                     : Results.BadRequest(new { error = result.Error });
             });
 

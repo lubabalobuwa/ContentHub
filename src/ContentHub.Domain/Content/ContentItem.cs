@@ -24,12 +24,29 @@ namespace ContentHub.Domain.Content
             Status = ContentStatus.Draft;
         }
 
+        public void Update(string title, string body)
+        {
+            if (Status == ContentStatus.Archived)
+                throw new InvalidOperationException("Archived content cannot be updated");
+
+            Title = title;
+            Body = body;
+        }
+
         public void Publish()
         {
             if (Status != ContentStatus.Draft)
                 throw new InvalidOperationException("Only draft content can be published");
 
             Status = ContentStatus.Published;
+        }
+
+        public void Archive()
+        {
+            if (Status == ContentStatus.Archived)
+                throw new InvalidOperationException("Content is already archived");
+
+            Status = ContentStatus.Archived;
         }
     }
 }

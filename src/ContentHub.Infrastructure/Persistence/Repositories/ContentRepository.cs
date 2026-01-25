@@ -28,5 +28,10 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
             return await _dbContext.ContentItems
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public void Remove(ContentItem contentItem)
+        {
+            _dbContext.ContentItems.Remove(contentItem);
+        }
     }
 }
