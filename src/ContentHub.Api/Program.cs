@@ -5,13 +5,35 @@ using ContentHub.Application;
 using ContentHub.Application.Common.Interfaces;
 using ContentHub.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var scheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter a valid JWT token."
+    };
+
+    options.AddSecurityDefinition("Bearer", scheme);
+
+    options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecuritySchemeReference("Bearer", doc, null),
+            new List<string>()
+        }
+    });
+});
 builder.Services.AddHealthChecks();
 
 builder.Services.AddApplication();

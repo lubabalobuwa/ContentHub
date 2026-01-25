@@ -2,6 +2,7 @@ using ContentHub.Api.Contracts.Requests;
 using ContentHub.Api.Contracts.Responses;
 using ContentHub.Application.Users.Commands.AuthenticateUser;
 using ContentHub.Application.Users.Commands.CreateUser;
+using ContentHub.Application.Users.Commands.ResetPassword;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentHub.Api.Endpoints
@@ -32,6 +33,23 @@ namespace ContentHub.Api.Endpoints
                 return result.IsSuccess
                     ? Results.Ok(new AuthResponse(result.Value!.UserId, result.Value.Token, result.Value.Role))
                     : Results.Unauthorized();
+            });
+
+            app.MapPost("/api/auth/reset-password", async (
+                [FromBody] ResetPasswordRequest request,
+                [FromServices] ResetPasswordHandler handler,
+                [FromServices] IConfiguration config) =>
+            {
+                var resetKey = config["Auth:ResetKey"];
+                if (string.IsNullOrWhiteSpace(resetKey) || request.ResetKey != resetKey)
+                    return Results.Unauthorized();
+
+                var result = await handler.HandleAsync(
+                    new ResetPasswordCommand(request.Email, request.NewPassword));
+
+                return result.IsSuccess
+                    ? Results.Ok(new { message = "Password reset successfully." })
+                    : Results.BadRequest(new { error = result.Error });
             });
 
             return app;

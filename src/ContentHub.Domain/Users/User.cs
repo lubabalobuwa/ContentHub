@@ -23,5 +23,10 @@ namespace ContentHub.Domain.Users
             Role = role;
             PasswordHash = passwordHash;
         }
+
+        public void SetPasswordHash(string passwordHash)
+        {
+            PasswordHash = passwordHash;
+        }
     }
 }
