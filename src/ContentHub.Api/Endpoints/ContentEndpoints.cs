@@ -7,6 +7,7 @@ using ContentHub.Application.Content.Commands.DeleteContent;
 using ContentHub.Application.Content.Commands.PublishContent;
 using ContentHub.Application.Content.Commands.RestoreContent;
 using ContentHub.Application.Content.Commands.UpdateContent;
+using ContentHub.Application.Content.Queries;
 using ContentHub.Application.Content.Queries.GetArchivedContent;
 using ContentHub.Application.Content.Queries.GetArchivedContentByAuthor;
 using ContentHub.Application.Content.Queries.GetContentById;
@@ -83,22 +84,23 @@ namespace ContentHub.Api.Endpoints
                 ));
             });
 
-            group.MapGet("", async ([FromServices] GetPublishedContentHandler handler) =>
+            group.MapGet("", async (
+                int? page,
+                int? pageSize,
+                [FromServices] GetPublishedContentHandler handler) =>
             {
-                var content = await handler.HandleAsync();
+                if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
+                    return error!;
 
-                return Results.Ok(content.Select(x =>
-                    new ContentSummaryResponse(
-                        x.Id,
-                        x.Title,
-                        x.Body,
-                        x.Status.ToString(),
-                        Convert.ToBase64String(x.RowVersion))
-                ));
+                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize);
+
+                return Results.Ok(MapPagedResponse(content));
             });
 
             // TODO: Remove global drafts/archived endpoints once auth is enforced.
             group.MapGet("/drafts", async (
+                int? page,
+                int? pageSize,
                 [FromServices] GetDraftContentHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
             {
@@ -108,20 +110,18 @@ namespace ContentHub.Api.Endpoints
                 if (currentUser.Role != UserRole.Admin)
                     return ApiResults.Forbidden();
 
-                var content = await handler.HandleAsync();
+                if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
+                    return error!;
 
-                return Results.Ok(content.Select(x =>
-                    new ContentSummaryResponse(
-                        x.Id,
-                        x.Title,
-                        x.Body,
-                        x.Status.ToString(),
-                        Convert.ToBase64String(x.RowVersion))
-                ));
+                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize);
+
+                return Results.Ok(MapPagedResponse(content));
             }).RequireAuthorization();
 
             group.MapGet("/authors/{authorId:guid}/drafts", async (
                 Guid authorId,
+                int? page,
+                int? pageSize,
                 [FromServices] GetDraftContentByAuthorHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
             {
@@ -134,19 +134,18 @@ namespace ContentHub.Api.Endpoints
                 if (currentUser.Role != UserRole.Admin && currentUser.UserId.Value != authorId)
                     return ApiResults.Forbidden();
 
-                var content = await handler.HandleAsync(new GetDraftContentByAuthorQuery(authorId));
+                if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
+                    return error!;
 
-                return Results.Ok(content.Select(x =>
-                    new ContentSummaryResponse(
-                        x.Id,
-                        x.Title,
-                        x.Body,
-                        x.Status.ToString(),
-                        Convert.ToBase64String(x.RowVersion))
-                ));
+                var content = await handler.HandleAsync(
+                    new GetDraftContentByAuthorQuery(authorId, normalizedPage, normalizedPageSize));
+
+                return Results.Ok(MapPagedResponse(content));
             }).RequireAuthorization();
 
             group.MapGet("/archived", async (
+                int? page,
+                int? pageSize,
                 [FromServices] GetArchivedContentHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
             {
@@ -156,20 +155,18 @@ namespace ContentHub.Api.Endpoints
                 if (currentUser.Role != UserRole.Admin)
                     return ApiResults.Forbidden();
 
-                var content = await handler.HandleAsync();
+                if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
+                    return error!;
 
-                return Results.Ok(content.Select(x =>
-                    new ContentSummaryResponse(
-                        x.Id,
-                        x.Title,
-                        x.Body,
-                        x.Status.ToString(),
-                        Convert.ToBase64String(x.RowVersion))
-                ));
+                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize);
+
+                return Results.Ok(MapPagedResponse(content));
             }).RequireAuthorization();
 
             group.MapGet("/authors/{authorId:guid}/archived", async (
                 Guid authorId,
+                int? page,
+                int? pageSize,
                 [FromServices] GetArchivedContentByAuthorHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
             {
@@ -182,16 +179,13 @@ namespace ContentHub.Api.Endpoints
                 if (currentUser.Role != UserRole.Admin && currentUser.UserId.Value != authorId)
                     return ApiResults.Forbidden();
 
-                var content = await handler.HandleAsync(new GetArchivedContentByAuthorQuery(authorId));
+                if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
+                    return error!;
 
-                return Results.Ok(content.Select(x =>
-                    new ContentSummaryResponse(
-                        x.Id,
-                        x.Title,
-                        x.Body,
-                        x.Status.ToString(),
-                        Convert.ToBase64String(x.RowVersion))
-                ));
+                var content = await handler.HandleAsync(
+                    new GetArchivedContentByAuthorQuery(authorId, normalizedPage, normalizedPageSize));
+
+                return Results.Ok(MapPagedResponse(content));
             }).RequireAuthorization();
 
             group.MapPost("/{id:guid}/publish", async (
@@ -255,6 +249,56 @@ namespace ContentHub.Api.Endpoints
                 "Author not found." => ApiResults.NotFound("Author not found."),
                 _ => ApiResults.ValidationProblem(error)
             };
+        }
+
+        private static bool TryNormalizePaging(
+            int? page,
+            int? pageSize,
+            out int normalizedPage,
+            out int normalizedPageSize,
+            out IResult? error)
+        {
+            const int defaultPage = 1;
+            const int defaultPageSize = 20;
+            const int maxPageSize = 100;
+
+            normalizedPage = page ?? defaultPage;
+            normalizedPageSize = pageSize ?? defaultPageSize;
+
+            if (normalizedPage < 1)
+            {
+                error = ApiResults.ValidationProblem("Page must be greater than or equal to 1.");
+                return false;
+            }
+
+            if (normalizedPageSize < 1 || normalizedPageSize > maxPageSize)
+            {
+                error = ApiResults.ValidationProblem("PageSize must be between 1 and 100.");
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        private static PagedResponse<ContentSummaryResponse> MapPagedResponse(
+            ContentHub.Application.Common.PagedResult<ContentSummaryDto> content)
+        {
+            var items = content.Items.Select(x =>
+                new ContentSummaryResponse(
+                    x.Id,
+                    x.Title,
+                    x.Body,
+                    x.Status.ToString(),
+                    Convert.ToBase64String(x.RowVersion)))
+                .ToList();
+
+            return new PagedResponse<ContentSummaryResponse>(
+                items,
+                content.Page,
+                content.PageSize,
+                content.TotalCount,
+                content.TotalPages);
         }
     }
 }

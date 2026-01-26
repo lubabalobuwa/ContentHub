@@ -1,10 +1,10 @@
-﻿using ContentHub.Application.Common.Interfaces;
+using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 using ContentHub.Domain.Content;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ContentHub.Infrastructure.Persistence.Repositories
@@ -25,49 +25,73 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IReadOnlyList<ContentItem>> GetArchivedAsync()
+        public async Task<PagedResult<ContentItem>> GetArchivedAsync(int page, int pageSize)
         {
-            return await _dbContext.ContentItems
-                .AsNoTracking()
-                .Where(x => x.Status == ContentStatus.Archived)
-                .OrderByDescending(x => x.Id)
-                .ToListAsync();
+            return await GetPagedAsync(
+                _dbContext.ContentItems
+                    .AsNoTracking()
+                    .Where(x => x.Status == ContentStatus.Archived)
+                    .OrderByDescending(x => x.Id),
+                page,
+                pageSize);
         }
 
-        public async Task<IReadOnlyList<ContentItem>> GetArchivedByAuthorAsync(Guid authorId)
+        public async Task<PagedResult<ContentItem>> GetArchivedByAuthorAsync(Guid authorId, int page, int pageSize)
         {
-            return await _dbContext.ContentItems
-                .AsNoTracking()
-                .Where(x => x.Status == ContentStatus.Archived && x.AuthorId == authorId)
-                .OrderByDescending(x => x.Id)
-                .ToListAsync();
+            return await GetPagedAsync(
+                _dbContext.ContentItems
+                    .AsNoTracking()
+                    .Where(x => x.Status == ContentStatus.Archived && x.AuthorId == authorId)
+                    .OrderByDescending(x => x.Id),
+                page,
+                pageSize);
         }
 
-        public async Task<IReadOnlyList<ContentItem>> GetDraftsAsync()
+        public async Task<PagedResult<ContentItem>> GetDraftsAsync(int page, int pageSize)
         {
-            return await _dbContext.ContentItems
-                .AsNoTracking()
-                .Where(x => x.Status == ContentStatus.Draft)
-                .OrderByDescending(x => x.Id)
-                .ToListAsync();
+            return await GetPagedAsync(
+                _dbContext.ContentItems
+                    .AsNoTracking()
+                    .Where(x => x.Status == ContentStatus.Draft)
+                    .OrderByDescending(x => x.Id),
+                page,
+                pageSize);
         }
 
-        public async Task<IReadOnlyList<ContentItem>> GetDraftsByAuthorAsync(Guid authorId)
+        public async Task<PagedResult<ContentItem>> GetDraftsByAuthorAsync(Guid authorId, int page, int pageSize)
         {
-            return await _dbContext.ContentItems
-                .AsNoTracking()
-                .Where(x => x.Status == ContentStatus.Draft && x.AuthorId == authorId)
-                .OrderByDescending(x => x.Id)
-                .ToListAsync();
+            return await GetPagedAsync(
+                _dbContext.ContentItems
+                    .AsNoTracking()
+                    .Where(x => x.Status == ContentStatus.Draft && x.AuthorId == authorId)
+                    .OrderByDescending(x => x.Id),
+                page,
+                pageSize);
         }
 
-        public async Task<IReadOnlyList<ContentItem>> GetPublishedAsync()
+        public async Task<PagedResult<ContentItem>> GetPublishedAsync(int page, int pageSize)
         {
-            return await _dbContext.ContentItems
-                .AsNoTracking()
-                .Where(x => x.Status == ContentStatus.Published)
-                .OrderByDescending(x => x.Id)
+            return await GetPagedAsync(
+                _dbContext.ContentItems
+                    .AsNoTracking()
+                    .Where(x => x.Status == ContentStatus.Published)
+                    .OrderByDescending(x => x.Id),
+                page,
+                pageSize);
+        }
+
+        private static async Task<PagedResult<ContentItem>> GetPagedAsync(
+            IQueryable<ContentItem> query,
+            int page,
+            int pageSize)
+        {
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return new PagedResult<ContentItem>(items, page, pageSize, totalCount);
         }
     }
 }
