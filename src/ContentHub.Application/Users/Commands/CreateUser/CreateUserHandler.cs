@@ -41,7 +41,7 @@ namespace ContentHub.Application.Users.Commands.CreateUser
                 return Result<Guid>.Failure("Email is already registered.");
 
             var passwordHash = _passwordHasher.Hash(command.Password);
-            var user = new User(email, command.DisplayName.Trim(), UserRole.Author, passwordHash);
+            var user = new User(email, command.DisplayName.Trim(), UserRole.Author, passwordHash, DateTime.UtcNow);
 
             await _userRepository.AddAsync(user);
             await _unitOfWork.CommitAsync();

@@ -18,7 +18,13 @@ namespace ContentHub.Application.Users.Queries.GetUserProfile
             if (user is null)
                 return null;
 
-            return new UserProfileResult(user.Id, user.Email, user.DisplayName, user.Role.ToString());
+            return new UserProfileResult(
+                user.Id,
+                user.Email,
+                user.DisplayName,
+                user.Role.ToString(),
+                user.CreatedAtUtc,
+                user.LastLoginAtUtc);
         }
     }
 }

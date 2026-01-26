@@ -26,6 +26,12 @@ namespace ContentHub.Infrastructure.Persistence.Configuration
 
             builder.Property(x => x.PasswordHash)
                 .IsRequired();
+
+            builder.Property(x => x.CreatedAtUtc)
+                .IsRequired();
+
+            builder.Property(x => x.LastLoginAtUtc)
+                .IsRequired(false);
         }
     }
 }

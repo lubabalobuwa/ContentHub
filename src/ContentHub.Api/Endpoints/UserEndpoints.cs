@@ -78,7 +78,9 @@ namespace ContentHub.Api.Endpoints
                     profile.Id,
                     profile.Email,
                     profile.DisplayName,
-                    profile.Role));
+                    profile.Role,
+                    profile.CreatedAtUtc,
+                    profile.LastLoginAtUtc));
             }).RequireAuthorization();
 
             return app;
