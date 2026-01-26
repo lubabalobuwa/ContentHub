@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentHub.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentHub.Worker", "src\ContentHub.Worker\ContentHub.Worker.csproj", "{00B1FA53-5158-45D2-92D0-C5045564591F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{07E36161-6B44-4D8C-B1BE-B4254A000395}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentHub.Api.IntegrationTests", "tests\ContentHub.Api.IntegrationTests\ContentHub.Api.IntegrationTests.csproj", "{B4F78839-D78C-4B2D-A982-BCA4E6D6D075}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentHub.Application.Tests", "tests\ContentHub.Application.Tests\ContentHub.Application.Tests.csproj", "{17C1968F-55EC-4F70-8CC4-022FB54437F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,11 +45,23 @@ Global
 		{00B1FA53-5158-45D2-92D0-C5045564591F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00B1FA53-5158-45D2-92D0-C5045564591F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00B1FA53-5158-45D2-92D0-C5045564591F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4F78839-D78C-4B2D-A982-BCA4E6D6D075}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4F78839-D78C-4B2D-A982-BCA4E6D6D075}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4F78839-D78C-4B2D-A982-BCA4E6D6D075}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4F78839-D78C-4B2D-A982-BCA4E6D6D075}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17C1968F-55EC-4F70-8CC4-022FB54437F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17C1968F-55EC-4F70-8CC4-022FB54437F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17C1968F-55EC-4F70-8CC4-022FB54437F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17C1968F-55EC-4F70-8CC4-022FB54437F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {306D49E4-1948-49D4-8987-7B2C1A5C9C66}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B4F78839-D78C-4B2D-A982-BCA4E6D6D075} = {07E36161-6B44-4D8C-B1BE-B4254A000395}
+		{17C1968F-55EC-4F70-8CC4-022FB54437F5} = {07E36161-6B44-4D8C-B1BE-B4254A000395}
 	EndGlobalSection
 EndGlobal

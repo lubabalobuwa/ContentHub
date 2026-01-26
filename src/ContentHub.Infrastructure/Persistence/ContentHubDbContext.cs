@@ -21,6 +21,14 @@ namespace ContentHub.Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ContentHubDbContext).Assembly);
+
+            if (Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
+            {
+                modelBuilder.Entity<ContentItem>()
+                    .Property(x => x.RowVersion)
+                    .IsRequired()
+                    .ValueGeneratedNever();
+            }
         }
     }
 }

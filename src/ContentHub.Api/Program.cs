@@ -117,3 +117,5 @@ app.MapUserEndpoints();
 app.UseCors("FrontendPolicy");
 
 app.Run();
+
+public partial class Program { }

@@ -1,10 +1,12 @@
-﻿namespace ContentHub.Api.Middleware
+using Microsoft.AspNetCore.Mvc;
+
+namespace ContentHub.Api.Middleware
 {
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next) 
+        public ExceptionHandlingMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -17,22 +19,46 @@
             }
             catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException ex)
             {
-                context.Response.StatusCode = StatusCodes.Status409Conflict;
-                await context.Response.WriteAsJsonAsync(new
-                {
-                    error = "Content was modified by another request. Please refresh and try again.",
-                    details = ex.Message
-                });
+                await WriteProblemAsync(
+                    context,
+                    StatusCodes.Status409Conflict,
+                    "Conflict",
+                    "Content was modified by another request. Please refresh and try again.",
+                    ex.Message);
             }
             catch (Exception ex)
             {
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                await context.Response.WriteAsJsonAsync(new
-                {
-                    error = ex.Message,
-                    stackTrace = ex.StackTrace
-                });
+                await WriteProblemAsync(
+                    context,
+                    StatusCodes.Status500InternalServerError,
+                    "Unexpected error",
+                    ex.Message,
+                    null);
             }
+        }
+
+        private static Task WriteProblemAsync(
+            HttpContext context,
+            int statusCode,
+            string title,
+            string detail,
+            string? debugDetails)
+        {
+            var problem = new ProblemDetails
+            {
+                Status = statusCode,
+                Title = title,
+                Detail = detail,
+                Instance = context.Request.Path
+            };
+
+            problem.Extensions["traceId"] = context.TraceIdentifier;
+            if (!string.IsNullOrWhiteSpace(debugDetails))
+                problem.Extensions["debug"] = debugDetails;
+
+            context.Response.StatusCode = statusCode;
+            context.Response.ContentType = "application/problem+json";
+            return context.Response.WriteAsJsonAsync(problem);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace ContentHub.Api.Endpoints
 
                 return result.IsSuccess
                     ? Results.Ok(new AuthResponse(result.Value!.UserId, result.Value.Token, result.Value.Role))
-                    : Results.Unauthorized();
+                    : ApiResults.Unauthorized("Invalid credentials.");
             });
 
             group.MapPost("/auth/reset-password", async (
@@ -47,13 +47,13 @@ namespace ContentHub.Api.Endpoints
             {
                 var enabled = config.GetValue<bool>("Auth:EnableResetPassword");
                 if (!enabled)
-                    return Results.NotFound();
+                    return ApiResults.NotFound();
 
                 if (!currentUser.IsAuthenticated || currentUser.UserId is null)
-                    return Results.Unauthorized();
+                    return ApiResults.Unauthorized();
 
                 if (currentUser.Role != ContentHub.Domain.Users.UserRole.Admin)
-                    return Results.Forbid();
+                    return ApiResults.Forbidden();
 
                 var result = await handler.HandleAsync(
                     new ResetPasswordCommand(request.Email, request.NewPassword));
@@ -68,11 +68,11 @@ namespace ContentHub.Api.Endpoints
                 [FromServices] GetUserProfileHandler handler) =>
             {
                 if (!currentUser.IsAuthenticated || currentUser.UserId is null)
-                    return Results.Unauthorized();
+                    return ApiResults.Unauthorized();
 
                 var profile = await handler.HandleAsync(new GetUserProfileQuery(currentUser.UserId.Value));
                 if (profile is null)
-                    return Results.NotFound();
+                    return ApiResults.NotFound("User not found.");
 
                 return Results.Ok(new UserProfileResponse(
                     profile.Id,

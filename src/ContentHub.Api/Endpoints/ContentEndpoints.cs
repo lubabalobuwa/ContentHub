@@ -31,7 +31,7 @@ namespace ContentHub.Api.Endpoints
                 ICurrentUserService currentUser) =>
             {
                 if (!currentUser.IsAuthenticated || currentUser.UserId is null)
-                    return Results.Unauthorized();
+                    return ApiResults.Unauthorized();
 
                 var command = new CreateContentCommand(
                     request.Title,
@@ -63,15 +63,15 @@ namespace ContentHub.Api.Endpoints
                 var content = await handler.HandleAsync(new GetContentByIdQuery(id));
 
                 if (content is null)
-                    return Results.NotFound();
+                    return ApiResults.NotFound("Content not found.");
 
                 if (content.Status != ContentStatus.Published)
                 {
                     if (!currentUser.IsAuthenticated || currentUser.UserId is null)
-                        return Results.NotFound();
+                        return ApiResults.NotFound("Content not found.");
 
                     if (currentUser.Role != UserRole.Admin && currentUser.UserId.Value != content.AuthorId)
-                        return Results.Forbid();
+                        return ApiResults.Forbidden();
                 }
 
                 return Results.Ok(new ContentSummaryResponse(
@@ -103,10 +103,10 @@ namespace ContentHub.Api.Endpoints
                 [FromServices] ICurrentUserService currentUser) =>
             {
                 if (!currentUser.IsAuthenticated)
-                    return Results.Unauthorized();
+                    return ApiResults.Unauthorized();
 
                 if (currentUser.Role != UserRole.Admin)
-                    return Results.Forbid();
+                    return ApiResults.Forbidden();
 
                 var content = await handler.HandleAsync();
 
@@ -129,10 +129,10 @@ namespace ContentHub.Api.Endpoints
                     return ApiResults.ValidationProblem("AuthorId is required.");
 
                 if (!currentUser.IsAuthenticated || currentUser.UserId is null)
-                    return Results.Unauthorized();
+                    return ApiResults.Unauthorized();
 
                 if (currentUser.Role != UserRole.Admin && currentUser.UserId.Value != authorId)
-                    return Results.Forbid();
+                    return ApiResults.Forbidden();
 
                 var content = await handler.HandleAsync(new GetDraftContentByAuthorQuery(authorId));
 
@@ -151,10 +151,10 @@ namespace ContentHub.Api.Endpoints
                 [FromServices] ICurrentUserService currentUser) =>
             {
                 if (!currentUser.IsAuthenticated)
-                    return Results.Unauthorized();
+                    return ApiResults.Unauthorized();
 
                 if (currentUser.Role != UserRole.Admin)
-                    return Results.Forbid();
+                    return ApiResults.Forbidden();
 
                 var content = await handler.HandleAsync();
 
@@ -177,10 +177,10 @@ namespace ContentHub.Api.Endpoints
                     return ApiResults.ValidationProblem("AuthorId is required.");
 
                 if (!currentUser.IsAuthenticated || currentUser.UserId is null)
-                    return Results.Unauthorized();
+                    return ApiResults.Unauthorized();
 
                 if (currentUser.Role != UserRole.Admin && currentUser.UserId.Value != authorId)
-                    return Results.Forbid();
+                    return ApiResults.Forbidden();
 
                 var content = await handler.HandleAsync(new GetArchivedContentByAuthorQuery(authorId));
 
@@ -249,10 +249,10 @@ namespace ContentHub.Api.Endpoints
         {
             return error switch
             {
-                "Unauthorized." => Results.Unauthorized(),
-                "Forbidden." => Results.Forbid(),
-                "Content not found." => Results.NotFound(),
-                "Author not found." => Results.NotFound(),
+                "Unauthorized." => ApiResults.Unauthorized(),
+                "Forbidden." => ApiResults.Forbidden(),
+                "Content not found." => ApiResults.NotFound("Content not found."),
+                "Author not found." => ApiResults.NotFound("Author not found."),
                 _ => ApiResults.ValidationProblem(error)
             };
         }
