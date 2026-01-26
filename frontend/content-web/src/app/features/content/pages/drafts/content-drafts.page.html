@@ -1,0 +1,45 @@
+<section class="page">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Your workspace</p>
+      <h1>Drafts</h1>
+      <p class="subtitle">Publish or archive drafts when you’re ready.</p>
+    </div>
+    <a class="cta" routerLink="/create">New draft</a>
+  </header>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <ng-container *ngIf="drafts$ | async as paged">
+    <div class="cards">
+      <article class="card" *ngFor="let item of paged.items">
+        <div class="card-top">
+          <h3>{{ item.title }}</h3>
+          <span class="pill">Draft</span>
+        </div>
+        <p class="body">
+          {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+        </p>
+        <div class="actions">
+          <a class="ghost" [routerLink]="['/edit', item.id]">Edit</a>
+          <button class="ghost" (click)="archive(item)" [disabled]="isBusy(item)">
+            {{ pending[item.id] === 'archive' ? 'Archiving…' : 'Archive' }}
+          </button>
+          <button class="cta" (click)="publish(item)" [disabled]="isBusy(item)">
+            {{ pending[item.id] === 'publish' ? 'Publishing…' : 'Publish' }}
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <p class="empty" *ngIf="paged.items.length === 0">
+      You don’t have any drafts yet.
+    </p>
+
+    <div class="pagination" *ngIf="paged.totalPages > 1">
+      <button class="btn" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
+      <span class="page-info">Page {{ page }} of {{ paged.totalPages }}</span>
+      <button class="btn" (click)="nextPage()" [disabled]="page >= paged.totalPages">Next</button>
+    </div>
+  </ng-container>
+</section>

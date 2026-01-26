@@ -9,6 +9,7 @@ using ContentHub.Application.Content.Queries.GetArchivedContentByAuthor;
 using ContentHub.Application.Content.Queries.GetContentById;
 using ContentHub.Application.Content.Queries.GetDraftContent;
 using ContentHub.Application.Content.Queries.GetDraftContentByAuthor;
+using ContentHub.Application.Content.Queries.GetPublishedContentByAuthor;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
 using ContentHub.Application.Common.Interfaces;
 using ContentHub.Application.Users.Commands.AuthenticateUser;
@@ -32,6 +33,7 @@ namespace ContentHub.Application
             services.AddScoped<GetDraftContentHandler>();
             services.AddScoped<GetDraftContentByAuthorHandler>();
             services.AddScoped<GetPublishedContentHandler>();
+            services.AddScoped<GetPublishedContentByAuthorHandler>();
             services.AddScoped<PublishContentHandler>();
             services.AddScoped<RestoreContentHandler>();
             services.AddScoped<UpdateContentHandler>();

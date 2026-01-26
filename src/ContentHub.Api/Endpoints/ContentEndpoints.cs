@@ -14,6 +14,7 @@ using ContentHub.Application.Content.Queries.GetContentById;
 using ContentHub.Application.Content.Queries.GetDraftContent;
 using ContentHub.Application.Content.Queries.GetDraftContentByAuthor;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
+using ContentHub.Application.Content.Queries.GetPublishedContentByAuthor;
 using ContentHub.Domain.Content;
 using ContentHub.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -77,6 +78,7 @@ namespace ContentHub.Api.Endpoints
 
                 return Results.Ok(new ContentSummaryResponse(
                     content.Id,
+                    content.AuthorId,
                     content.Title,
                     content.Body,
                     content.Status.ToString(),
@@ -139,6 +141,31 @@ namespace ContentHub.Api.Endpoints
 
                 var content = await handler.HandleAsync(
                     new GetDraftContentByAuthorQuery(authorId, normalizedPage, normalizedPageSize));
+
+                return Results.Ok(MapPagedResponse(content));
+            }).RequireAuthorization();
+
+            group.MapGet("/authors/{authorId:guid}/published", async (
+                Guid authorId,
+                int? page,
+                int? pageSize,
+                [FromServices] GetPublishedContentByAuthorHandler handler,
+                [FromServices] ICurrentUserService currentUser) =>
+            {
+                if (authorId == Guid.Empty)
+                    return ApiResults.ValidationProblem("AuthorId is required.");
+
+                if (!currentUser.IsAuthenticated || currentUser.UserId is null)
+                    return ApiResults.Unauthorized();
+
+                if (currentUser.Role != UserRole.Admin && currentUser.UserId.Value != authorId)
+                    return ApiResults.Forbidden();
+
+                if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
+                    return error!;
+
+                var content = await handler.HandleAsync(
+                    new GetPublishedContentByAuthorQuery(authorId, normalizedPage, normalizedPageSize));
 
                 return Results.Ok(MapPagedResponse(content));
             }).RequireAuthorization();
@@ -287,6 +314,7 @@ namespace ContentHub.Api.Endpoints
             var items = content.Items.Select(x =>
                 new ContentSummaryResponse(
                     x.Id,
+                    x.AuthorId,
                     x.Title,
                     x.Body,
                     x.Status.ToString(),

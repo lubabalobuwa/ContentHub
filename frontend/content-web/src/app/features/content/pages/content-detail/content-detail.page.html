@@ -14,14 +14,17 @@
           <span class="status-pill">{{ content.status }}</span>
         </div>
 
-        <div class="actions">
-          <button
-            class="btn"
-            [disabled]="isPublishing || content.status === 'Published'"
-            (click)="publish(content.id)">
-            {{ isPublishing ? 'Publishing…' : 'Publish' }}
-          </button>
-        </div>
+        <ng-container *ngIf="me$ | async as me">
+          <div class="actions" *ngIf="auth.isAuthenticated() && me?.id === content.authorId">
+            <a class="ghost-link" [routerLink]="['/edit', content.id]">Edit</a>
+            <button
+              class="btn"
+              [disabled]="isPublishing || content.status === 'Published'"
+              (click)="publish(content)">
+              {{ isPublishing ? 'Publishing…' : 'Publish' }}
+            </button>
+          </div>
+        </ng-container>
 
         <p class="error" *ngIf="error">{{ error }}</p>
 

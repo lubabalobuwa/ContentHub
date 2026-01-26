@@ -69,6 +69,17 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
                 pageSize);
         }
 
+        public async Task<PagedResult<ContentItem>> GetPublishedByAuthorAsync(Guid authorId, int page, int pageSize)
+        {
+            return await GetPagedAsync(
+                _dbContext.ContentItems
+                    .AsNoTracking()
+                    .Where(x => x.Status == ContentStatus.Published && x.AuthorId == authorId)
+                    .OrderByDescending(x => x.Id),
+                page,
+                pageSize);
+        }
+
         public async Task<PagedResult<ContentItem>> GetPublishedAsync(int page, int pageSize)
         {
             return await GetPagedAsync(

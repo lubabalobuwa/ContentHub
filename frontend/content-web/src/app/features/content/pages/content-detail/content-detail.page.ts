@@ -1,9 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, of, switchMap, catchError } from 'rxjs';
 import { ContentService } from '../../../../core/services/content.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Content } from '../../../../core/models/content.model';
+import { UserProfile } from '../../../../core/models/user-profile.model';
 
 @Component({
   selector: 'app-content-detail-page',
@@ -15,13 +17,18 @@ import { Content } from '../../../../core/models/content.model';
 })
 export class ContentDetailPage {
   content$!: Observable<Content | null>;
+  me$!: Observable<UserProfile | null>;
   isPublishing = false;
   error: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private contentService: ContentService
+    private contentService: ContentService,
+    public auth: AuthService
   ) {
+    this.me$ = this.auth.me().pipe(
+      catchError(() => of(null))
+    );
     this.content$ = this.route.paramMap.pipe(
       switchMap(params => {
         const id = params.get('id');
@@ -31,14 +38,20 @@ export class ContentDetailPage {
     );
   }
 
-  publish(id: string) {
+  publish(content: Content) {
     this.error = null;
     this.isPublishing = true;
 
-    this.contentService.publish(id).subscribe({
+    if (!content.rowVersion) {
+      this.error = 'Missing row version for publish.';
+      this.isPublishing = false;
+      return;
+    }
+
+    this.contentService.publish(content.id, content.rowVersion).subscribe({
       next: () => {
         // refresh content after publishing
-        this.content$ = this.contentService.getById(id);
+        this.content$ = this.contentService.getById(content.id);
         this.isPublishing = false;
       },
       error: () => {

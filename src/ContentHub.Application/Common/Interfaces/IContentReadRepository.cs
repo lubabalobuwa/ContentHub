@@ -12,6 +12,7 @@ namespace ContentHub.Application.Common.Interfaces
         Task<PagedResult<ContentItem>> GetArchivedByAuthorAsync(Guid authorId, int page, int pageSize);
         Task<PagedResult<ContentItem>> GetDraftsAsync(int page, int pageSize);
         Task<PagedResult<ContentItem>> GetDraftsByAuthorAsync(Guid authorId, int page, int pageSize);
+        Task<PagedResult<ContentItem>> GetPublishedByAuthorAsync(Guid authorId, int page, int pageSize);
         Task<PagedResult<ContentItem>> GetPublishedAsync(int page, int pageSize);
     }
 }

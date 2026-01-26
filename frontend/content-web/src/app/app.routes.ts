@@ -5,11 +5,19 @@ import { CreateContentPage } from './features/content/pages/create-content/creat
 import { LoginPage } from './features/auth/pages/login/login.page';
 import { RegisterPage } from './features/auth/pages/register/register.page';
 import { authGuard } from './core/guards/auth.guard';
+import { ContentDraftsPage } from './features/content/pages/drafts/content-drafts.page';
+import { ContentArchivedPage } from './features/content/pages/archived/content-archived.page';
+import { EditContentPage } from './features/content/pages/edit-content/edit-content.page';
+import { ContentPublishedPage } from './features/content/pages/published/content-published.page';
 
 export const routes: Routes = [
     { path: '', component: ContentListPage },
     { path: 'login', component: LoginPage },
     { path: 'register', component: RegisterPage },
     { path: 'create', component: CreateContentPage, canActivate: [authGuard] },
+    { path: 'drafts', component: ContentDraftsPage, canActivate: [authGuard] },
+    { path: 'published', component: ContentPublishedPage, canActivate: [authGuard] },
+    { path: 'archived', component: ContentArchivedPage, canActivate: [authGuard] },
+    { path: 'edit/:id', component: EditContentPage, canActivate: [authGuard] },
     { path: ':id', component: ContentDetailPage }
 ];

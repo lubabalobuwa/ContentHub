@@ -2,6 +2,7 @@
 {
     public record ContentSummaryResponse(
         Guid Id,
+        Guid AuthorId,
         string Title,
         string Body,
         string Status,

@@ -4,6 +4,9 @@
   <nav class="nav">
     <ng-container *ngIf="auth.isAuthenticated(); else guest">
       <a class="nav-link" routerLink="/create">Create</a>
+      <a class="nav-link" routerLink="/drafts">My Drafts</a>
+      <a class="nav-link" routerLink="/published">My Published</a>
+      <a class="nav-link" routerLink="/archived">Archived</a>
       <button class="nav-btn" type="button" (click)="logout()">Logout</button>
     </ng-container>
     <ng-template #guest>

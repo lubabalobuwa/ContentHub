@@ -1,0 +1,42 @@
+<section class="page">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Your published</p>
+      <h1>Published posts</h1>
+      <p class="subtitle">Archive anything you don’t want in the public feed.</p>
+    </div>
+    <a class="ghost" routerLink="/drafts">Back to drafts</a>
+  </header>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <ng-container *ngIf="published$ | async as paged">
+    <div class="cards">
+      <article class="card" *ngFor="let item of paged.items">
+        <div class="card-top">
+          <h3>{{ item.title }}</h3>
+          <span class="pill">Published</span>
+        </div>
+        <p class="body">
+          {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+        </p>
+        <div class="actions">
+          <a class="ghost" [routerLink]="['/edit', item.id]">Edit</a>
+          <button class="ghost" (click)="archive(item)" [disabled]="isBusy(item)">
+            {{ pending[item.id] ? 'Archiving…' : 'Archive' }}
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <p class="empty" *ngIf="paged.items.length === 0">
+      No published posts yet.
+    </p>
+
+    <div class="pagination" *ngIf="paged.totalPages > 1">
+      <button class="btn" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
+      <span class="page-info">Page {{ page }} of {{ paged.totalPages }}</span>
+      <button class="btn" (click)="nextPage()" [disabled]="page >= paged.totalPages">Next</button>
+    </div>
+  </ng-container>
+</section>

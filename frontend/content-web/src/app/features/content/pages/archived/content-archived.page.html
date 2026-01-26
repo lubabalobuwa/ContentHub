@@ -1,0 +1,41 @@
+<section class="page">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Your archive</p>
+      <h1>Archived posts</h1>
+      <p class="subtitle">Restore anything you want to bring back.</p>
+    </div>
+    <a class="ghost" routerLink="/drafts">Back to drafts</a>
+  </header>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <ng-container *ngIf="archived$ | async as paged">
+    <div class="cards">
+      <article class="card" *ngFor="let item of paged.items">
+        <div class="card-top">
+          <h3>{{ item.title }}</h3>
+          <span class="pill">Archived</span>
+        </div>
+        <p class="body">
+          {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+        </p>
+        <div class="actions">
+          <button class="cta" (click)="restore(item)" [disabled]="isBusy(item)">
+            {{ pending[item.id] ? 'Restoring…' : 'Restore' }}
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <p class="empty" *ngIf="paged.items.length === 0">
+      No archived posts yet.
+    </p>
+
+    <div class="pagination" *ngIf="paged.totalPages > 1">
+      <button class="btn" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
+      <span class="page-info">Page {{ page }} of {{ paged.totalPages }}</span>
+      <button class="btn" (click)="nextPage()" [disabled]="page >= paged.totalPages">Next</button>
+    </div>
+  </ng-container>
+</section>

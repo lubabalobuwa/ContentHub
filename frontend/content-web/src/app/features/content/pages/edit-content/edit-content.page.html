@@ -1,0 +1,28 @@
+<section class="page">
+  <header class="header">
+    <a class="back-link" routerLink="/">← Back</a>
+    <div class="header-copy">
+      <p class="eyebrow">Edit</p>
+      <h1>Edit Content</h1>
+      <p class="subtitle">Update your draft or published post.</p>
+    </div>
+  </header>
+
+  <div class="card">
+    <label class="label">
+      Title
+      <input class="input" type="text" [(ngModel)]="title" />
+    </label>
+
+    <label class="label">
+      Body
+      <textarea class="textarea" [(ngModel)]="body" rows="10"></textarea>
+    </label>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <button class="btn" (click)="submit()" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Saving…' : 'Update' }}
+    </button>
+  </div>
+</section>
