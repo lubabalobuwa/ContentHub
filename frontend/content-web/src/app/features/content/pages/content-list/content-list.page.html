@@ -4,17 +4,25 @@
     <a class="link" routerLink="/create">Create</a>
   </header>
 
-  <div class="card" *ngFor="let item of (contents$ | async)">
-    <h3>
-      <a [routerLink]="['/', item.id]">{{ item.title }}</a>
-    </h3>
-    <p class="meta">Status: {{ item.status }}</p>
-    <p class="body">
-        {{ item.body.length > 160 ? (item.body | slice:0:160) + '…' : item.body }}
-    </p>
-  </div>
+  <ng-container *ngIf="contents$ | async as paged">
+    <div class="card" *ngFor="let item of paged.items">
+      <h3>
+        <a [routerLink]="['/', item.id]">{{ item.title }}</a>
+      </h3>
+      <p class="meta">Status: {{ item.status }}</p>
+      <p class="body">
+          {{ item.body.length > 160 ? (item.body | slice:0:160) + '…' : item.body }}
+      </p>
+    </div>
 
-  <p class="empty" *ngIf="(contents$ | async)?.length === 0">
-    No published content yet.
-  </p>
+    <p class="empty" *ngIf="paged.items.length === 0">
+      No published content yet.
+    </p>
+
+    <div class="pagination" *ngIf="paged.totalPages > 1">
+      <button class="btn" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
+      <span class="page-info">Page {{ page }} of {{ paged.totalPages }}</span>
+      <button class="btn" (click)="nextPage()" [disabled]="page >= paged.totalPages">Next</button>
+    </div>
+  </ng-container>
 </section>

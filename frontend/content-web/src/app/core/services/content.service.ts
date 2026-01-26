@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Content } from '../models/content.model';
 import { environment } from '../../../environments/environments';
+import { PagedResponse } from '../models/paged-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class ContentService {
@@ -10,8 +11,12 @@ export class ContentService {
 
     constructor(private http: HttpClient) {}
 
-    getPublished(): Observable<Content[]> {
-        return this.http.get<Content[]>(this.baseUrl);
+    getPublished(page = 1, pageSize = 20): Observable<PagedResponse<Content>> {
+        const params = new HttpParams()
+            .set('page', page)
+            .set('pageSize', pageSize);
+
+        return this.http.get<PagedResponse<Content>>(this.baseUrl, { params });
     }
 
     getById(id: string): Observable<Content> {
