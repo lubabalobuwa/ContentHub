@@ -2,9 +2,14 @@ import { Routes } from '@angular/router';
 import { ContentListPage } from './features/content/pages/content-list/content-list.page';
 import { ContentDetailPage } from './features/content/pages/content-detail/content-detail.page';
 import { CreateContentPage } from './features/content/pages/create-content/create-content.page';
+import { LoginPage } from './features/auth/pages/login/login.page';
+import { RegisterPage } from './features/auth/pages/register/register.page';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     { path: '', component: ContentListPage },
-    { path: 'create', component: CreateContentPage },
+    { path: 'login', component: LoginPage },
+    { path: 'register', component: RegisterPage },
+    { path: 'create', component: CreateContentPage, canActivate: [authGuard] },
     { path: ':id', component: ContentDetailPage }
 ];

@@ -1,6 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
 :root {
   color-scheme: light;
+  --ink: #0b1221;
+  --ink-muted: #5b6475;
+  --surface: #ffffff;
+  --surface-alt: #f6f7fb;
+  --line: #e6e8ef;
+  --accent: #2f6cff;
+  --accent-dark: #1f4ccf;
+  --glow: rgba(47, 108, 255, 0.16);
+  --grad: radial-gradient(circle at 10% -10%, #e6edff 0%, #f7f9ff 40%, #f6f7fb 100%);
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 
 * {
@@ -9,8 +21,8 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  line-height: 1.5;
-  background: #f6f7fb;
-  color: #111827;
+  font-family: var(--font-body);
+  line-height: 1.6;
+  background: var(--grad);
+  color: var(--ink);
 }

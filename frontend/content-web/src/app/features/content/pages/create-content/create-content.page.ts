@@ -15,7 +15,6 @@ import { ContentService } from '../../../../core/services/content.service';
 export class CreateContentPage {
   title = '';
   body = '';
-  authorId = '11111111-1111-1111-1111-111111111111'; // placeholder
 
   isSubmitting = false;
   error: string | null = null;
@@ -37,18 +36,11 @@ export class CreateContentPage {
       this.error = 'Body is required.';
       return;
     }
-    if (!this.authorId || this.authorId === '00000000-0000-0000-0000-000000000000') {
-      // You’re skipping users for now, so allow this to be edited manually.
-      this.error = 'AuthorId is required (use a valid GUID).';
-      return;
-    }
-
     this.isSubmitting = true;
 
     this.contentService.create({
       title: this.title.trim(),
-      body: this.body.trim(),
-      authorId: this.authorId
+      body: this.body.trim()
     }).subscribe({
       next: () => {
         this.isSubmitting = false;

@@ -6,8 +6,13 @@
   <ng-container *ngIf="content$ | async as content; else loading">
     <ng-container *ngIf="content; else notFound">
       <div class="card">
-        <h1>{{ content.title }}</h1>
-        <p class="meta">Status: {{ content.status }}</p>
+        <div class="title-row">
+          <div>
+            <p class="eyebrow">Article</p>
+            <h1>{{ content.title }}</h1>
+          </div>
+          <span class="status-pill">{{ content.status }}</span>
+        </div>
 
         <div class="actions">
           <button

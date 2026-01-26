@@ -1,7 +1,11 @@
 <section class="page">
   <header class="header">
     <a class="link" routerLink="/">← Back</a>
-    <h1>Create Content</h1>
+    <div>
+      <p class="eyebrow">New draft</p>
+      <h1>Create Content</h1>
+      <p class="subtitle">Share an idea, a guide, or a quick update.</p>
+    </div>
   </header>
 
   <div class="card">
@@ -13,11 +17,6 @@
     <label class="label">
       Body
       <textarea class="textarea" [(ngModel)]="body" rows="10" placeholder="Write something..."></textarea>
-    </label>
-
-    <label class="label">
-      AuthorId (GUID)
-      <input class="input" type="text" [(ngModel)]="authorId" placeholder="Paste a valid GUID" />
     </label>
 
     <p class="error" *ngIf="error">{{ error }}</p>

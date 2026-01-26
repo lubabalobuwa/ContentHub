@@ -23,7 +23,7 @@ export class ContentService {
         return this.http.get<Content>(`${this.baseUrl}/${id}`);
     }
 
-    create(payload: { title: string; body: string; authorId: string }) {
+    create(payload: { title: string; body: string }) {
         return this.http.post(this.baseUrl, payload);
     }
 

@@ -1,0 +1,43 @@
+<section class="page">
+  <div class="card">
+    <h1>Create account</h1>
+    <p class="muted">Start publishing and managing content.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label class="field">
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="you@domain.com" />
+      </label>
+      <p class="error" *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
+        Please enter a valid email.
+      </p>
+
+      <label class="field">
+        <span>Display name</span>
+        <input type="text" formControlName="displayName" placeholder="Your name" />
+      </label>
+      <p class="error" *ngIf="form.controls['displayName'].touched && form.controls['displayName'].invalid">
+        Display name must be at least 2 characters.
+      </p>
+
+      <label class="field">
+        <span>Password</span>
+        <input type="password" formControlName="password" placeholder="••••••••" />
+      </label>
+      <p class="error" *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
+        Password must be at least 8 characters.
+      </p>
+
+      <button class="btn" type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Creating…' : 'Create account' }}
+      </button>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </form>
+
+    <p class="muted">
+      Already have an account?
+      <a routerLink="/login">Login</a>
+    </p>
+  </div>
+</section>

@@ -1,28 +1,89 @@
 <section class="page">
-  <header class="header">
-    <h1>Published Content</h1>
-    <a class="link" routerLink="/create">Create</a>
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Insightful stories, product reviews, and guides</p>
+      <h1>Build and share ideas with a modern publishing space.</h1>
+      <p class="subtitle">
+        Curated developer articles, tools, and deep dives. Stay sharp with weekly editor picks.
+      </p>
+      <div class="hero-actions">
+        <a class="cta" routerLink="/create">Start writing</a>
+        <a class="ghost" routerLink="/register">Join the community</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-inner">
+        <span class="pill">Featured</span>
+        <h3>Emerging trends in developer tooling</h3>
+        <p>Explore the latest build tools, AI assistants, and workflows shaping 2024.</p>
+      </div>
+    </div>
   </header>
 
-  <ng-container *ngIf="contents$ | async as paged">
-    <div class="card" *ngFor="let item of paged.items">
-      <h3>
-        <a [routerLink]="['/', item.id]">{{ item.title }}</a>
-      </h3>
-      <p class="meta">Status: {{ item.status }}</p>
-      <p class="body">
-          {{ item.body.length > 160 ? (item.body | slice:0:160) + '…' : item.body }}
-      </p>
-    </div>
+  <ng-container *ngIf="view$ | async as view">
+    <section class="featured" *ngIf="view.featured">
+      <div class="featured-card">
+        <div class="featured-content">
+          <span class="pill">Latest</span>
+          <h2>{{ view.featured.title }}</h2>
+          <p class="meta">Status: {{ view.featured.status }}</p>
+          <p class="body">
+            {{ view.featured.body.length > 220 ? (view.featured.body | slice:0:220) + '…' : view.featured.body }}
+          </p>
+          <a class="cta" [routerLink]="['/', view.featured.id]">Read more</a>
+        </div>
+        <div class="featured-image">
+          <div class="glow"></div>
+        </div>
+      </div>
+    </section>
 
-    <p class="empty" *ngIf="paged.items.length === 0">
-      No published content yet.
-    </p>
+    <section class="content-grid">
+      <div class="main">
+        <h3 class="section-title">Latest Articles</h3>
 
-    <div class="pagination" *ngIf="paged.totalPages > 1">
-      <button class="btn" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
-      <span class="page-info">Page {{ page }} of {{ paged.totalPages }}</span>
-      <button class="btn" (click)="nextPage()" [disabled]="page >= paged.totalPages">Next</button>
-    </div>
+        <div class="cards">
+          <article class="card" *ngFor="let item of view.rest">
+            <h3>
+              <a [routerLink]="['/', item.id]">{{ item.title }}</a>
+            </h3>
+            <p class="meta">Status: {{ item.status }}</p>
+            <p class="body">
+              {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+            </p>
+            <a class="ghost" [routerLink]="['/', item.id]">Read article</a>
+          </article>
+        </div>
+
+        <p class="empty" *ngIf="view.paged.items.length === 0">
+          No published content yet.
+        </p>
+
+        <div class="pagination" *ngIf="view.paged.totalPages > 1">
+          <button class="btn" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
+          <span class="page-info">Page {{ page }} of {{ view.paged.totalPages }}</span>
+          <button class="btn" (click)="nextPage()" [disabled]="page >= view.paged.totalPages">Next</button>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="panel">
+          <h4>Trending Topics</h4>
+          <ul>
+            <li>AI &amp; Machine Learning</li>
+            <li>Backend Architecture</li>
+            <li>Frontend Performance</li>
+            <li>Security &amp; Privacy</li>
+          </ul>
+        </div>
+
+        <div class="panel newsletter">
+          <h4>Weekly Digest</h4>
+          <p>Get fresh content every Friday. No spam, unsubscribe anytime.</p>
+          <input type="email" placeholder="you@domain.com" />
+          <button class="cta">Subscribe</button>
+        </div>
+      </aside>
+    </section>
   </ng-container>
 </section>

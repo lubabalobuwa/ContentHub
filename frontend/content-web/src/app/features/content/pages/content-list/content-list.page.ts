@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { ContentService } from '../../../../../app/core/services/content.service';
 import { Content } from '../../../../core/models/content.model';
 import { PagedResponse } from '../../../../core/models/paged-response.model';
@@ -15,7 +15,11 @@ import { PagedResponse } from '../../../../core/models/paged-response.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContentListPage {
-  contents$!: Observable<PagedResponse<Content>>;
+  view$!: Observable<{
+    paged: PagedResponse<Content>;
+    featured: Content | null;
+    rest: Content[];
+  }>;
   page = 1;
   pageSize = 10;
   totalPages = 1;
@@ -38,11 +42,16 @@ export class ContentListPage {
   }
 
   private load() {
-    this.contents$ = this.contentService.getPublished(this.page, this.pageSize).pipe(
+    this.view$ = this.contentService.getPublished(this.page, this.pageSize).pipe(
       tap(response => {
         this.totalPages = response.totalPages || 1;
         this.totalCount = response.totalCount;
-      })
+      }),
+      map(response => ({
+        paged: response,
+        featured: response.items.length > 0 ? response.items[0] : null,
+        rest: response.items.slice(1)
+      }))
     );
   }
 }

@@ -1,1 +1,16 @@
+<header class="topbar">
+  <a class="brand" routerLink="/">ContentHub</a>
+
+  <nav class="nav">
+    <ng-container *ngIf="auth.isAuthenticated(); else guest">
+      <a class="nav-link" routerLink="/create">Create</a>
+      <button class="nav-btn" type="button" (click)="logout()">Logout</button>
+    </ng-container>
+    <ng-template #guest>
+      <a class="nav-link" routerLink="/login">Login</a>
+      <a class="nav-link" routerLink="/register">Register</a>
+    </ng-template>
+  </nav>
+</header>
+
 <router-outlet></router-outlet>
