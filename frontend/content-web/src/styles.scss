@@ -25,4 +25,11 @@ body {
   line-height: 1.6;
   background: var(--grad);
   color: var(--ink);
+  min-height: 100vh;
+}
+
+app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
