@@ -2,13 +2,19 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+}
+
+.topbar-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px 32px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 28px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(14px);
+  gap: 18px;
 }
 
 .brand {
@@ -22,23 +28,39 @@
 
 .nav {
   display: flex;
-  gap: 12px;
+  gap: 6px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--ink);
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 10px 12px 12px;
+  border-radius: 8px 8px 0 0;
   border: 1px solid transparent;
   font-weight: 600;
   font-size: 14px;
+  position: relative;
 }
 
 .nav-link:hover {
-  border-color: var(--line);
-  background: #f2f4fb;
+  background: #f6f8ff;
+}
+
+.nav-link.active {
+  color: var(--accent-dark);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 4px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 .nav-btn {
@@ -49,6 +71,7 @@
   border-radius: 10px;
   font-weight: 700;
   font-size: 14px;
+  margin-left: 8px;
 }
 
 .main-content {

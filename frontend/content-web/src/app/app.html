@@ -1,19 +1,23 @@
 <header class="topbar">
-  <a class="brand" routerLink="/">ContentHub</a>
+  <div class="topbar-inner">
+    <a class="brand" routerLink="/">ContentHub</a>
 
-  <nav class="nav">
-    <ng-container *ngIf="auth.isAuthenticated(); else guest">
-      <a class="nav-link" routerLink="/create">Create</a>
-      <a class="nav-link" routerLink="/drafts">My Drafts</a>
-      <a class="nav-link" routerLink="/published">My Published</a>
-      <a class="nav-link" routerLink="/archived">Archived</a>
-      <button class="nav-btn" type="button" (click)="logout()">Logout</button>
-    </ng-container>
-    <ng-template #guest>
-      <a class="nav-link" routerLink="/login">Login</a>
-      <a class="nav-link" routerLink="/register">Register</a>
-    </ng-template>
-  </nav>
+    <nav class="nav">
+      <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+
+      <ng-container *ngIf="auth.isAuthenticated(); else guest">
+        <a class="nav-link" routerLink="/create" routerLinkActive="active">Create</a>
+        <a class="nav-link" routerLink="/drafts" routerLinkActive="active">My Drafts</a>
+        <a class="nav-link" routerLink="/published" routerLinkActive="active">My Published</a>
+        <a class="nav-link" routerLink="/archived" routerLinkActive="active">Archived</a>
+        <button class="nav-btn" type="button" (click)="logout()">Logout</button>
+      </ng-container>
+      <ng-template #guest>
+        <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+        <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
+      </ng-template>
+    </nav>
+  </div>
 </header>
 
 <main class="main-content">

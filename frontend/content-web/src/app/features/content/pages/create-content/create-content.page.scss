@@ -5,10 +5,7 @@
 }
 
 .header {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 18px;
+  display: block;
   margin-bottom: 22px;
 
   h1 {
@@ -19,15 +16,19 @@
   }
 }
 
+.back-row {
+  padding-bottom: 28px;
+}
+
 .back-link {
   text-decoration: none;
   font-weight: 600;
   color: var(--ink);
-  padding-top: 28px;
+  display: inline-block;
 }
 
 .header-copy {
-  padding-top: 18px;
+  padding-top: 4px;
 }
 
 .card {
