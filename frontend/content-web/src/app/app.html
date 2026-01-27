@@ -7,14 +7,56 @@
 
       <ng-container *ngIf="auth.isAuthenticated(); else guest">
         <a class="nav-link" routerLink="/create" routerLinkActive="active">Create</a>
-        <a class="nav-link" routerLink="/drafts" routerLinkActive="active">My Drafts</a>
-        <a class="nav-link" routerLink="/published" routerLinkActive="active">My Published</a>
-        <a class="nav-link" routerLink="/archived" routerLinkActive="active">Archived</a>
-        <button class="nav-btn" type="button" (click)="logout()">Logout</button>
+
+        <button
+          class="theme-toggle"
+          type="button"
+          (click)="toggleTheme()"
+          [attr.aria-label]="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+          title="Toggle theme">
+          <span class="theme-icon" aria-hidden="true">
+            {{ theme === 'dark' ? '◐' : '☼' }}
+          </span>
+        </button>
+
+        <div class="profile-menu" [class.open]="isWorkspaceMenuOpen">
+          <button class="nav-btn profile-trigger" type="button" (click)="toggleWorkspaceMenu()">
+            Workspace
+            <span class="chevron">▾</span>
+          </button>
+
+          <div class="menu" *ngIf="isWorkspaceMenuOpen">
+            <a class="menu-item" routerLink="/drafts" (click)="closeWorkspaceMenu()">Drafts</a>
+            <a class="menu-item" routerLink="/published" (click)="closeWorkspaceMenu()">Published</a>
+            <a class="menu-item" routerLink="/archived" (click)="closeWorkspaceMenu()">Archived</a>
+          </div>
+        </div>
+
+        <div class="profile-menu" [class.open]="isProfileMenuOpen">
+          <button class="nav-btn profile-trigger" type="button" (click)="toggleProfileMenu()">
+            Profile
+            <span class="chevron">▾</span>
+          </button>
+
+          <div class="menu" *ngIf="isProfileMenuOpen">
+            <a class="menu-item" routerLink="/account" (click)="closeProfileMenu()">Account settings</a>
+            <button class="menu-item danger" type="button" (click)="logout()">Logout</button>
+          </div>
+        </div>
       </ng-container>
       <ng-template #guest>
         <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
         <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
+        <button
+          class="theme-toggle"
+          type="button"
+          (click)="toggleTheme()"
+          [attr.aria-label]="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+          title="Toggle theme">
+          <span class="theme-icon" aria-hidden="true">
+            {{ theme === 'dark' ? '◐' : '☼' }}
+          </span>
+        </button>
       </ng-template>
     </nav>
   </div>

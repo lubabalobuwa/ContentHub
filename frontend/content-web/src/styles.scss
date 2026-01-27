@@ -15,6 +15,19 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 
+:root.theme-dark {
+  color-scheme: dark;
+  --ink: #e8ecf8;
+  --ink-muted: #a9b1c7;
+  --surface: #0f172a;
+  --surface-alt: #0b1221;
+  --line: #1f2a44;
+  --accent: #5b8cff;
+  --accent-dark: #3f6fe0;
+  --glow: rgba(91, 140, 255, 0.2);
+  --grad: radial-gradient(circle at 10% -10%, #182544 0%, #0f172a 45%, #0b1221 100%);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -32,4 +45,64 @@ app-root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Dark theme safety overrides for common surfaces that were hard-coded to white. */
+:root.theme-dark .card,
+:root.theme-dark .panel,
+:root.theme-dark .featured-card,
+:root.theme-dark .pagination,
+:root.theme-dark .menu,
+:root.theme-dark .footer,
+:root.theme-dark .topbar,
+:root.theme-dark .hero-card,
+:root.theme-dark .featured-image {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+:root.theme-dark .row,
+:root.theme-dark .newsletter input,
+:root.theme-dark input,
+:root.theme-dark textarea {
+  background: var(--surface-alt);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+:root.theme-dark .field input {
+  background: var(--surface-alt);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+:root.theme-dark .ghost,
+:root.theme-dark .ghost-link,
+:root.theme-dark .menu-item {
+  background: var(--surface-alt);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+:root.theme-dark .row.muted {
+  background: var(--surface-alt);
+}
+
+:root.theme-dark .btn {
+  background: var(--surface-alt);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+:root.theme-dark .btn:disabled {
+  opacity: 0.5;
+}
+
+:root.theme-dark .muted,
+:root.theme-dark .meta,
+:root.theme-dark .subtitle,
+:root.theme-dark .footer-muted,
+:root.theme-dark .page-info {
+  color: var(--ink-muted);
 }

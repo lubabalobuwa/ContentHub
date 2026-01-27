@@ -1,0 +1,33 @@
+<section class="page">
+  <header class="header">
+    <div class="back-row">
+      <a class="back-link" routerLink="/">← Back</a>
+    </div>
+    <div class="header-copy">
+      <p class="eyebrow">Profile</p>
+      <h1>Account settings</h1>
+      <p class="subtitle">Your account details and basic profile info.</p>
+    </div>
+  </header>
+
+  <ng-container *ngIf="profile$ | async as profile">
+    <div class="card" *ngIf="profile; else missing">
+      <div class="row">
+        <span class="label">Display name</span>
+        <span class="value">{{ profile.displayName }}</span>
+      </div>
+      <div class="row">
+        <span class="label">Email</span>
+        <span class="value">{{ profile.email }}</span>
+      </div>
+      <div class="row muted">
+        <span class="label">Role</span>
+        <span class="value">{{ profile.role }}</span>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #missing>
+    <p class="muted-text">Unable to load your account details.</p>
+  </ng-template>
+</section>

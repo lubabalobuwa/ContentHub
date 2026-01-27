@@ -44,6 +44,16 @@ h1 {
   }
 }
 
+:host-context(.theme-dark) .card {
+  background: var(--surface);
+}
+
+:host-context(.theme-dark) .field input {
+  background: var(--surface-alt);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
 .btn {
   width: 100%;
   border: 1px solid var(--accent);
