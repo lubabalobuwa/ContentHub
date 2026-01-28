@@ -1,6 +1,8 @@
 <section class="page">
   <header class="header">
-    <a class="back-link" routerLink="/">← Back</a>
+    <div class="back-row">
+      <a class="back-link" routerLink="/">← Back</a>
+    </div>
     <div class="header-copy">
       <p class="eyebrow">Edit</p>
       <h1>Edit Content</h1>
@@ -16,7 +18,7 @@
 
     <label class="label">
       Body
-      <textarea class="textarea" [(ngModel)]="body" rows="10"></textarea>
+      <textarea class="textarea" [(ngModel)]="body" rows="5"></textarea>
     </label>
 
     <p class="error" *ngIf="error">{{ error }}</p>

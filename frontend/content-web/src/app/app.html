@@ -8,17 +8,6 @@
       <ng-container *ngIf="auth.isAuthenticated(); else guest">
         <a class="nav-link" routerLink="/create" routerLinkActive="active">Create</a>
 
-        <button
-          class="theme-toggle"
-          type="button"
-          (click)="toggleTheme()"
-          [attr.aria-label]="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
-          title="Toggle theme">
-          <span class="theme-icon" aria-hidden="true">
-            {{ theme === 'dark' ? '◐' : '☼' }}
-          </span>
-        </button>
-
         <div class="profile-menu" [class.open]="isWorkspaceMenuOpen">
           <button class="nav-btn profile-trigger" type="button" (click)="toggleWorkspaceMenu()">
             Workspace
@@ -47,16 +36,6 @@
       <ng-template #guest>
         <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
         <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
-        <button
-          class="theme-toggle"
-          type="button"
-          (click)="toggleTheme()"
-          [attr.aria-label]="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
-          title="Toggle theme">
-          <span class="theme-icon" aria-hidden="true">
-            {{ theme === 'dark' ? '◐' : '☼' }}
-          </span>
-        </button>
       </ng-template>
     </nav>
   </div>
@@ -79,3 +58,14 @@
     </div>
   </div>
 </footer>
+
+<button
+  class="theme-fab"
+  type="button"
+  (click)="toggleTheme()"
+  [attr.aria-label]="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+  title="Toggle theme">
+  <span class="theme-icon" aria-hidden="true">
+    {{ theme === 'dark' ? '◐' : '☼' }}
+  </span>
+</button>

@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, of, switchMap, tap } from 'rxjs';
+import { EMPTY, Observable, of, switchMap, tap, timeout, catchError, finalize } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ContentService } from '../../../../core/services/content.service';
@@ -25,7 +25,8 @@ export class ContentPublishedPage {
 
   constructor(
     private auth: AuthService,
-    private contentService: ContentService
+    private contentService: ContentService,
+    private cdr: ChangeDetectorRef
   ) {
     this.load();
   }
@@ -50,16 +51,19 @@ export class ContentPublishedPage {
     }
 
     this.pending[item.id] = 'archive';
-    this.contentService.archive(item.id, item.rowVersion).subscribe({
-      next: () => {
-        delete this.pending[item.id];
-        this.load();
-      },
-      error: () => {
-        delete this.pending[item.id];
+    this.cdr.markForCheck();
+    this.contentService.archive(item.id, item.rowVersion).pipe(
+      timeout(15000),
+      tap(() => this.load()),
+      catchError(() => {
         this.error = 'Failed to archive content.';
-      }
-    });
+        return EMPTY;
+      }),
+      finalize(() => {
+        delete this.pending[item.id];
+        this.cdr.markForCheck();
+      })
+    ).subscribe();
   }
 
   isBusy(item: Content) {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Observable, map, tap } from 'rxjs';
 import { ContentService } from '../../../../../app/core/services/content.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Content } from '../../../../core/models/content.model';
 import { PagedResponse } from '../../../../core/models/paged-response.model';
 
@@ -20,12 +21,17 @@ export class ContentListPage {
     featured: Content | null;
     rest: Content[];
   }>;
+  isAuthenticated$!: Observable<boolean>;
   page = 1;
   pageSize = 10;
   totalPages = 1;
   totalCount = 0;
 
-  constructor(private contentService: ContentService) {
+  constructor(
+    private contentService: ContentService,
+    public auth: AuthService
+  ) {
+    this.isAuthenticated$ = this.auth.authChanges();
     this.load();
   }
 

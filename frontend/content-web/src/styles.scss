@@ -85,6 +85,17 @@ app-root {
   border-color: var(--line);
 }
 
+:root.theme-dark .menu-item:hover,
+:root.theme-dark .nav-link:hover,
+:root.theme-dark .theme-fab:hover {
+  background: #17233b;
+  color: var(--ink);
+}
+
+:root .ghost {
+  font-size: 14px;
+}
+
 :root.theme-dark .row.muted {
   background: var(--surface-alt);
 }

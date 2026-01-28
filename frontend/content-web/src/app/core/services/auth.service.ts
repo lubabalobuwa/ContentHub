@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { environment } from '../../../environments/environments';
 import { AuthResponse } from '../models/auth.model';
 import { UserProfile } from '../models/user-profile.model';
@@ -10,13 +10,17 @@ const TOKEN_KEY = 'contenthub_token';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly baseUrl = environment.apiBaseUrl;
+  private readonly authState = new BehaviorSubject<boolean>(!!this.getToken());
 
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.baseUrl}/auth/login`, { email, password })
-      .pipe(tap(response => this.setToken(response.token)));
+      .pipe(tap(response => {
+        this.setToken(response.token);
+        this.authState.next(true);
+      }));
   }
 
   register(email: string, displayName: string, password: string) {
@@ -29,6 +33,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem(TOKEN_KEY);
+    this.authState.next(false);
   }
 
   getToken(): string | null {
@@ -36,7 +41,24 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    return this.authState.value;
+  }
+
+  authChanges() {
+    return this.authState.asObservable();
+  }
+
+  initialize() {
+    const token = this.getToken();
+    if (!token) {
+      this.authState.next(false);
+      return;
+    }
+
+    this.me().subscribe({
+      next: () => this.authState.next(true),
+      error: () => this.logout()
+    });
   }
 
   private setToken(token: string) {

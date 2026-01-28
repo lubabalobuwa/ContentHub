@@ -21,6 +21,7 @@ export class App {
     const saved = localStorage.getItem('contenthub_theme');
     this.theme = saved === 'dark' ? 'dark' : 'light';
     this.applyTheme();
+    this.auth.initialize();
   }
   isProfileMenuOpen = false;
   isWorkspaceMenuOpen = false;
@@ -47,7 +48,9 @@ export class App {
     this.closeProfileMenu();
     this.closeWorkspaceMenu();
     this.auth.logout();
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigateByUrl('/');
+    });
   }
 
   toggleTheme() {
