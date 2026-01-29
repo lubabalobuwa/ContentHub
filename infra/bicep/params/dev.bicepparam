@@ -17,6 +17,8 @@ param corsAllowedOrigins = [
   'https://yellow-moss-0baf47510.6.azurestaticapps.net'
 ]
 
+param messagingEnabled = false
+
 param serviceBusNamespaceName = 'sb-contenthub-dev'
 param serviceBusQueueName = 'content-published'
 

@@ -19,17 +19,21 @@ namespace ContentHub.Infrastructure
             services.AddDbContext<ContentHubDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddSingleton<IConnection>(_ =>
+            var messagingEnabled = configuration.GetValue<bool>("Messaging:Enabled");
+            if (messagingEnabled)
             {
-                var connectionString = configuration.GetValue<string>("RabbitMq:ConnectionString")
-                    ?? "amqp://guest:guest@localhost:5672";
-                var factory = new ConnectionFactory
+                services.AddSingleton<IConnection>(_ =>
                 {
-                    Uri = new Uri(connectionString)
-                };
+                    var connectionString = configuration.GetValue<string>("RabbitMq:ConnectionString")
+                        ?? "amqp://guest:guest@localhost:5672";
+                    var factory = new ConnectionFactory
+                    {
+                        Uri = new Uri(connectionString)
+                    };
 
-                return factory.CreateConnectionAsync().GetAwaiter().GetResult();
-            });
+                    return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+                });
+            }
 
             services.AddScoped<IContentRepository, ContentRepository>();
             services.AddScoped<IContentReadRepository, ContentReadRepository>();
@@ -37,7 +41,14 @@ namespace ContentHub.Infrastructure
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
+            if (messagingEnabled)
+            {
+                services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
+            }
+            else
+            {
+                services.AddScoped<IRabbitMqPublisher, NoOpRabbitMqPublisher>();
+            }
 
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 

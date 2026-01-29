@@ -22,6 +22,7 @@
         "https://yellow-moss-0baf47510.6.azurestaticapps.net"
       ]
     },
+    "messagingEnabled": { "value": false },
     "authEnableResetPassword": { "value": false },
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },

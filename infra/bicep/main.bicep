@@ -43,6 +43,9 @@ param corsAllowedOrigins array = []
 @description('Enable reset password feature.')
 param authEnableResetPassword bool = false
 
+@description('Enable messaging (RabbitMQ).')
+param messagingEnabled bool = false
+
 @description('SQL server name (must be globally unique).')
 param sqlServerName string
 
@@ -134,6 +137,10 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'Auth__EnableResetPassword'
           value: string(authEnableResetPassword)
+        }
+        {
+          name: 'Messaging__Enabled'
+          value: string(messagingEnabled)
         }
         {
           name: 'AllowedHosts'
