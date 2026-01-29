@@ -132,13 +132,16 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
           value: allowedHosts
         }
       ]
-      connectionStrings: [
-        {
-          name: 'DefaultConnection'
-          type: 'SQLAzure'
-          value: 'Server=tcp:${sqlServerName}.database.windows.net,1433;Initial Catalog=${sqlDbName};Persist Security Info=False;User ID=${sqlAdminLogin};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-        }
-      ]
+    }
+  }
+}
+
+resource apiConnectionStrings 'Microsoft.Web/sites/config@2022-09-01' = {
+  name: '${apiApp.name}/connectionstrings'
+  properties: {
+    DefaultConnection: {
+      type: 'SQLAzure'
+      value: 'Server=tcp:${sqlServerName}.database.windows.net,1433;Initial Catalog=${sqlDbName};Persist Security Info=False;User ID=${sqlAdminLogin};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
     }
   }
 }
