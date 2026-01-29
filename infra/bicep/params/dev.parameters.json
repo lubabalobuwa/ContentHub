@@ -23,6 +23,7 @@
       ]
     },
     "messagingEnabled": { "value": false },
+    "migrationsEnabled": { "value": true },
     "authEnableResetPassword": { "value": false },
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },

@@ -103,8 +103,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+var migrationsEnabled = builder.Configuration.GetValue("Migrations:Enabled", true);
+if (migrationsEnabled)
 {
+    using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ContentHubDbContext>();
     dbContext.Database.Migrate();
 }

@@ -46,6 +46,9 @@ param authEnableResetPassword bool = false
 @description('Enable messaging (RabbitMQ).')
 param messagingEnabled bool = false
 
+@description('Run EF Core migrations on API startup.')
+param migrationsEnabled bool = true
+
 @description('SQL server name (must be globally unique).')
 param sqlServerName string
 
@@ -141,6 +144,10 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'Messaging__Enabled'
           value: string(messagingEnabled)
+        }
+        {
+          name: 'Migrations__Enabled'
+          value: string(migrationsEnabled)
         }
         {
           name: 'AllowedHosts'

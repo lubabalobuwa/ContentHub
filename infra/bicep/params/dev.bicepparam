@@ -19,6 +19,8 @@ param corsAllowedOrigins = [
 
 param messagingEnabled = false
 
+param migrationsEnabled = true
+
 param serviceBusNamespaceName = 'sb-contenthub-dev'
 param serviceBusQueueName = 'content-published'
 
