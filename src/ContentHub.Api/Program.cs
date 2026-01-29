@@ -115,10 +115,11 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseCors("FrontendPolicy");
+
 app.MapHealthChecks("/health");
 app.MapContentEndpoints();
 app.MapUserEndpoints();
-app.UseCors("FrontendPolicy");
 
 app.Run();
 

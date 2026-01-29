@@ -16,6 +16,12 @@
     "jwtAudience": { "value": "ContentHub" },
     "jwtExpiresMinutes": { "value": 60 },
     "allowedHosts": { "value": "*" },
+    "corsAllowedOrigins": {
+      "value": [
+        "http://localhost:4200",
+        "https://yellow-moss-0baf47510.6.azurestaticapps.net"
+      ]
+    },
     "authEnableResetPassword": { "value": false },
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },

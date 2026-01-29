@@ -37,6 +37,9 @@ param jwtExpiresMinutes int = 60
 @description('Allowed hosts (comma separated) for ASP.NET Core.')
 param allowedHosts string = '*'
 
+@description('Allowed CORS origins for the API app.')
+param corsAllowedOrigins array = []
+
 @description('Enable reset password feature.')
 param authEnableResetPassword bool = false
 
@@ -80,6 +83,11 @@ param staticWebAppArtifactLocation string
 @description('Static Web App API location (relative to repo root).')
 param staticWebAppApiLocation string = ''
 
+var corsAppSettings = [for (origin, i) in corsAllowedOrigins: {
+  name: 'Cors__AllowedOrigins__${i}'
+  value: origin
+}]
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
   location: location
@@ -102,7 +110,7 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
     httpsOnly: true
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|8.0'
-      appSettings: [
+      appSettings: concat([
         {
           name: 'RabbitMq__ConnectionString'
           value: rabbitMqConnectionString
@@ -131,7 +139,7 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
           name: 'AllowedHosts'
           value: allowedHosts
         }
-      ]
+      ], corsAppSettings)
     }
   }
 }
