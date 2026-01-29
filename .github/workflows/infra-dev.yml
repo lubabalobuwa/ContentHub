@@ -13,7 +13,7 @@ permissions:
 
 env:
   BICEP_FILE: infra/bicep/main.bicep
-  BICEP_PARAMS: infra/bicep/params/dev.bicepparam
+  BICEP_PARAMS: infra/bicep/params/dev.parameters.json
 
 jobs:
   deploy_infra_dev:

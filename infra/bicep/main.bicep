@@ -88,6 +88,7 @@ resource sqlFirewallAllowAzure 'Microsoft.Sql/servers/firewallRules@2023-05-01-p
 resource sqlDb 'Microsoft.Sql/servers/databases@2023-05-01-preview' = {
   name: sqlDbName
   parent: sqlServer
+  location: location
   sku: {
     name: 'Basic'
     tier: 'Basic'
