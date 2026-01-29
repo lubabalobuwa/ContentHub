@@ -4,7 +4,9 @@ using ContentHub.Api.Services;
 using ContentHub.Application;
 using ContentHub.Application.Common.Interfaces;
 using ContentHub.Infrastructure;
+using ContentHub.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -100,6 +102,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ContentHubDbContext>();
+    dbContext.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
