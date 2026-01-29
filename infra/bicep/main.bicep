@@ -40,6 +40,24 @@ param serviceBusQueueName string = 'content-published'
 @description('Static Web App name.')
 param staticWebAppName string
 
+@description('Static Web App repository URL.')
+param staticWebAppRepositoryUrl string
+
+@description('Static Web App branch.')
+param staticWebAppBranch string = 'main'
+
+@description('Static Web App provider (GitHub or DevOps).')
+param staticWebAppProvider string = 'GitHub'
+
+@description('Static Web App app location (relative to repo root).')
+param staticWebAppAppLocation string
+
+@description('Static Web App artifact output location (relative to repo root).')
+param staticWebAppArtifactLocation string
+
+@description('Static Web App API location (relative to repo root).')
+param staticWebAppApiLocation string = ''
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
   location: location
@@ -115,12 +133,24 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-prev
   }
 }
 
-resource staticWebApp 'Microsoft.Web/staticSites@2022-09-01' = {
+resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
   name: staticWebAppName
   location: staticWebAppLocation
   sku: {
     name: 'Free'
     tier: 'Free'
+  }
+  properties: {
+    repositoryUrl: staticWebAppRepositoryUrl
+    branch: staticWebAppBranch
+    provider: staticWebAppProvider
+    allowConfigFileUpdates: true
+    buildProperties: {
+      appLocation: staticWebAppAppLocation
+      appArtifactLocation: staticWebAppArtifactLocation
+      apiLocation: staticWebAppApiLocation
+      skipGithubActionWorkflowGeneration: true
+    }
   }
 }
 

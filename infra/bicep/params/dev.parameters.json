@@ -13,6 +13,12 @@
     "sqlAdminLogin": { "value": "contenthubadmin" },
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },
-    "staticWebAppName": { "value": "swa-contenthub-dev" }
+    "staticWebAppName": { "value": "swa-contenthub-dev" },
+    "staticWebAppRepositoryUrl": { "value": "https://github.com/lubabalobuwa/ContentHub" },
+    "staticWebAppBranch": { "value": "main" },
+    "staticWebAppProvider": { "value": "GitHub" },
+    "staticWebAppAppLocation": { "value": "frontend/content-web" },
+    "staticWebAppArtifactLocation": { "value": "dist/content-web" },
+    "staticWebAppApiLocation": { "value": "" }
   }
 }
