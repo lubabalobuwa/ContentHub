@@ -42,3 +42,25 @@ Validation errors use ProblemDetails with an `errors` dictionary, for example:
   }
 }
 ```
+
+## Deployment (GitHub Actions + Bicep)
+This repo uses GitHub Actions to provision infra (Bicep) and deploy the API + Angular app.
+
+### Workflows
+- `infra-dev`: validates and deploys Bicep to the dev resource group
+- `deploy-dev`: deploys the API to App Service and the Angular app to Static Web Apps
+
+### Required GitHub Secrets
+- `AZURE_CLIENT_ID`
+- `AZURE_TENANT_ID`
+- `AZURE_SUBSCRIPTION_ID`
+- `AZURE_RG_DEV`
+- `SQL_ADMIN_PASSWORD_DEV`
+- `API_APP_NAME_DEV`
+- `SWA_TOKEN_DEV`
+
+### Run the pipelines
+1) Push to GitHub: `git push`
+2) Run infra: GitHub Actions -> `infra-dev` -> Run workflow
+3) After infra completes, copy the Static Web App deployment token to `SWA_TOKEN_DEV`
+4) Run app deploy: GitHub Actions -> `deploy-dev` -> Run workflow

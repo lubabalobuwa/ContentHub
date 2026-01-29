@@ -11,6 +11,10 @@ permissions:
 jobs:
   build_api:
     runs-on: ubuntu-latest
+    env:
+      Jwt__Key: "dev-test-key-please-change"
+      Jwt__Issuer: "contenthub-tests"
+      Jwt__Audience: "contenthub-tests"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
