@@ -2,6 +2,10 @@ name: deploy-dev
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["infra-dev"]
+    types:
+      - completed
 
 permissions:
   contents: read

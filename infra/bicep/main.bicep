@@ -18,6 +18,28 @@ param appServiceSkuTier string = 'Basic'
 @description('API App Service name.')
 param apiAppName string
 
+@description('RabbitMQ connection string.')
+param rabbitMqConnectionString string
+
+@secure()
+@description('JWT signing key.')
+param jwtKey string
+
+@description('JWT issuer.')
+param jwtIssuer string = 'ContentHub'
+
+@description('JWT audience.')
+param jwtAudience string = 'ContentHub'
+
+@description('JWT expiration in minutes.')
+param jwtExpiresMinutes int = 60
+
+@description('Allowed hosts (comma separated) for ASP.NET Core.')
+param allowedHosts string = '*'
+
+@description('Enable reset password feature.')
+param authEnableResetPassword bool = false
+
 @description('SQL server name (must be globally unique).')
 param sqlServerName string
 
@@ -80,6 +102,43 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
     httpsOnly: true
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|8.0'
+      appSettings: [
+        {
+          name: 'RabbitMq__ConnectionString'
+          value: rabbitMqConnectionString
+        }
+        {
+          name: 'Jwt__Key'
+          value: jwtKey
+        }
+        {
+          name: 'Jwt__Issuer'
+          value: jwtIssuer
+        }
+        {
+          name: 'Jwt__Audience'
+          value: jwtAudience
+        }
+        {
+          name: 'Jwt__ExpiresMinutes'
+          value: string(jwtExpiresMinutes)
+        }
+        {
+          name: 'Auth__EnableResetPassword'
+          value: string(authEnableResetPassword)
+        }
+        {
+          name: 'AllowedHosts'
+          value: allowedHosts
+        }
+      ]
+      connectionStrings: [
+        {
+          name: 'DefaultConnection'
+          type: 'SQLAzure'
+          value: 'Server=tcp:${sqlServerName}.database.windows.net,1433;Initial Catalog=${sqlDbName};Persist Security Info=False;User ID=${sqlAdminLogin};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+        }
+      ]
     }
   }
 }

@@ -35,6 +35,8 @@ jobs:
           --template-file "${{ env.BICEP_FILE }}"
           --parameters @"${{ env.BICEP_PARAMS }}"
           --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"
+          --parameters jwtKey="${{ secrets.JWT_KEY_DEV }}"
+          --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
 
       - name: Deploy infra (bicep)
         run: >
@@ -43,3 +45,5 @@ jobs:
           --template-file "${{ env.BICEP_FILE }}"
           --parameters @"${{ env.BICEP_PARAMS }}"
           --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"
+          --parameters jwtKey="${{ secrets.JWT_KEY_DEV }}"
+          --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
