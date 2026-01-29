@@ -18,7 +18,7 @@
     "staticWebAppBranch": { "value": "main" },
     "staticWebAppProvider": { "value": "GitHub" },
     "staticWebAppAppLocation": { "value": "frontend/content-web" },
-    "staticWebAppArtifactLocation": { "value": "dist/content-web" },
+    "staticWebAppArtifactLocation": { "value": "dist/content-web/browser" },
     "staticWebAppApiLocation": { "value": "" }
   }
 }

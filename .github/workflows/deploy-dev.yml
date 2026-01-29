@@ -44,4 +44,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "frontend/content-web"
-          output_location: "dist/content-web"
+          output_location: "dist/content-web/browser"
