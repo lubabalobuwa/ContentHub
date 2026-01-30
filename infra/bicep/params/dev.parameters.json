@@ -19,7 +19,9 @@
     "corsAllowedOrigins": {
       "value": [
         "http://localhost:4200",
-        "https://yellow-moss-0baf47510.6.azurestaticapps.net"
+        "https://yellow-moss-0baf47510.6.azurestaticapps.net",
+        "https://www.techcontenthub.live",
+        "https://techcontenthub.live"
       ]
     },
     "messagingEnabled": { "value": false },
