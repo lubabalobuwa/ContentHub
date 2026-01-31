@@ -10,10 +10,10 @@ param staticWebAppLocation string = 'Central US'
 param appServicePlanName string
 
 @description('App Service plan SKU name (e.g., F1, B1).')
-param appServiceSkuName string = 'B1'
+param appServiceSkuName string = 'F1'
 
 @description('App Service plan SKU tier (e.g., Free, Basic).')
-param appServiceSkuTier string = 'Basic'
+param appServiceSkuTier string = 'Free'
 
 @description('API App Service name.')
 param apiAppName string
