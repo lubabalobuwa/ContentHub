@@ -1,5 +1,5 @@
 import { Component, Inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DOCUMENT, NgIf } from '@angular/common';
 import { AuthService } from './core/services/auth.service';
 
@@ -22,6 +22,12 @@ export class App {
     this.theme = saved === 'dark' ? 'dark' : 'light';
     this.applyTheme();
     this.auth.initialize();
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.closeProfileMenu();
+        this.closeWorkspaceMenu();
+      }
+    });
   }
   isProfileMenuOpen = false;
   isWorkspaceMenuOpen = false;

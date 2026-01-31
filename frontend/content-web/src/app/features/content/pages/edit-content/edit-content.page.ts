@@ -20,6 +20,7 @@ export class EditContentPage {
   rowVersion = '';
   isSubmitting = false;
   error: string | null = null;
+  returnUrl = '/drafts';
 
   constructor(
     private route: ActivatedRoute,
@@ -27,6 +28,11 @@ export class EditContentPage {
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
+    this.route.queryParamMap.subscribe(params => {
+      const from = params.get('from');
+      this.returnUrl = from === 'published' ? '/published' : '/drafts';
+    });
+
     this.route.paramMap.pipe(
       switchMap(params => {
         const id = params.get('id');
@@ -73,7 +79,7 @@ export class EditContentPage {
     }).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.router.navigateByUrl(`/${id}`);
+        this.router.navigateByUrl(this.returnUrl);
       },
       error: () => {
         this.isSubmitting = false;

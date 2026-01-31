@@ -16,7 +16,7 @@
 
         <ng-container *ngIf="me$ | async as me">
           <div class="actions" *ngIf="auth.isAuthenticated() && me?.id === content.authorId">
-            <a class="ghost-link" [routerLink]="['/edit', content.id]">Edit</a>
+            <a class="ghost-link" [routerLink]="['/edit', content.id]" [queryParams]="{ from: 'published' }">Edit</a>
             <button
               class="btn"
               [disabled]="isPublishing || content.status === 'Published'"

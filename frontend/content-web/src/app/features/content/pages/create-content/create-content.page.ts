@@ -44,7 +44,7 @@ export class CreateContentPage {
     }).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.router.navigateByUrl('/');
+        this.router.navigateByUrl('/drafts');
       },
       error: () => {
         this.isSubmitting = false;

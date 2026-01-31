@@ -21,7 +21,7 @@
           {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
         </p>
         <div class="actions">
-          <a class="ghost" [routerLink]="['/edit', item.id]">Edit</a>
+          <a class="ghost" [routerLink]="['/edit', item.id]" [queryParams]="{ from: 'published' }">Edit</a>
           <button class="ghost" (click)="archive(item)" [disabled]="isBusy(item)">
             {{ pending[item.id] ? 'Archiving…' : 'Archive' }}
           </button>
