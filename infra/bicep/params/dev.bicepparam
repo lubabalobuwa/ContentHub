@@ -27,6 +27,9 @@ param migrationsEnabled = true
 
 param keyVaultName = 'kv-contenthub-dev'
 
+param logAnalyticsWorkspaceName = 'law-contenthub-dev'
+param appInsightsName = 'appi-contenthub-dev'
+
 param serviceBusNamespaceName = 'sb-contenthub-dev'
 param serviceBusQueueName = 'content-published'
 

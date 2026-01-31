@@ -5,27 +5,32 @@ using ContentHub.Application;
 using ContentHub.Application.Common.Interfaces;
 using ContentHub.Infrastructure;
 using ContentHub.Infrastructure.Persistence;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Microsoft.IdentityModel.Tokens;
+using Serilog.Sinks.ApplicationInsights.TelemetryConverters;
 using Serilog;
 using Serilog.Events;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddApplicationInsightsTelemetry();
+
 builder.Host.UseSerilog((context, services, configuration) =>
 {
+    var telemetryConfig = services.GetRequiredService<TelemetryConfiguration>();
     configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
         .Enrich.FromLogContext()
         .Enrich.WithProperty("Application", "ContentHub.Api")
-        .WriteTo.Console();
+        .WriteTo.Console()
+        .WriteTo.ApplicationInsights(telemetryConfig, TelemetryConverter.Traces);
 });
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

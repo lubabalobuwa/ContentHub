@@ -55,6 +55,12 @@ param migrationsEnabled bool = true
 @description('Key Vault name (must be globally unique).')
 param keyVaultName string
 
+@description('Log Analytics workspace name (must be globally unique).')
+param logAnalyticsWorkspaceName string
+
+@description('Application Insights name (must be globally unique).')
+param appInsightsName string
+
 @description('SQL server name (must be globally unique).')
 param sqlServerName string
 
@@ -157,6 +163,10 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
           value: string(jwtRefreshTokenDays)
         }
         {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
+        {
           name: 'Auth__EnableResetPassword'
           value: string(authEnableResetPassword)
         }
@@ -184,6 +194,27 @@ resource apiConnectionStrings 'Microsoft.Web/sites/config@2022-09-01' = {
       type: 'SQLAzure'
       value: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/${sqlConnectionSecretName}/)'
     }
+  }
+}
+
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: logAnalyticsWorkspaceName
+  location: location
+  properties: {
+    retentionInDays: 30
+  }
+  sku: {
+    name: 'PerGB2018'
+  }
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: appInsightsName
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspace.id
   }
 }
 

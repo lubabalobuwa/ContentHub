@@ -28,6 +28,8 @@
     "messagingEnabled": { "value": false },
     "migrationsEnabled": { "value": true },
     "keyVaultName": { "value": "kv-contenthub-dev" },
+    "logAnalyticsWorkspaceName": { "value": "law-contenthub-dev" },
+    "appInsightsName": { "value": "appi-contenthub-dev" },
     "authEnableResetPassword": { "value": false },
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },
