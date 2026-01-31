@@ -12,6 +12,8 @@ param sqlServerName = 'sql-contenthub-dev'
 param sqlDbName = 'contenthub'
 param sqlAdminLogin = 'contenthubadmin'
 
+param jwtRefreshTokenDays = 7
+
 param corsAllowedOrigins = [
   'http://localhost:4200'
   'https://yellow-moss-0baf47510.6.azurestaticapps.net'
@@ -22,6 +24,8 @@ param corsAllowedOrigins = [
 param messagingEnabled = false
 
 param migrationsEnabled = true
+
+param keyVaultName = 'kv-contenthub-dev'
 
 param serviceBusNamespaceName = 'sb-contenthub-dev'
 param serviceBusQueueName = 'content-published'

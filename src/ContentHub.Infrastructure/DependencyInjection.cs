@@ -39,6 +39,7 @@ namespace ContentHub.Infrastructure
             services.AddScoped<IContentReadRepository, ContentReadRepository>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ITokenService, JwtTokenService>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             if (messagingEnabled)

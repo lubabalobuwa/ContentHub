@@ -34,6 +34,7 @@ namespace ContentHub.Api.IntegrationTests
                     ["Jwt:Issuer"] = JwtIssuer,
                     ["Jwt:Audience"] = JwtAudience,
                     ["Jwt:ExpiresMinutes"] = "60",
+                    ["Jwt:RefreshTokenDays"] = "7",
                     ["Migrations:Enabled"] = "false",
                     ["RabbitMq:ConnectionString"] = "amqp://guest:guest@localhost:5672",
                     ["ConnectionStrings:DefaultConnection"] = "DataSource=:memory:"

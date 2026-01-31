@@ -9,6 +9,7 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly ITokenService _tokenService;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IValidator<AuthenticateUserCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -16,12 +17,14 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
             IUserRepository userRepository,
             IPasswordHasher passwordHasher,
             ITokenService tokenService,
+            IRefreshTokenRepository refreshTokenRepository,
             IValidator<AuthenticateUserCommand> validator,
             IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _tokenService = tokenService;
+            _refreshTokenRepository = refreshTokenRepository;
             _validator = validator;
             _unitOfWork = unitOfWork;
         }
@@ -41,12 +44,23 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
                 return Result<AuthenticateUserResult>.Failure("Invalid email or password.");
 
             user.MarkLoggedIn(DateTime.UtcNow);
+            var refreshTokenValue = _tokenService.GenerateRefreshToken();
+            var refreshTokenHash = _tokenService.HashRefreshToken(refreshTokenValue);
+
+            var now = DateTime.UtcNow;
+            var refreshToken = new ContentHub.Domain.Users.RefreshToken(
+                user.Id,
+                refreshTokenHash,
+                now,
+                now.Add(_tokenService.GetRefreshTokenLifetime()));
+
+            await _refreshTokenRepository.AddAsync(refreshToken);
             await _unitOfWork.CommitAsync();
 
-            var token = _tokenService.CreateToken(user);
+            var accessToken = _tokenService.CreateAccessToken(user);
 
             return Result<AuthenticateUserResult>.Success(
-                new AuthenticateUserResult(user.Id, token, user.Role.ToString()));
+                new AuthenticateUserResult(user.Id, accessToken, refreshTokenValue, user.Role.ToString()));
         }
     }
 }

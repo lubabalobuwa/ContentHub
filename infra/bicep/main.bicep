@@ -34,6 +34,9 @@ param jwtAudience string = 'ContentHub'
 @description('JWT expiration in minutes.')
 param jwtExpiresMinutes int = 60
 
+@description('JWT refresh token expiration in days.')
+param jwtRefreshTokenDays int = 7
+
 @description('Allowed hosts (comma separated) for ASP.NET Core.')
 param allowedHosts string = '*'
 
@@ -48,6 +51,9 @@ param messagingEnabled bool = false
 
 @description('Run EF Core migrations on API startup.')
 param migrationsEnabled bool = true
+
+@description('Key Vault name (must be globally unique).')
+param keyVaultName string
 
 @description('SQL server name (must be globally unique).')
 param sqlServerName string
@@ -94,6 +100,12 @@ var corsAppSettings = [for (origin, i) in corsAllowedOrigins: {
   value: origin
 }]
 
+var sqlConnectionString = 'Server=tcp:${sqlServerName}.database.windows.net,1433;Initial Catalog=${sqlDbName};Persist Security Info=False;User ID=${sqlAdminLogin};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+var keyVaultUri = 'https://${keyVaultName}.vault.azure.net/'
+var jwtKeySecretName = 'jwt-key'
+var sqlConnectionSecretName = 'sql-connection-string'
+var rabbitMqSecretName = 'rabbitmq-connection-string'
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
   location: location
@@ -111,6 +123,9 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
   name: apiAppName
   location: location
   kind: 'app,linux'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
@@ -119,11 +134,11 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
       appSettings: concat([
         {
           name: 'RabbitMq__ConnectionString'
-          value: rabbitMqConnectionString
+          value: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/${rabbitMqSecretName}/)'
         }
         {
           name: 'Jwt__Key'
-          value: jwtKey
+          value: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/${jwtKeySecretName}/)'
         }
         {
           name: 'Jwt__Issuer'
@@ -136,6 +151,10 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'Jwt__ExpiresMinutes'
           value: string(jwtExpiresMinutes)
+        }
+        {
+          name: 'Jwt__RefreshTokenDays'
+          value: string(jwtRefreshTokenDays)
         }
         {
           name: 'Auth__EnableResetPassword'
@@ -163,8 +182,53 @@ resource apiConnectionStrings 'Microsoft.Web/sites/config@2022-09-01' = {
   properties: {
     DefaultConnection: {
       type: 'SQLAzure'
-      value: 'Server=tcp:${sqlServerName}.database.windows.net,1433;Initial Catalog=${sqlDbName};Persist Security Info=False;User ID=${sqlAdminLogin};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+      value: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/${sqlConnectionSecretName}/)'
     }
+  }
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+  name: keyVaultName
+  location: location
+  properties: {
+    tenantId: subscription().tenantId
+    sku: {
+      name: 'standard'
+      family: 'A'
+    }
+    accessPolicies: [
+      {
+        tenantId: subscription().tenantId
+        objectId: apiApp.identity.principalId
+        permissions: {
+          secrets: [
+            'get'
+            'list'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource keyVaultJwtKey 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: '${keyVault.name}/${jwtKeySecretName}'
+  properties: {
+    value: jwtKey
+  }
+}
+
+resource keyVaultSqlConnection 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: '${keyVault.name}/${sqlConnectionSecretName}'
+  properties: {
+    value: sqlConnectionString
+  }
+}
+
+resource keyVaultRabbitMq 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: '${keyVault.name}/${rabbitMqSecretName}'
+  properties: {
+    value: rabbitMqConnectionString
   }
 }
 

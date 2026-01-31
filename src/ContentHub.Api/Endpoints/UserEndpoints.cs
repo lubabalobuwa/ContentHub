@@ -3,6 +3,7 @@ using ContentHub.Api.Contracts.Responses;
 using ContentHub.Application.Common.Interfaces;
 using ContentHub.Application.Users.Commands.AuthenticateUser;
 using ContentHub.Application.Users.Commands.CreateUser;
+using ContentHub.Application.Users.Commands.RefreshToken;
 using ContentHub.Application.Users.Commands.ResetPassword;
 using ContentHub.Application.Users.Queries.GetUserProfile;
 using Microsoft.AspNetCore.Mvc;
@@ -35,8 +36,28 @@ namespace ContentHub.Api.Endpoints
                     new AuthenticateUserCommand(request.Email, request.Password));
 
                 return result.IsSuccess
-                    ? Results.Ok(new AuthResponse(result.Value!.UserId, result.Value.Token, result.Value.Role))
+                    ? Results.Ok(new AuthResponse(
+                        result.Value!.UserId,
+                        result.Value.AccessToken,
+                        result.Value.RefreshToken,
+                        result.Value.Role))
                     : ApiResults.Unauthorized("Invalid credentials.");
+            });
+
+            group.MapPost("/auth/refresh", async (
+                [FromBody] RefreshTokenRequest request,
+                [FromServices] RefreshTokenHandler handler) =>
+            {
+                var result = await handler.HandleAsync(
+                    new RefreshTokenCommand(request.RefreshToken));
+
+                return result.IsSuccess
+                    ? Results.Ok(new AuthResponse(
+                        result.Value!.UserId,
+                        result.Value.AccessToken,
+                        result.Value.RefreshToken,
+                        result.Value.Role))
+                    : ApiResults.Unauthorized("Invalid refresh token.");
             });
 
             group.MapPost("/auth/reset-password", async (

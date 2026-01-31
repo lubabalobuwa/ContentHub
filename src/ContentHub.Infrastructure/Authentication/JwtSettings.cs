@@ -6,5 +6,6 @@ namespace ContentHub.Infrastructure.Authentication
         public string Audience { get; set; } = string.Empty;
         public string Key { get; set; } = string.Empty;
         public int ExpiresMinutes { get; set; }
+        public int RefreshTokenDays { get; set; } = 7;
     }
 }

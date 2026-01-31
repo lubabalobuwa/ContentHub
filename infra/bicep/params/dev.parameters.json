@@ -15,6 +15,7 @@
     "jwtIssuer": { "value": "ContentHub" },
     "jwtAudience": { "value": "ContentHub" },
     "jwtExpiresMinutes": { "value": 60 },
+    "jwtRefreshTokenDays": { "value": 7 },
     "allowedHosts": { "value": "*" },
     "corsAllowedOrigins": {
       "value": [
@@ -26,6 +27,7 @@
     },
     "messagingEnabled": { "value": false },
     "migrationsEnabled": { "value": true },
+    "keyVaultName": { "value": "kv-contenthub-dev" },
     "authEnableResetPassword": { "value": false },
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },

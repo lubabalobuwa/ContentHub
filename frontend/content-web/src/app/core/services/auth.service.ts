@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { Observable, tap, BehaviorSubject, shareReplay, throwError } from 'rxjs';
 import { environment } from '../../../environments/environments';
 import { AuthResponse } from '../models/auth.model';
 import { UserProfile } from '../models/user-profile.model';
 
 const TOKEN_KEY = 'contenthub_token';
+const REFRESH_TOKEN_KEY = 'contenthub_refresh_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly authState = new BehaviorSubject<boolean>(!!this.getToken());
+  private refreshInFlight$: Observable<AuthResponse> | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -19,8 +21,39 @@ export class AuthService {
       .post<AuthResponse>(`${this.baseUrl}/auth/login`, { email, password })
       .pipe(tap(response => {
         this.setToken(response.token);
+        this.setRefreshToken(response.refreshToken);
         this.authState.next(true);
       }));
+  }
+
+  refresh(): Observable<AuthResponse> {
+    if (this.refreshInFlight$) return this.refreshInFlight$;
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available.'));
+    }
+
+    this.refreshInFlight$ = this.http
+      .post<AuthResponse>(`${this.baseUrl}/auth/refresh`, { refreshToken })
+      .pipe(
+        tap(response => {
+          this.setToken(response.token);
+          this.setRefreshToken(response.refreshToken);
+          this.authState.next(true);
+        }),
+        shareReplay(1)
+      );
+
+    this.refreshInFlight$.subscribe({
+      complete: () => {
+        this.refreshInFlight$ = null;
+      },
+      error: () => {
+        this.refreshInFlight$ = null;
+      }
+    });
+
+    return this.refreshInFlight$;
   }
 
   register(email: string, displayName: string, password: string) {
@@ -33,11 +66,16 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     this.authState.next(false);
   }
 
   getToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem(REFRESH_TOKEN_KEY);
   }
 
   isAuthenticated(): boolean {
@@ -63,5 +101,9 @@ export class AuthService {
 
   private setToken(token: string) {
     localStorage.setItem(TOKEN_KEY, token);
+  }
+
+  private setRefreshToken(token: string) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, token);
   }
 }

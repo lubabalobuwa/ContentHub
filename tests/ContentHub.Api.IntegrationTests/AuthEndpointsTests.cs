@@ -25,6 +25,7 @@ namespace ContentHub.Api.IntegrationTests
             var auth = await RegisterAndLoginAsync(client);
 
             Assert.False(string.IsNullOrWhiteSpace(auth.Token));
+            Assert.False(string.IsNullOrWhiteSpace(auth.RefreshToken));
             Assert.Equal("Author", auth.Role);
         }
 

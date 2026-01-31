@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ContentHub.Infrastructure.Authentication
@@ -19,7 +20,7 @@ namespace ContentHub.Infrastructure.Authentication
             _settings = options.Value;
         }
 
-        public string CreateToken(User user)
+        public string CreateAccessToken(User user)
         {
             var claims = new List<Claim>
             {
@@ -39,6 +40,25 @@ namespace ContentHub.Infrastructure.Authentication
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var bytes = RandomNumberGenerator.GetBytes(64);
+            return Convert.ToBase64String(bytes);
+        }
+
+        public string HashRefreshToken(string refreshToken)
+        {
+            using var sha = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(refreshToken);
+            var hash = sha.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
+        }
+
+        public TimeSpan GetRefreshTokenLifetime()
+        {
+            return TimeSpan.FromDays(_settings.RefreshTokenDays);
         }
     }
 }

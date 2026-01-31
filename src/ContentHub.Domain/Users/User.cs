@@ -15,6 +15,7 @@ namespace ContentHub.Domain.Users
         public string PasswordHash { get; private set; }
         public DateTime CreatedAtUtc { get; private set; }
         public DateTime? LastLoginAtUtc { get; private set; }
+        public ICollection<RefreshToken> RefreshTokens { get; private set; } = new List<RefreshToken>();
         
         private User(){}
         
