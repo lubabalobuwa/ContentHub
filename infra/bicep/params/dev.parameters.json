@@ -36,7 +36,6 @@
     "appInsightsName": { "value": "appi-contenthub-dev" },
     "smtpHost": { "value": "smtp-relay.brevo.com" },
     "smtpPort": { "value": 587 },
-    "smtpUsername": { "value": "noreply@techcontenthub.live" },
     "smtpFromAddress": { "value": "noreply@techcontenthub.live" },
     "smtpFromName": { "value": "TechContentHub" },
     "smtpUseStartTls": { "value": true },

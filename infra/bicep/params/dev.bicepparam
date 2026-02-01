@@ -35,7 +35,6 @@ param logAnalyticsWorkspaceName = 'law-contenthub-dev'
 param appInsightsName = 'appi-contenthub-dev'
 param smtpHost = 'smtp-relay.brevo.com'
 param smtpPort = 587
-param smtpUsername = 'noreply@techcontenthub.live'
 param smtpFromAddress = 'noreply@techcontenthub.live'
 param smtpFromName = 'TechContentHub'
 param smtpUseStartTls = true
