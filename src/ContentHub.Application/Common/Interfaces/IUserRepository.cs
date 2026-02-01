@@ -11,6 +11,8 @@ namespace ContentHub.Application.Common.Interfaces
     {
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByIdAsync(Guid id);
+        Task<User?> GetByEmailVerificationTokenHashAsync(string tokenHash);
+        Task<User?> GetByPasswordResetTokenHashAsync(string tokenHash);
         Task AddAsync(User user);
     }
 }

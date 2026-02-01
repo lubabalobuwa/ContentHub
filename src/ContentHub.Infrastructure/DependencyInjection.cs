@@ -1,6 +1,8 @@
 using ContentHub.Application.Common.Interfaces;
+using ContentHub.Application.Common.Options;
 using ContentHub.Application.Messaging;
 using ContentHub.Infrastructure.Authentication;
+using ContentHub.Infrastructure.Email;
 using ContentHub.Infrastructure.Messaging;
 using ContentHub.Infrastructure.Persistence;
 using ContentHub.Infrastructure.Persistence.Repositories;
@@ -52,6 +54,9 @@ namespace ContentHub.Infrastructure
             }
 
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+            services.Configure<AuthSettings>(configuration.GetSection("Auth"));
+            services.Configure<SmtpSettings>(configuration.GetSection("Smtp"));
+            services.AddTransient<IEmailSender, SmtpEmailSender>();
 
             return services;
         }

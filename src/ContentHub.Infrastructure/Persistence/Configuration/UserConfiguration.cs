@@ -27,6 +27,24 @@ namespace ContentHub.Infrastructure.Persistence.Configuration
             builder.Property(x => x.PasswordHash)
                 .IsRequired();
 
+            builder.Property(x => x.EmailConfirmed)
+                .IsRequired();
+
+            builder.Property(x => x.EmailVerificationTokenHash)
+                .HasMaxLength(256);
+
+            builder.Property(x => x.EmailVerificationExpiresAtUtc)
+                .IsRequired(false);
+
+            builder.Property(x => x.PasswordResetTokenHash)
+                .HasMaxLength(256);
+
+            builder.Property(x => x.PasswordResetExpiresAtUtc)
+                .IsRequired(false);
+
+            builder.Property(x => x.PasswordResetUsedAtUtc)
+                .IsRequired(false);
+
             builder.Property(x => x.CreatedAtUtc)
                 .IsRequired();
 

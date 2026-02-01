@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using ContentHub.Application.Common.Interfaces;
 
 namespace ContentHub.Api.IntegrationTests
 {
@@ -36,6 +37,8 @@ namespace ContentHub.Api.IntegrationTests
                     ["Jwt:ExpiresMinutes"] = "60",
                     ["Jwt:RefreshTokenDays"] = "7",
                     ["Migrations:Enabled"] = "false",
+                    ["Auth:RequireEmailVerification"] = "false",
+                    ["Auth:BaseUrl"] = "http://localhost:4200",
                     ["RabbitMq:ConnectionString"] = "amqp://guest:guest@localhost:5672",
                     ["ConnectionStrings:DefaultConnection"] = "DataSource=:memory:"
                 });
@@ -60,6 +63,9 @@ namespace ContentHub.Api.IntegrationTests
 
                 services.RemoveAll<IConnection>();
                 services.AddSingleton(CreateMockConnection());
+
+                services.RemoveAll<IEmailSender>();
+                services.AddSingleton<IEmailSender>(new NoOpEmailSender());
 
                 using var scope = services.BuildServiceProvider().CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<ContentHubDbContext>();
@@ -86,6 +92,14 @@ namespace ContentHub.Api.IntegrationTests
             if (disposing)
             {
                 _connection.Dispose();
+            }
+        }
+
+        private sealed class NoOpEmailSender : IEmailSender
+        {
+            public Task SendAsync(string to, string subject, string htmlBody)
+            {
+                return Task.CompletedTask;
             }
         }
     }

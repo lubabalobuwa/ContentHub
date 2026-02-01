@@ -14,8 +14,12 @@ using ContentHub.Application.Content.Queries.GetPublishedContent;
 using ContentHub.Application.Common.Interfaces;
 using ContentHub.Application.Users.Commands.AuthenticateUser;
 using ContentHub.Application.Users.Commands.CreateUser;
+using ContentHub.Application.Users.Commands.ForgotPassword;
 using ContentHub.Application.Users.Commands.RefreshToken;
 using ContentHub.Application.Users.Commands.ResetPassword;
+using ContentHub.Application.Users.Commands.ResetPasswordWithToken;
+using ContentHub.Application.Users.Commands.ResendVerification;
+using ContentHub.Application.Users.Commands.VerifyEmail;
 using ContentHub.Application.Users.Queries.GetUserProfile;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -48,13 +52,18 @@ namespace ContentHub.Application
 
             services.AddScoped<AuthenticateUserHandler>();
             services.AddScoped<CreateUserHandler>();
+            services.AddScoped<ForgotPasswordHandler>();
             services.AddScoped<RefreshTokenHandler>();
             services.AddScoped<ResetPasswordHandler>();
+            services.AddScoped<ResetPasswordWithTokenHandler>();
+            services.AddScoped<ResendVerificationHandler>();
+            services.AddScoped<VerifyEmailHandler>();
             services.AddScoped<GetUserProfileHandler>();
 
             services.AddScoped<IValidator<AuthenticateUserCommand>, AuthenticateUserValidator>();
             services.AddScoped<IValidator<CreateUserCommand>, CreateUserValidator>();
             services.AddScoped<IValidator<ResetPasswordCommand>, ResetPasswordValidator>();
+            services.AddScoped<IValidator<ResetPasswordWithTokenCommand>, ResetPasswordWithTokenValidator>();
 
             return services;
         }

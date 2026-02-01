@@ -16,6 +16,10 @@
     "jwtAudience": { "value": "ContentHub" },
     "jwtExpiresMinutes": { "value": 60 },
     "jwtRefreshTokenDays": { "value": 7 },
+    "authRequireEmailVerification": { "value": true },
+    "authEmailVerificationTokenHours": { "value": 24 },
+    "authPasswordResetTokenHours": { "value": 1 },
+    "authBaseUrl": { "value": "https://www.techcontenthub.live" },
     "allowedHosts": { "value": "*" },
     "corsAllowedOrigins": {
       "value": [
@@ -30,6 +34,12 @@
     "keyVaultName": { "value": "kv-contenthub-dev" },
     "logAnalyticsWorkspaceName": { "value": "law-contenthub-dev" },
     "appInsightsName": { "value": "appi-contenthub-dev" },
+    "smtpHost": { "value": "smtp-relay.brevo.com" },
+    "smtpPort": { "value": 587 },
+    "smtpUsername": { "value": "noreply@techcontenthub.live" },
+    "smtpFromAddress": { "value": "noreply@techcontenthub.live" },
+    "smtpFromName": { "value": "TechContentHub" },
+    "smtpUseStartTls": { "value": true },
     "authEnableResetPassword": { "value": false },
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },

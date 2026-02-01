@@ -28,6 +28,18 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
             return await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
 
+        public async Task<User?> GetByEmailVerificationTokenHashAsync(string tokenHash)
+        {
+            return await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.EmailVerificationTokenHash == tokenHash);
+        }
+
+        public async Task<User?> GetByPasswordResetTokenHashAsync(string tokenHash)
+        {
+            return await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.PasswordResetTokenHash == tokenHash);
+        }
+
         public async Task AddAsync(User user)
         {
             await _dbContext.Users.AddAsync(user);

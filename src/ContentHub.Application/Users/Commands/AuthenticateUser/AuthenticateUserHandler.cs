@@ -1,5 +1,7 @@
 using ContentHub.Application.Common;
 using ContentHub.Application.Common.Interfaces;
+using ContentHub.Application.Common.Options;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
 namespace ContentHub.Application.Users.Commands.AuthenticateUser
@@ -10,6 +12,7 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
         private readonly IPasswordHasher _passwordHasher;
         private readonly ITokenService _tokenService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly AuthSettings _authSettings;
         private readonly IValidator<AuthenticateUserCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -18,6 +21,7 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
             IPasswordHasher passwordHasher,
             ITokenService tokenService,
             IRefreshTokenRepository refreshTokenRepository,
+            IOptions<AuthSettings> authOptions,
             IValidator<AuthenticateUserCommand> validator,
             IUnitOfWork unitOfWork)
         {
@@ -25,6 +29,7 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
             _passwordHasher = passwordHasher;
             _tokenService = tokenService;
             _refreshTokenRepository = refreshTokenRepository;
+            _authSettings = authOptions.Value;
             _validator = validator;
             _unitOfWork = unitOfWork;
         }
@@ -42,6 +47,9 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
 
             if (!_passwordHasher.Verify(user.PasswordHash, command.Password))
                 return Result<AuthenticateUserResult>.Failure("Invalid email or password.");
+
+            if (_authSettings.RequireEmailVerification && !user.EmailConfirmed)
+                return Result<AuthenticateUserResult>.Failure("Email not verified.");
 
             user.MarkLoggedIn(DateTime.UtcNow);
             var refreshTokenValue = _tokenService.GenerateRefreshToken();

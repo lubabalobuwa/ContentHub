@@ -1,0 +1,15 @@
+<section class="page">
+  <div class="card">
+    <h1>Email verification</h1>
+
+    <p class="muted" *ngIf="isSubmitting">Verifying your email…</p>
+
+    <p class="success" *ngIf="success">
+      Your email has been verified. You can now log in.
+    </p>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <a class="btn ghost" routerLink="/login">Go to login</a>
+  </div>
+</section>

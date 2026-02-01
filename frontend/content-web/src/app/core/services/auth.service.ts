@@ -60,6 +60,22 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/users`, { email, displayName, password });
   }
 
+  resendVerification(email: string) {
+    return this.http.post(`${this.baseUrl}/auth/resend-verification`, { email });
+  }
+
+  verifyEmail(token: string) {
+    return this.http.get(`${this.baseUrl}/auth/verify-email`, { params: { token } });
+  }
+
+  forgotPassword(email: string) {
+    return this.http.post(`${this.baseUrl}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    return this.http.post(`${this.baseUrl}/auth/reset-password`, { token, newPassword });
+  }
+
   me(): Observable<UserProfile> {
     return this.http.get<UserProfile>(`${this.baseUrl}/users/me`);
   }

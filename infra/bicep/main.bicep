@@ -37,6 +37,18 @@ param jwtExpiresMinutes int = 60
 @description('JWT refresh token expiration in days.')
 param jwtRefreshTokenDays int = 7
 
+@description('Require email verification before login.')
+param authRequireEmailVerification bool = true
+
+@description('Email verification token expiration in hours.')
+param authEmailVerificationTokenHours int = 24
+
+@description('Password reset token expiration in hours.')
+param authPasswordResetTokenHours int = 1
+
+@description('Base URL used to build auth links.')
+param authBaseUrl string
+
 @description('Allowed hosts (comma separated) for ASP.NET Core.')
 param allowedHosts string = '*'
 
@@ -60,6 +72,28 @@ param logAnalyticsWorkspaceName string
 
 @description('Application Insights name (must be globally unique).')
 param appInsightsName string
+
+@description('SMTP host.')
+param smtpHost string
+
+@description('SMTP port.')
+param smtpPort int = 587
+
+@description('SMTP username.')
+param smtpUsername string
+
+@secure()
+@description('SMTP password or API key.')
+param smtpPassword string
+
+@description('SMTP from address.')
+param smtpFromAddress string
+
+@description('SMTP from name.')
+param smtpFromName string = 'TechContentHub'
+
+@description('SMTP UseStartTls.')
+param smtpUseStartTls bool = true
 
 @description('SQL server name (must be globally unique).')
 param sqlServerName string
@@ -111,6 +145,7 @@ var keyVaultUri = 'https://${keyVaultName}.vault.azure.net/'
 var jwtKeySecretName = 'jwt-key'
 var sqlConnectionSecretName = 'sql-connection-string'
 var rabbitMqSecretName = 'rabbitmq-connection-string'
+var smtpPasswordSecretName = 'smtp-password'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
@@ -163,6 +198,22 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
           value: string(jwtRefreshTokenDays)
         }
         {
+          name: 'Auth__RequireEmailVerification'
+          value: string(authRequireEmailVerification)
+        }
+        {
+          name: 'Auth__EmailVerificationTokenHours'
+          value: string(authEmailVerificationTokenHours)
+        }
+        {
+          name: 'Auth__PasswordResetTokenHours'
+          value: string(authPasswordResetTokenHours)
+        }
+        {
+          name: 'Auth__BaseUrl'
+          value: authBaseUrl
+        }
+        {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
           value: appInsights.properties.ConnectionString
         }
@@ -177,6 +228,34 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'Migrations__Enabled'
           value: string(migrationsEnabled)
+        }
+        {
+          name: 'Smtp__Host'
+          value: smtpHost
+        }
+        {
+          name: 'Smtp__Port'
+          value: string(smtpPort)
+        }
+        {
+          name: 'Smtp__Username'
+          value: smtpUsername
+        }
+        {
+          name: 'Smtp__Password'
+          value: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/${smtpPasswordSecretName}/)'
+        }
+        {
+          name: 'Smtp__FromAddress'
+          value: smtpFromAddress
+        }
+        {
+          name: 'Smtp__FromName'
+          value: smtpFromName
+        }
+        {
+          name: 'Smtp__UseStartTls'
+          value: string(smtpUseStartTls)
         }
         {
           name: 'AllowedHosts'
@@ -260,6 +339,13 @@ resource keyVaultRabbitMq 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   name: '${keyVault.name}/${rabbitMqSecretName}'
   properties: {
     value: rabbitMqConnectionString
+  }
+}
+
+resource keyVaultSmtpPassword 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: '${keyVault.name}/${smtpPasswordSecretName}'
+  properties: {
+    value: smtpPassword
   }
 }
 

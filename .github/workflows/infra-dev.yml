@@ -37,6 +37,7 @@ jobs:
           --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"
           --parameters jwtKey="${{ secrets.JWT_KEY_DEV }}"
           --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
+          --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
 
       - name: Deploy infra (bicep)
         run: >
@@ -47,3 +48,4 @@ jobs:
           --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"
           --parameters jwtKey="${{ secrets.JWT_KEY_DEV }}"
           --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
+          --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
