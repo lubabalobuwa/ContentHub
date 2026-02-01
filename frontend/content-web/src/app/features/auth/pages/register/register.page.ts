@@ -43,7 +43,7 @@ export class RegisterPage {
     this.auth.register(email, displayName, password).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.router.navigateByUrl('/login');
+        this.router.navigate(['/verify-email-sent'], { queryParams: { email } });
       },
       error: () => {
         this.error = 'Registration failed. Try a different email.';

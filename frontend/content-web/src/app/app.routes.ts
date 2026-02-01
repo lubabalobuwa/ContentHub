@@ -5,6 +5,7 @@ import { CreateContentPage } from './features/content/pages/create-content/creat
 import { LoginPage } from './features/auth/pages/login/login.page';
 import { RegisterPage } from './features/auth/pages/register/register.page';
 import { VerifyEmailPage } from './features/auth/pages/verify-email/verify-email.page';
+import { VerifyEmailSentPage } from './features/auth/pages/verify-email-sent/verify-email-sent.page';
 import { ForgotPasswordPage } from './features/auth/pages/forgot-password/forgot-password.page';
 import { ResetPasswordPage } from './features/auth/pages/reset-password/reset-password.page';
 import { authGuard } from './core/guards/auth.guard';
@@ -19,6 +20,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginPage },
     { path: 'register', component: RegisterPage },
     { path: 'verify-email', component: VerifyEmailPage },
+    { path: 'verify-email-sent', component: VerifyEmailSentPage },
     { path: 'forgot-password', component: ForgotPasswordPage },
     { path: 'reset-password', component: ResetPasswordPage },
     { path: 'account', component: AccountSettingsPage, canActivate: [authGuard] },

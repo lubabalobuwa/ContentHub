@@ -1,0 +1,25 @@
+<section class="page">
+  <div class="card">
+    <h1>Verify your email</h1>
+    <p class="muted">
+      We sent a verification link to
+      <strong *ngIf="email; else missingEmail">{{ email }}</strong>.
+    </p>
+    <ng-template #missingEmail>
+      <strong>your email</strong>.
+    </ng-template>
+
+    <p class="muted">Click the link in that email to activate your account.</p>
+
+    <button class="btn ghost" type="button" (click)="resend()" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Sending…' : 'Resend verification email' }}
+    </button>
+
+    <p class="success" *ngIf="message">{{ message }}</p>
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <p class="muted">
+      <a routerLink="/login">Back to login</a>
+    </p>
+  </div>
+</section>
