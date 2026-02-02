@@ -109,3 +109,27 @@
   color: var(--ink-muted);
   margin: 0 0 6px;
 }
+
+@media (max-width: 720px) {
+  .page {
+    padding: 28px 16px 50px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .card h1 {
+    font-size: 24px;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .card h1 {
+    font-size: 22px;
+  }
+}

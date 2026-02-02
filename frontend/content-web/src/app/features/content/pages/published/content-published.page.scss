@@ -151,3 +151,28 @@
   color: #b91c1c;
   margin: 0 0 12px;
 }
+
+@media (max-width: 720px) {
+  .page {
+    padding: 28px 16px 50px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+}

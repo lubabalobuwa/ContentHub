@@ -99,3 +99,23 @@
   color: var(--ink-muted);
   font-size: 14px;
 }
+
+@media (max-width: 720px) {
+  .page {
+    padding: 28px 16px 50px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 22px;
+  }
+}

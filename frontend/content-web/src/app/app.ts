@@ -13,6 +13,9 @@ export class App {
   protected readonly title = signal('content-web');
   theme: 'light' | 'dark' = 'light';
   showCookieBanner = false;
+  isProfileMenuOpen = false;
+  isWorkspaceMenuOpen = false;
+  isMobileMenuOpen = false;
 
   constructor(
     public auth: AuthService,
@@ -26,17 +29,16 @@ export class App {
     this.showCookieBanner = localStorage.getItem('contenthub_cookie_consent') !== 'accepted';
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        this.closeProfileMenu();
-        this.closeWorkspaceMenu();
+        this.closeAllMenus();
       }
     });
   }
-  isProfileMenuOpen = false;
-  isWorkspaceMenuOpen = false;
 
   toggleProfileMenu() {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
-    if (this.isProfileMenuOpen) this.isWorkspaceMenuOpen = false;
+    if (this.isProfileMenuOpen) {
+      this.isWorkspaceMenuOpen = false;
+    }
   }
 
   closeProfileMenu() {
@@ -45,16 +47,35 @@ export class App {
 
   toggleWorkspaceMenu() {
     this.isWorkspaceMenuOpen = !this.isWorkspaceMenuOpen;
-    if (this.isWorkspaceMenuOpen) this.isProfileMenuOpen = false;
+    if (this.isWorkspaceMenuOpen) {
+      this.isProfileMenuOpen = false;
+    }
   }
 
   closeWorkspaceMenu() {
     this.isWorkspaceMenuOpen = false;
   }
 
-  logout() {
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    if (this.isMobileMenuOpen) {
+      this.isProfileMenuOpen = false;
+      this.isWorkspaceMenuOpen = false;
+    }
+  }
+
+  closeMobileMenu() {
+    this.isMobileMenuOpen = false;
+  }
+
+  closeAllMenus() {
     this.closeProfileMenu();
     this.closeWorkspaceMenu();
+    this.closeMobileMenu();
+  }
+
+  logout() {
+    this.closeAllMenus();
     this.auth.logout();
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigateByUrl('/');

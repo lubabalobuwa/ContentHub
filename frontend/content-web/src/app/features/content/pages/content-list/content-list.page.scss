@@ -261,3 +261,39 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 720px) {
+  .page {
+    padding: 28px 16px 50px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-copy h1 {
+    font-size: 28px;
+  }
+
+  .featured-card {
+    padding: 18px;
+  }
+
+  .hero-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-copy h1 {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+}

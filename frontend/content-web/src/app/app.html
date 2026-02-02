@@ -5,11 +5,23 @@
       <span class="brand-title">ContentHub</span>
     </a>
 
-    <nav class="nav">
-      <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <button
+      class="nav-toggle"
+      type="button"
+      (click)="toggleMobileMenu()"
+      [attr.aria-expanded]="isMobileMenuOpen"
+      aria-controls="primary-nav"
+      aria-label="Toggle navigation menu">
+      <span class="nav-toggle__bar"></span>
+      <span class="nav-toggle__bar"></span>
+      <span class="nav-toggle__bar"></span>
+    </button>
+
+    <nav class="nav" id="primary-nav" [class.open]="isMobileMenuOpen">
+      <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Home</a>
 
       <ng-container *ngIf="auth.isAuthenticated(); else guest">
-        <a class="nav-link" routerLink="/create" routerLinkActive="active">Create</a>
+        <a class="nav-link" routerLink="/create" routerLinkActive="active" (click)="closeMobileMenu()">Create</a>
 
         <div class="profile-menu" [class.open]="isWorkspaceMenuOpen">
           <button class="nav-btn profile-trigger" type="button" (click)="toggleWorkspaceMenu()">
@@ -18,9 +30,9 @@
           </button>
 
           <div class="menu" *ngIf="isWorkspaceMenuOpen">
-            <a class="menu-item" routerLink="/drafts" (click)="closeWorkspaceMenu()">Drafts</a>
-            <a class="menu-item" routerLink="/published" (click)="closeWorkspaceMenu()">Published</a>
-            <a class="menu-item" routerLink="/archived" (click)="closeWorkspaceMenu()">Archived</a>
+            <a class="menu-item" routerLink="/drafts" (click)="closeAllMenus()">Drafts</a>
+            <a class="menu-item" routerLink="/published" (click)="closeAllMenus()">Published</a>
+            <a class="menu-item" routerLink="/archived" (click)="closeAllMenus()">Archived</a>
           </div>
         </div>
 
@@ -31,18 +43,20 @@
           </button>
 
           <div class="menu" *ngIf="isProfileMenuOpen">
-            <a class="menu-item" routerLink="/account" (click)="closeProfileMenu()">Account settings</a>
+            <a class="menu-item" routerLink="/account" (click)="closeAllMenus()">Account settings</a>
             <button class="menu-item danger" type="button" (click)="logout()">Logout</button>
           </div>
         </div>
       </ng-container>
       <ng-template #guest>
-        <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
-        <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
+        <a class="nav-link" routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">Login</a>
+        <a class="nav-link" routerLink="/register" routerLinkActive="active" (click)="closeMobileMenu()">Register</a>
       </ng-template>
     </nav>
   </div>
 </header>
+
+<div class="nav-scrim" *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
 
 <main class="main-content">
   <router-outlet></router-outlet>
