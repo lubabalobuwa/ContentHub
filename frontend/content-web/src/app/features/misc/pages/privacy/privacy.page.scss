@@ -1,0 +1,69 @@
+.privacy {
+  padding: 48px 0 64px;
+}
+
+.privacy-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header {
+  display: block;
+  margin-bottom: 22px;
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 30px;
+    letter-spacing: -0.02em;
+  }
+}
+
+.back-row {
+  padding-bottom: 22px;
+}
+
+.back-link {
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--ink);
+  display: inline-block;
+}
+
+.header-copy {
+  padding-top: 2px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ink-muted);
+  margin: 0 0 6px;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--ink-muted);
+}
+
+.privacy-card {
+  padding: 32px;
+  line-height: 1.7;
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+h1 {
+  margin-top: 0;
+}
+
+h2 {
+  margin-top: 22px;
+}
+
+ul {
+  padding-left: 18px;
+}

@@ -14,6 +14,7 @@ import { ContentArchivedPage } from './features/content/pages/archived/content-a
 import { EditContentPage } from './features/content/pages/edit-content/edit-content.page';
 import { ContentPublishedPage } from './features/content/pages/published/content-published.page';
 import { AccountSettingsPage } from './features/auth/pages/account-settings/account-settings.page';
+import { PrivacyPage } from './features/misc/pages/privacy/privacy.page';
 
 export const routes: Routes = [
     { path: '', component: ContentListPage },
@@ -24,6 +25,7 @@ export const routes: Routes = [
     { path: 'forgot-password', component: ForgotPasswordPage },
     { path: 'reset-password', component: ResetPasswordPage },
     { path: 'account', component: AccountSettingsPage, canActivate: [authGuard] },
+    { path: 'privacy', component: PrivacyPage },
     { path: 'create', component: CreateContentPage, canActivate: [authGuard] },
     { path: 'drafts', component: ContentDraftsPage, canActivate: [authGuard] },
     { path: 'published', component: ContentPublishedPage, canActivate: [authGuard] },

@@ -12,6 +12,7 @@ import { AuthService } from './core/services/auth.service';
 export class App {
   protected readonly title = signal('content-web');
   theme: 'light' | 'dark' = 'light';
+  showCookieBanner = false;
 
   constructor(
     public auth: AuthService,
@@ -22,6 +23,7 @@ export class App {
     this.theme = saved === 'dark' ? 'dark' : 'light';
     this.applyTheme();
     this.auth.initialize();
+    this.showCookieBanner = localStorage.getItem('contenthub_cookie_consent') !== 'accepted';
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.closeProfileMenu();
@@ -63,6 +65,11 @@ export class App {
     this.theme = this.theme === 'dark' ? 'light' : 'dark';
     localStorage.setItem('contenthub_theme', this.theme);
     this.applyTheme();
+  }
+
+  acceptCookies() {
+    localStorage.setItem('contenthub_cookie_consent', 'accepted');
+    this.showCookieBanner = false;
   }
 
   private applyTheme() {

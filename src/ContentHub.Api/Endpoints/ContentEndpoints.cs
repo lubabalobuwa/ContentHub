@@ -25,7 +25,7 @@ namespace ContentHub.Api.Endpoints
     {
         public static IEndpointRouteBuilder MapContentEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/content").WithTags("Content");
+            var group = app.MapGroup("/api/content").WithTags("Content").RequireRateLimiting("general");
 
             group.MapPost("", async (
                 [FromBody] CreateContentRequest request,

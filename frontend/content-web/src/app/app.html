@@ -48,6 +48,16 @@
   <router-outlet></router-outlet>
 </main>
 
+<div class="cookie-banner" *ngIf="showCookieBanner">
+  <div class="cookie-banner__content">
+    <p>
+      We use cookies and basic telemetry to keep the service reliable. Read our
+      <a routerLink="/privacy">privacy policy</a>.
+    </p>
+    <button class="btn" type="button" (click)="acceptCookies()">Accept</button>
+  </div>
+</div>
+
 <footer class="footer">
   <div class="footer-inner">
     <div>
@@ -58,6 +68,7 @@
       <a href="#" class="footer-link">About</a>
       <a href="#" class="footer-link">Docs</a>
       <a href="#" class="footer-link">Contact</a>
+      <a routerLink="/privacy" class="footer-link">Privacy</a>
     </div>
   </div>
 </footer>

@@ -45,6 +45,14 @@ namespace ContentHub.Api.Endpoints
             });
         }
 
+        public static IResult TooManyRequests(string? detail = null)
+        {
+            return Results.Problem(
+                statusCode: StatusCodes.Status429TooManyRequests,
+                title: "Too Many Requests",
+                detail: detail);
+        }
+
         public static IResult Unexpected(string? detail = null)
         {
             return Results.Problem(

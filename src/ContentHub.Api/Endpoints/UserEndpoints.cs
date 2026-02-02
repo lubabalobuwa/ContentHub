@@ -11,6 +11,7 @@ using ContentHub.Application.Users.Commands.ResetPassword;
 using ContentHub.Application.Users.Commands.VerifyEmail;
 using ContentHub.Application.Users.Queries.GetUserProfile;
 using Microsoft.AspNetCore.Mvc;
+using ContentHub.Api.Security;
 
 namespace ContentHub.Api.Endpoints
 {
@@ -18,7 +19,7 @@ namespace ContentHub.Api.Endpoints
     {
         public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api").WithTags("Users");
+            var group = app.MapGroup("/api").WithTags("Users").RequireRateLimiting("general");
 
             group.MapPost("/users", async (
                 [FromBody] CreateUserRequest request,
@@ -33,12 +34,28 @@ namespace ContentHub.Api.Endpoints
             });
 
             group.MapPost("/auth/login", async (
+                HttpContext httpContext,
                 [FromBody] LoginRequest request,
-                [FromServices] AuthenticateUserHandler handler) =>
+                [FromServices] AuthenticateUserHandler handler,
+                [FromServices] LoginThrottle throttle) =>
             {
+                var emailKey = request.Email?.Trim().ToLowerInvariant() ?? string.Empty;
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var key = $"login:{ip}:{emailKey}";
+
+                if (throttle.IsLockedOut(key))
+                    return ApiResults.TooManyRequests("Too many login attempts. Try again later.");
+
                 var result = await handler.HandleAsync(
                     new AuthenticateUserCommand(request.Email, request.Password));
 
+                if (!result.IsSuccess)
+                {
+                    throttle.RegisterFailure(key);
+                    return ApiResults.Unauthorized("Invalid credentials.");
+                }
+
+                throttle.RegisterSuccess(key);
                 return result.IsSuccess
                     ? Results.Ok(new AuthResponse(
                         result.Value!.UserId,
@@ -46,7 +63,7 @@ namespace ContentHub.Api.Endpoints
                         result.Value.RefreshToken,
                         result.Value.Role))
                     : ApiResults.Unauthorized("Invalid credentials.");
-            });
+            }).RequireRateLimiting("auth");
 
             group.MapPost("/auth/refresh", async (
                 [FromBody] RefreshTokenRequest request,
@@ -80,7 +97,7 @@ namespace ContentHub.Api.Endpoints
             {
                 await handler.HandleAsync(new ResendVerificationCommand(request.Email));
                 return Results.Ok(new { message = "If the account exists, a verification email has been sent." });
-            });
+            }).RequireRateLimiting("auth");
 
             group.MapPost("/auth/forgot-password", async (
                 [FromBody] ForgotPasswordRequest request,
@@ -88,7 +105,7 @@ namespace ContentHub.Api.Endpoints
             {
                 await handler.HandleAsync(new ForgotPasswordCommand(request.Email));
                 return Results.Ok(new { message = "If the account exists, a reset email has been sent." });
-            });
+            }).RequireRateLimiting("auth");
 
             group.MapPost("/auth/reset-password", async (
                 [FromBody] ResetPasswordWithTokenRequest request,
@@ -100,7 +117,7 @@ namespace ContentHub.Api.Endpoints
                 return result.IsSuccess
                     ? Results.Ok(new { message = "Password reset successfully." })
                     : ApiResults.ValidationProblem(result.Error);
-            });
+            }).RequireRateLimiting("auth");
 
             group.MapPost("/auth/admin/reset-password", async (
                 [FromBody] ResetPasswordRequest request,

@@ -1,5 +1,6 @@
 using ContentHub.Api.Endpoints;
 using ContentHub.Api.Middleware;
+using ContentHub.Api.Security;
 using ContentHub.Api.Services;
 using ContentHub.Application;
 using ContentHub.Application.Common.Interfaces;
@@ -13,7 +14,9 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog.Sinks.ApplicationInsights.TelemetryConverters;
 using Serilog;
 using Serilog.Events;
+using System.Net;
 using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,34 @@ builder.Services.AddHsts(options =>
     options.Preload = false;
     options.IncludeSubDomains = true;
     options.MaxAge = TimeSpan.FromDays(365);
+});
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", context =>
+    {
+        var ip = context.Connection.RemoteIpAddress ?? IPAddress.None;
+        return RateLimitPartition.GetFixedWindowLimiter(
+            ip,
+            _ => new FixedWindowRateLimiterOptions
+            {
+                Window = TimeSpan.FromMinutes(1),
+                PermitLimit = 5,
+                QueueLimit = 0
+            });
+    });
+    options.AddPolicy("general", context =>
+    {
+        var ip = context.Connection.RemoteIpAddress ?? IPAddress.None;
+        return RateLimitPartition.GetFixedWindowLimiter(
+            ip,
+            _ => new FixedWindowRateLimiterOptions
+            {
+                Window = TimeSpan.FromMinutes(1),
+                PermitLimit = 100,
+                QueueLimit = 0
+            });
+    });
 });
 
 builder.Host.UseSerilog((context, services, configuration) =>
@@ -74,6 +105,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<LoginThrottle>();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var jwtKey = jwtSection["Key"] ?? string.Empty;
@@ -138,6 +171,7 @@ app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

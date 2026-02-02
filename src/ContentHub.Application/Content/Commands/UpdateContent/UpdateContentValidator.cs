@@ -20,6 +20,9 @@ namespace ContentHub.Application.Content.Commands.UpdateContent
             if (string.IsNullOrWhiteSpace(command.Body))
                 return Result.Failure("Body is required.");
 
+            if (ContainsDangerousHtml(command.Title) || ContainsDangerousHtml(command.Body))
+                return Result.Failure("Content contains disallowed markup.");
+
             if (string.IsNullOrWhiteSpace(command.RowVersion))
                 return Result.Failure("RowVersion is required.");
 
@@ -27,6 +30,15 @@ namespace ContentHub.Application.Content.Commands.UpdateContent
                 return Result.Failure("RowVersion is invalid.");
 
             return Result.Success();
+        }
+
+        private static bool ContainsDangerousHtml(string value)
+        {
+            var lower = value.ToLowerInvariant();
+            return lower.Contains("<script")
+                || lower.Contains("javascript:")
+                || lower.Contains("onerror=")
+                || lower.Contains("onload=");
         }
 
         private static bool TryParseRowVersion(string rowVersion)

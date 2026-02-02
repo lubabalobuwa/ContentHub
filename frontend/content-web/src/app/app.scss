@@ -221,3 +221,34 @@
 .footer-link:hover {
   color: var(--accent-dark);
 }
+
+.cookie-banner {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background: rgba(9, 17, 34, 0.95);
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+  z-index: 50;
+}
+
+.cookie-banner__content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cookie-banner a {
+  color: #8ab4ff;
+}
+
+@media (max-width: 720px) {
+  .cookie-banner__content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -16,10 +16,22 @@ namespace ContentHub.Application.Content.Commands.CreateContent
             if (string.IsNullOrWhiteSpace(command.Body))
                 return Result.Failure("Body is required.");
 
+            if (ContainsDangerousHtml(command.Title) || ContainsDangerousHtml(command.Body))
+                return Result.Failure("Content contains disallowed markup.");
+
             if (command.AuthorId == Guid.Empty)
                 return Result.Failure("AuthorId is required.");
 
             return Result.Success();
+        }
+
+        private static bool ContainsDangerousHtml(string value)
+        {
+            var lower = value.ToLowerInvariant();
+            return lower.Contains("<script")
+                || lower.Contains("javascript:")
+                || lower.Contains("onerror=")
+                || lower.Contains("onload=");
         }
     }
 }
