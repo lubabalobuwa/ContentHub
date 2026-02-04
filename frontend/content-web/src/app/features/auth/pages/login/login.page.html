@@ -4,6 +4,8 @@
     <p class="muted">Login to manage your content.</p>
 
     <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="banner banner--error" *ngIf="error">{{ error }}</div>
+
       <label class="field">
         <span>Email</span>
         <input type="email" formControlName="email" placeholder="you@domain.com" />
@@ -23,8 +25,6 @@
       <button class="btn" type="submit" [disabled]="isSubmitting">
         {{ isSubmitting ? 'Logging in…' : 'Login' }}
       </button>
-
-      <p class="error" *ngIf="error">{{ error }}</p>
     </form>
 
     <p class="muted">

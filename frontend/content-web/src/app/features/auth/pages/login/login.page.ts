@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { catchError, finalize, throwError, timeout } from 'rxjs';
 
 @Component({
   selector: 'app-login-page',
@@ -15,13 +16,15 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class LoginPage {
   error: string | null = null;
   isSubmitting = false;
+  private readonly requestTimeoutMs = 15000;
 
   form!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.form = this.fb.nonNullable.group({
       email: ['', [Validators.required, Validators.email]],
@@ -39,15 +42,40 @@ export class LoginPage {
     const { email, password } = this.form.getRawValue();
     this.isSubmitting = true;
 
-    this.auth.login(email, password).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.router.navigateByUrl('/');
-      },
-      error: () => {
-        this.error = 'Invalid email or password.';
-        this.isSubmitting = false;
+    this.auth.login(email, password)
+      .pipe(
+        timeout(this.requestTimeoutMs),
+        catchError(err => {
+          this.error = this.getErrorMessage(err, 'Invalid email or password.');
+          this.cdr.markForCheck();
+          return throwError(() => err);
+        }),
+        finalize(() => {
+          this.isSubmitting = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.router.navigateByUrl('/');
+        }
+      });
+  }
+
+  private getErrorMessage(error: any, fallback: string) {
+    const detail = error?.error?.detail as string | undefined;
+    if (error?.status === 403) {
+      if (detail?.toLowerCase().includes('disabled')) {
+        return 'User disabled. Contact support.';
       }
-    });
+      if (detail?.toLowerCase().includes('not verified')) {
+        return 'Email not verified. Check your inbox.';
+      }
+      return 'Access denied.';
+    }
+
+    return detail
+      ?? error?.error?.errors?.error?.[0]
+      ?? fallback;
   }
 }

@@ -56,7 +56,12 @@ namespace ContentHub.Api.Endpoints
                 if (!result.IsSuccess)
                 {
                     throttle.RegisterFailure(key);
-                    return ApiResults.Unauthorized("Invalid credentials.");
+                    return result.Error switch
+                    {
+                        "User disabled." => ApiResults.Forbidden("User disabled. Contact support."),
+                        "Email not verified." => ApiResults.Forbidden("Email not verified. Check your inbox."),
+                        _ => ApiResults.Unauthorized("Invalid credentials.")
+                    };
                 }
 
                 throttle.RegisterSuccess(key);

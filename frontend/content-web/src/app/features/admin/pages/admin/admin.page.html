@@ -7,7 +7,7 @@
     </div>
   </header>
 
-  <p class="error" *ngIf="error">{{ error }}</p>
+  <div class="banner banner--error" *ngIf="error">{{ error }}</div>
   <p class="notice" *ngIf="loading">Loading admin tools…</p>
 
   <ng-container *ngIf="!loading && isAdmin">

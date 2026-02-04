@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { catchError, finalize, throwError, timeout } from 'rxjs';
 
 @Component({
   selector: 'app-register-page',
@@ -15,6 +16,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class RegisterPage {
   error: string | null = null;
   isSubmitting = false;
+  private readonly requestTimeoutMs = 15000;
 
   form!: FormGroup;
 
@@ -40,15 +42,27 @@ export class RegisterPage {
     const { email, displayName, password } = this.form.getRawValue();
     this.isSubmitting = true;
 
-    this.auth.register(email, displayName, password).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.router.navigate(['/verify-email-sent'], { queryParams: { email } });
-      },
-      error: () => {
-        this.error = 'Registration failed. Try a different email.';
-        this.isSubmitting = false;
-      }
-    });
+    this.auth.register(email, displayName, password)
+      .pipe(
+        timeout(this.requestTimeoutMs),
+        catchError(err => {
+          this.error = this.getErrorMessage(err, 'Registration failed. Try a different email.');
+          return throwError(() => err);
+        }),
+        finalize(() => {
+          this.isSubmitting = false;
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/verify-email-sent'], { queryParams: { email } });
+        }
+      });
+  }
+
+  private getErrorMessage(error: any, fallback: string) {
+    return error?.error?.detail
+      ?? error?.error?.errors?.error?.[0]
+      ?? fallback;
   }
 }

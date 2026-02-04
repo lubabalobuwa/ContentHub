@@ -49,7 +49,7 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
                 return Result<AuthenticateUserResult>.Failure("Invalid email or password.");
 
             if (user.IsDisabled)
-                return Result<AuthenticateUserResult>.Failure("Account disabled.");
+                return Result<AuthenticateUserResult>.Failure("User disabled.");
 
             if (_authSettings.RequireEmailVerification && !user.EmailConfirmed)
                 return Result<AuthenticateUserResult>.Failure("Email not verified.");
