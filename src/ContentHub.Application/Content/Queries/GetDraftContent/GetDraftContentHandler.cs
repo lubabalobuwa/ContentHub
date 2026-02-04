@@ -14,9 +14,9 @@ namespace ContentHub.Application.Content.Queries.GetDraftContent
             _repository = repository;
         }
 
-        public async Task<PagedResult<ContentSummaryDto>> HandleAsync(int page, int pageSize)
+        public async Task<PagedResult<ContentSummaryDto>> HandleAsync(int page, int pageSize, string? search)
         {
-            var content = await _repository.GetDraftsAsync(page, pageSize);
+            var content = await _repository.GetDraftsAsync(page, pageSize, search);
 
             var items = content.Items.Select(x => new ContentSummaryDto(
                     x.Id,

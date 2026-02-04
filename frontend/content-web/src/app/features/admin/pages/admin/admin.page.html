@@ -61,6 +61,16 @@
     </div>
 
     <div *ngIf="activeTab === 'moderation'" class="moderation">
+      <div class="toolbar">
+        <input
+          class="input"
+          type="search"
+          placeholder="Search moderation content"
+          [(ngModel)]="moderationSearch"
+          (keyup.enter)="searchModeration()" />
+        <button class="ghost" type="button" (click)="searchModeration()">Search</button>
+      </div>
+
       <section class="panel">
         <div class="panel-header">
           <div>

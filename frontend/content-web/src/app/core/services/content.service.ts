@@ -11,10 +11,14 @@ export class ContentService {
 
     constructor(private http: HttpClient) {}
 
-    getPublished(page = 1, pageSize = 20): Observable<PagedResponse<Content>> {
-        const params = new HttpParams()
+    getPublished(page = 1, pageSize = 20, search = ''): Observable<PagedResponse<Content>> {
+        let params = new HttpParams()
             .set('page', page)
             .set('pageSize', pageSize);
+
+        if (search.trim().length > 0) {
+            params = params.set('search', search.trim());
+        }
 
         return this.http.get<PagedResponse<Content>>(this.baseUrl, { params });
     }
@@ -35,10 +39,14 @@ export class ContentService {
         return this.http.get<PagedResponse<Content>>(`${this.baseUrl}/authors/${authorId}/drafts`, { params });
     }
 
-    getDrafts(page = 1, pageSize = 20): Observable<PagedResponse<Content>> {
-        const params = new HttpParams()
+    getDrafts(page = 1, pageSize = 20, search = ''): Observable<PagedResponse<Content>> {
+        let params = new HttpParams()
             .set('page', page)
             .set('pageSize', pageSize);
+
+        if (search.trim().length > 0) {
+            params = params.set('search', search.trim());
+        }
 
         return this.http.get<PagedResponse<Content>>(`${this.baseUrl}/drafts`, { params });
     }
@@ -59,10 +67,14 @@ export class ContentService {
         return this.http.get<PagedResponse<Content>>(`${this.baseUrl}/authors/${authorId}/archived`, { params });
     }
 
-    getArchived(page = 1, pageSize = 20): Observable<PagedResponse<Content>> {
-        const params = new HttpParams()
+    getArchived(page = 1, pageSize = 20, search = ''): Observable<PagedResponse<Content>> {
+        let params = new HttpParams()
             .set('page', page)
             .set('pageSize', pageSize);
+
+        if (search.trim().length > 0) {
+            params = params.set('search', search.trim());
+        }
 
         return this.http.get<PagedResponse<Content>>(`${this.baseUrl}/archived`, { params });
     }

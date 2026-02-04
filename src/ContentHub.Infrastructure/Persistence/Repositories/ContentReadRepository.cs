@@ -25,12 +25,12 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PagedResult<ContentItem>> GetArchivedAsync(int page, int pageSize)
+        public async Task<PagedResult<ContentItem>> GetArchivedAsync(int page, int pageSize, string? search)
         {
             return await GetPagedAsync(
-                _dbContext.ContentItems
+                ApplySearch(_dbContext.ContentItems
                     .AsNoTracking()
-                    .Where(x => x.Status == ContentStatus.Archived)
+                    .Where(x => x.Status == ContentStatus.Archived), search)
                     .OrderByDescending(x => x.Id),
                 page,
                 pageSize);
@@ -47,12 +47,12 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
                 pageSize);
         }
 
-        public async Task<PagedResult<ContentItem>> GetDraftsAsync(int page, int pageSize)
+        public async Task<PagedResult<ContentItem>> GetDraftsAsync(int page, int pageSize, string? search)
         {
             return await GetPagedAsync(
-                _dbContext.ContentItems
+                ApplySearch(_dbContext.ContentItems
                     .AsNoTracking()
-                    .Where(x => x.Status == ContentStatus.Draft)
+                    .Where(x => x.Status == ContentStatus.Draft), search)
                     .OrderByDescending(x => x.Id),
                 page,
                 pageSize);
@@ -80,12 +80,12 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
                 pageSize);
         }
 
-        public async Task<PagedResult<ContentItem>> GetPublishedAsync(int page, int pageSize)
+        public async Task<PagedResult<ContentItem>> GetPublishedAsync(int page, int pageSize, string? search)
         {
             return await GetPagedAsync(
-                _dbContext.ContentItems
+                ApplySearch(_dbContext.ContentItems
                     .AsNoTracking()
-                    .Where(x => x.Status == ContentStatus.Published)
+                    .Where(x => x.Status == ContentStatus.Published), search)
                     .OrderByDescending(x => x.Id),
                 page,
                 pageSize);
@@ -103,6 +103,17 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
                 .ToListAsync();
 
             return new PagedResult<ContentItem>(items, page, pageSize, totalCount);
+        }
+
+        private static IQueryable<ContentItem> ApplySearch(IQueryable<ContentItem> query, string? search)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+                return query;
+
+            var term = search.Trim().ToLowerInvariant();
+            return query.Where(x =>
+                x.Title.ToLower().Contains(term) ||
+                x.Body.ToLower().Contains(term));
         }
     }
 }

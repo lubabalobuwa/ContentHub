@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Observable, map, tap } from 'rxjs';
 import { ContentService } from '../../../../../app/core/services/content.service';
@@ -10,7 +11,7 @@ import { PagedResponse } from '../../../../core/models/paged-response.model';
 @Component({
   selector: 'app-content-list-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './content-list.page.html',
   styleUrl: './content-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,6 +27,7 @@ export class ContentListPage {
   pageSize = 10;
   totalPages = 1;
   totalCount = 0;
+  searchTerm = '';
 
   constructor(
     private contentService: ContentService,
@@ -47,8 +49,19 @@ export class ContentListPage {
     this.load();
   }
 
+  search() {
+    this.page = 1;
+    this.load();
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+    this.page = 1;
+    this.load();
+  }
+
   private load() {
-    this.view$ = this.contentService.getPublished(this.page, this.pageSize).pipe(
+    this.view$ = this.contentService.getPublished(this.page, this.pageSize, this.searchTerm).pipe(
       tap(response => {
         this.totalPages = response.totalPages || 1;
         this.totalCount = response.totalCount;

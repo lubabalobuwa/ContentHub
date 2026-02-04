@@ -151,6 +151,22 @@
   gap: 16px;
 }
 
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0 18px;
+}
+
+.input {
+  flex: 1 1 240px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  font: inherit;
+  background: #fff;
+}
+
 .card {
   border: 1px solid var(--line);
   border-radius: 16px;

@@ -89,12 +89,13 @@ namespace ContentHub.Api.Endpoints
             group.MapGet("", async (
                 int? page,
                 int? pageSize,
+                string? search,
                 [FromServices] GetPublishedContentHandler handler) =>
             {
                 if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
                     return error!;
 
-                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize);
+                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize, search);
 
                 return Results.Ok(MapPagedResponse(content));
             });
@@ -103,6 +104,7 @@ namespace ContentHub.Api.Endpoints
             group.MapGet("/drafts", async (
                 int? page,
                 int? pageSize,
+                string? search,
                 [FromServices] GetDraftContentHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
             {
@@ -115,7 +117,7 @@ namespace ContentHub.Api.Endpoints
                 if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
                     return error!;
 
-                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize);
+                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize, search);
 
                 return Results.Ok(MapPagedResponse(content));
             }).RequireAuthorization();
@@ -173,6 +175,7 @@ namespace ContentHub.Api.Endpoints
             group.MapGet("/archived", async (
                 int? page,
                 int? pageSize,
+                string? search,
                 [FromServices] GetArchivedContentHandler handler,
                 [FromServices] ICurrentUserService currentUser) =>
             {
@@ -185,7 +188,7 @@ namespace ContentHub.Api.Endpoints
                 if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
                     return error!;
 
-                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize);
+                var content = await handler.HandleAsync(normalizedPage, normalizedPageSize, search);
 
                 return Results.Ok(MapPagedResponse(content));
             }).RequireAuthorization();

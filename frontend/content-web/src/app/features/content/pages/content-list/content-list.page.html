@@ -41,6 +41,16 @@
     <section class="content-grid">
       <div class="main">
         <h3 class="section-title">Latest Articles</h3>
+        <div class="toolbar">
+          <input
+            class="input"
+            type="search"
+            placeholder="Search articles"
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="search()" />
+          <button class="ghost" type="button" (click)="search()">Search</button>
+          <button class="ghost" type="button" *ngIf="searchTerm" (click)="clearSearch()">Clear</button>
+        </div>
 
         <div class="cards">
           <article class="card" *ngFor="let item of view.rest">

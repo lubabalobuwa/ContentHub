@@ -22,6 +22,7 @@ export class AdminPage implements OnInit {
   error = '';
   isAdmin = false;
   activeTab: 'users' | 'moderation' = 'users';
+  moderationSearch = '';
 
   users?: PagedResponse<AdminUser>;
   userPage = 1;
@@ -115,7 +116,7 @@ export class AdminPage implements OnInit {
   }
 
   loadModeration() {
-    this.content.getDrafts(this.draftPage, 20)
+    this.content.getDrafts(this.draftPage, 20, this.moderationSearch)
       .pipe(
         timeout(this.requestTimeoutMs),
         catchError(() => {
@@ -130,7 +131,7 @@ export class AdminPage implements OnInit {
         this.finishLoading();
       });
 
-    this.content.getPublished(this.publishedPage, 20)
+    this.content.getPublished(this.publishedPage, 20, this.moderationSearch)
       .pipe(
         timeout(this.requestTimeoutMs),
         catchError(() => {
@@ -145,7 +146,7 @@ export class AdminPage implements OnInit {
         this.finishLoading();
       });
 
-    this.content.getArchived(this.archivedPage, 20)
+    this.content.getArchived(this.archivedPage, 20, this.moderationSearch)
       .pipe(
         timeout(this.requestTimeoutMs),
         catchError(() => {
@@ -226,6 +227,13 @@ export class AdminPage implements OnInit {
 
   isBusy(item: Content) {
     return !!this.pending[item.id];
+  }
+
+  searchModeration() {
+    this.draftPage = 1;
+    this.publishedPage = 1;
+    this.archivedPage = 1;
+    this.loadModeration();
   }
 
   getInitials(name?: string, email?: string) {
