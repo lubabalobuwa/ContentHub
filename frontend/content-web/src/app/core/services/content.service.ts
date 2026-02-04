@@ -35,6 +35,14 @@ export class ContentService {
         return this.http.get<PagedResponse<Content>>(`${this.baseUrl}/authors/${authorId}/drafts`, { params });
     }
 
+    getDrafts(page = 1, pageSize = 20): Observable<PagedResponse<Content>> {
+        const params = new HttpParams()
+            .set('page', page)
+            .set('pageSize', pageSize);
+
+        return this.http.get<PagedResponse<Content>>(`${this.baseUrl}/drafts`, { params });
+    }
+
     getPublishedByAuthor(authorId: string, page = 1, pageSize = 20): Observable<PagedResponse<Content>> {
         const params = new HttpParams()
             .set('page', page)
@@ -49,6 +57,14 @@ export class ContentService {
             .set('pageSize', pageSize);
 
         return this.http.get<PagedResponse<Content>>(`${this.baseUrl}/authors/${authorId}/archived`, { params });
+    }
+
+    getArchived(page = 1, pageSize = 20): Observable<PagedResponse<Content>> {
+        const params = new HttpParams()
+            .set('page', page)
+            .set('pageSize', pageSize);
+
+        return this.http.get<PagedResponse<Content>>(`${this.baseUrl}/archived`, { params });
     }
 
     publish(id: string, rowVersion: string) {

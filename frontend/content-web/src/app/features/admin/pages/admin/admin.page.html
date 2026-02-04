@@ -1,0 +1,145 @@
+<section class="page">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Admin tools</h1>
+      <p class="subtitle">Manage users and moderate content across the platform.</p>
+    </div>
+  </header>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p class="notice" *ngIf="loading">Loading admin tools…</p>
+
+  <ng-container *ngIf="!loading && isAdmin">
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab === 'users'" (click)="setTab('users')">Users</button>
+      <button class="tab" [class.active]="activeTab === 'moderation'" (click)="setTab('moderation')">Moderation</button>
+    </div>
+
+    <div *ngIf="activeTab === 'users'">
+      <div class="toolbar">
+        <input
+          class="input"
+          type="search"
+          placeholder="Search users by name or email"
+          [(ngModel)]="search"
+          (keyup.enter)="searchUsers()" />
+        <button class="ghost" type="button" (click)="searchUsers()">Search</button>
+      </div>
+
+      <div class="cards" *ngIf="users">
+        <article class="card" *ngFor="let user of users.items">
+          <div class="card-top">
+            <div class="user-info">
+              <div class="avatar">{{ getInitials(user.displayName, user.email) }}</div>
+              <div>
+                <h3>{{ user.displayName }}</h3>
+                <p class="meta">{{ user.email }}</p>
+              </div>
+            </div>
+            <span class="pill" [class.danger]="user.isDisabled">
+              {{ user.isDisabled ? 'Disabled' : user.role }}
+            </span>
+          </div>
+          <div class="meta-row">
+            <span>Email {{ user.emailConfirmed ? 'verified' : 'unverified' }}</span>
+            <span>Last login {{ user.lastLoginAtUtc ? (user.lastLoginAtUtc | date:'mediumDate') : '—' }}</span>
+          </div>
+          <button class="cta" type="button" (click)="toggleUser(user)" [disabled]="pending[user.id]">
+            {{ user.isDisabled ? 'Enable user' : 'Disable user' }}
+          </button>
+        </article>
+      </div>
+
+      <p class="empty" *ngIf="users && users.items.length === 0">No users found.</p>
+
+      <div class="pagination" *ngIf="users && users.totalPages > 1">
+        <button class="btn" (click)="previousUserPage()" [disabled]="userPage <= 1">Previous</button>
+        <span class="page-info">Page {{ userPage }} of {{ users.totalPages }}</span>
+        <button class="btn" (click)="nextUserPage()" [disabled]="userPage >= users.totalPages">Next</button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'moderation'" class="moderation">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Draft queue</h2>
+            <p class="subtitle">Review drafts across all authors.</p>
+          </div>
+        </div>
+        <div class="cards" *ngIf="drafts">
+          <article class="card" *ngFor="let item of drafts.items">
+            <div class="card-top">
+              <h3>{{ item.title }}</h3>
+              <span class="pill">Draft</span>
+            </div>
+            <p class="body">
+              {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+            </p>
+            <div class="actions">
+              <button class="ghost" (click)="archive(item)" [disabled]="isBusy(item)">
+                {{ pending[item.id] === 'archive' ? 'Archiving…' : 'Archive' }}
+              </button>
+              <button class="cta" (click)="publish(item)" [disabled]="isBusy(item)">
+                {{ pending[item.id] === 'publish' ? 'Publishing…' : 'Publish' }}
+              </button>
+            </div>
+          </article>
+        </div>
+        <p class="empty" *ngIf="drafts && drafts.items.length === 0">No drafts awaiting review.</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Published</h2>
+            <p class="subtitle">Archive anything that should be removed.</p>
+          </div>
+        </div>
+        <div class="cards" *ngIf="published">
+          <article class="card" *ngFor="let item of published.items">
+            <div class="card-top">
+              <h3>{{ item.title }}</h3>
+              <span class="pill">Live</span>
+            </div>
+            <p class="body">
+              {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+            </p>
+            <div class="actions">
+              <button class="ghost" (click)="archive(item)" [disabled]="isBusy(item)">
+                {{ pending[item.id] === 'archive' ? 'Archiving…' : 'Archive' }}
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Archived</h2>
+            <p class="subtitle">Restore content back to drafts.</p>
+          </div>
+        </div>
+        <div class="cards" *ngIf="archived">
+          <article class="card" *ngFor="let item of archived.items">
+            <div class="card-top">
+              <h3>{{ item.title }}</h3>
+              <span class="pill">Archived</span>
+            </div>
+            <p class="body">
+              {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+            </p>
+            <div class="actions">
+              <button class="ghost" (click)="restore(item)" [disabled]="isBusy(item)">
+                {{ pending[item.id] === 'restore' ? 'Restoring…' : 'Restore' }}
+              </button>
+            </div>
+          </article>
+        </div>
+        <p class="empty" *ngIf="archived && archived.items.length === 0">No archived content.</p>
+      </section>
+    </div>
+  </ng-container>
+</section>

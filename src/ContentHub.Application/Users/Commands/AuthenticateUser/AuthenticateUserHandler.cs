@@ -48,6 +48,9 @@ namespace ContentHub.Application.Users.Commands.AuthenticateUser
             if (!_passwordHasher.Verify(user.PasswordHash, command.Password))
                 return Result<AuthenticateUserResult>.Failure("Invalid email or password.");
 
+            if (user.IsDisabled)
+                return Result<AuthenticateUserResult>.Failure("Account disabled.");
+
             if (_authSettings.RequireEmailVerification && !user.EmailConfirmed)
                 return Result<AuthenticateUserResult>.Failure("Email not verified.");
 

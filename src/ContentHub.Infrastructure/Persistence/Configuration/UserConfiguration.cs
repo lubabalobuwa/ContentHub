@@ -27,6 +27,9 @@ namespace ContentHub.Infrastructure.Persistence.Configuration
             builder.Property(x => x.PasswordHash)
                 .IsRequired();
 
+            builder.Property(x => x.IsDisabled)
+                .IsRequired();
+
             builder.Property(x => x.EmailConfirmed)
                 .IsRequired();
 

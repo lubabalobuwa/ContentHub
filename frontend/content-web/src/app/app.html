@@ -44,6 +44,7 @@
 
           <div class="menu" *ngIf="isProfileMenuOpen">
             <a class="menu-item" routerLink="/account" (click)="closeAllMenus()">Account settings</a>
+            <a class="menu-item" *ngIf="auth.isAdmin()" routerLink="/admin" (click)="closeAllMenus()">Admin tools</a>
             <button class="menu-item danger" type="button" (click)="logout()">Logout</button>
           </div>
         </div>

@@ -8,10 +8,13 @@ using ContentHub.Application.Users.Commands.RefreshToken;
 using ContentHub.Application.Users.Commands.ResetPasswordWithToken;
 using ContentHub.Application.Users.Commands.ResendVerification;
 using ContentHub.Application.Users.Commands.ResetPassword;
+using ContentHub.Application.Users.Commands.SetUserStatus;
 using ContentHub.Application.Users.Commands.VerifyEmail;
+using ContentHub.Application.Users.Queries.GetUsers;
 using ContentHub.Application.Users.Queries.GetUserProfile;
 using Microsoft.AspNetCore.Mvc;
 using ContentHub.Api.Security;
+using System.Linq;
 
 namespace ContentHub.Api.Endpoints
 {
@@ -20,6 +23,7 @@ namespace ContentHub.Api.Endpoints
         public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("/api").WithTags("Users").RequireRateLimiting("general");
+            var adminGroup = app.MapGroup("/api/admin").WithTags("Admin").RequireRateLimiting("general");
 
             group.MapPost("/users", async (
                 [FromBody] CreateUserRequest request,
@@ -163,7 +167,91 @@ namespace ContentHub.Api.Endpoints
                     profile.LastLoginAtUtc));
             }).RequireAuthorization();
 
+            adminGroup.MapGet("/users", async (
+                int? page,
+                int? pageSize,
+                string? search,
+                [FromServices] GetUsersHandler handler,
+                [FromServices] ICurrentUserService currentUser) =>
+            {
+                if (!currentUser.IsAuthenticated)
+                    return ApiResults.Unauthorized();
+
+                if (currentUser.Role != ContentHub.Domain.Users.UserRole.Admin)
+                    return ApiResults.Forbidden();
+
+                if (!TryNormalizePaging(page, pageSize, out var normalizedPage, out var normalizedPageSize, out var error))
+                    return error!;
+
+                var users = await handler.HandleAsync(new GetUsersQuery(normalizedPage, normalizedPageSize, search));
+
+                var items = users.Items.Select(x => new AdminUserResponse(
+                    x.Id,
+                    x.Email,
+                    x.DisplayName,
+                    x.Role,
+                    x.EmailConfirmed,
+                    x.IsDisabled,
+                    x.CreatedAtUtc,
+                    x.LastLoginAtUtc)).ToList();
+
+                return Results.Ok(new PagedResponse<AdminUserResponse>(
+                    items,
+                    users.Page,
+                    users.PageSize,
+                    users.TotalCount,
+                    users.TotalPages));
+            }).RequireAuthorization();
+
+            adminGroup.MapPut("/users/{id:guid}/status", async (
+                Guid id,
+                [FromBody] UpdateUserStatusRequest request,
+                [FromServices] SetUserStatusHandler handler) =>
+            {
+                var result = await handler.HandleAsync(new SetUserStatusCommand(id, request.IsDisabled));
+
+                return result.IsSuccess
+                    ? Results.Ok(new { message = "User status updated." })
+                    : result.Error switch
+                    {
+                        "Unauthorized." => ApiResults.Unauthorized(),
+                        "Forbidden." => ApiResults.Forbidden(),
+                        "User not found." => ApiResults.NotFound("User not found."),
+                        _ => ApiResults.ValidationProblem(result.Error)
+                    };
+            }).RequireAuthorization();
+
             return app;
+        }
+
+        private static bool TryNormalizePaging(
+            int? page,
+            int? pageSize,
+            out int normalizedPage,
+            out int normalizedPageSize,
+            out IResult? error)
+        {
+            const int defaultPage = 1;
+            const int defaultPageSize = 20;
+            const int maxPageSize = 100;
+
+            normalizedPage = page ?? defaultPage;
+            normalizedPageSize = pageSize ?? defaultPageSize;
+
+            if (normalizedPage < 1)
+            {
+                error = ApiResults.ValidationProblem("Page must be greater than or equal to 1.");
+                return false;
+            }
+
+            if (normalizedPageSize < 1 || normalizedPageSize > maxPageSize)
+            {
+                error = ApiResults.ValidationProblem("PageSize must be between 1 and 100.");
+                return false;
+            }
+
+            error = null;
+            return true;
         }
     }
 }

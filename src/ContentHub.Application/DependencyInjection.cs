@@ -19,7 +19,9 @@ using ContentHub.Application.Users.Commands.RefreshToken;
 using ContentHub.Application.Users.Commands.ResetPassword;
 using ContentHub.Application.Users.Commands.ResetPasswordWithToken;
 using ContentHub.Application.Users.Commands.ResendVerification;
+using ContentHub.Application.Users.Commands.SetUserStatus;
 using ContentHub.Application.Users.Commands.VerifyEmail;
+using ContentHub.Application.Users.Queries.GetUsers;
 using ContentHub.Application.Users.Queries.GetUserProfile;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -57,7 +59,9 @@ namespace ContentHub.Application
             services.AddScoped<ResetPasswordHandler>();
             services.AddScoped<ResetPasswordWithTokenHandler>();
             services.AddScoped<ResendVerificationHandler>();
+            services.AddScoped<SetUserStatusHandler>();
             services.AddScoped<VerifyEmailHandler>();
+            services.AddScoped<GetUsersHandler>();
             services.AddScoped<GetUserProfileHandler>();
 
             services.AddScoped<IValidator<AuthenticateUserCommand>, AuthenticateUserValidator>();

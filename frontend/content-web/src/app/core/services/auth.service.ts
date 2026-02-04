@@ -7,6 +7,7 @@ import { UserProfile } from '../models/user-profile.model';
 
 const TOKEN_KEY = 'contenthub_token';
 const REFRESH_TOKEN_KEY = 'contenthub_refresh_token';
+const ROLE_KEY = 'contenthub_role';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,6 +23,7 @@ export class AuthService {
       .pipe(tap(response => {
         this.setToken(response.token);
         this.setRefreshToken(response.refreshToken);
+        this.setRole(response.role);
         this.authState.next(true);
       }));
   }
@@ -39,6 +41,7 @@ export class AuthService {
         tap(response => {
           this.setToken(response.token);
           this.setRefreshToken(response.refreshToken);
+          this.setRole(response.role);
           this.authState.next(true);
         }),
         shareReplay(1)
@@ -83,6 +86,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(ROLE_KEY);
     this.authState.next(false);
   }
 
@@ -98,6 +102,14 @@ export class AuthService {
     return this.authState.value;
   }
 
+  getRole(): string | null {
+    return localStorage.getItem(ROLE_KEY);
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'Admin';
+  }
+
   authChanges() {
     return this.authState.asObservable();
   }
@@ -110,7 +122,10 @@ export class AuthService {
     }
 
     this.me().subscribe({
-      next: () => this.authState.next(true),
+      next: profile => {
+        this.setRole(profile.role);
+        this.authState.next(true);
+      },
       error: () => this.logout()
     });
   }
@@ -121,5 +136,9 @@ export class AuthService {
 
   private setRefreshToken(token: string) {
     localStorage.setItem(REFRESH_TOKEN_KEY, token);
+  }
+
+  private setRole(role: string) {
+    localStorage.setItem(ROLE_KEY, role);
   }
 }

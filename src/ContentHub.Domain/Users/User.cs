@@ -13,6 +13,7 @@ namespace ContentHub.Domain.Users
         public string DisplayName { get; private set; }
         public UserRole Role { get; private set; }
         public string PasswordHash { get; private set; }
+        public bool IsDisabled { get; private set; }
         public bool EmailConfirmed { get; private set; }
         public string? EmailVerificationTokenHash { get; private set; }
         public DateTime? EmailVerificationExpiresAtUtc { get; private set; }
@@ -33,11 +34,22 @@ namespace ContentHub.Domain.Users
             PasswordHash = passwordHash;
             CreatedAtUtc = createdAtUtc;
             EmailConfirmed = false;
+            IsDisabled = false;
         }
 
         public void SetPasswordHash(string passwordHash)
         {
             PasswordHash = passwordHash;
+        }
+
+        public void Disable()
+        {
+            IsDisabled = true;
+        }
+
+        public void Enable()
+        {
+            IsDisabled = false;
         }
 
         public void MarkLoggedIn(DateTime loggedInAtUtc)
