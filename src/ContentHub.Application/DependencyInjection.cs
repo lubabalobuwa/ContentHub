@@ -24,6 +24,7 @@ using ContentHub.Application.Users.Commands.VerifyEmail;
 using ContentHub.Application.Users.Queries.GetUsers;
 using ContentHub.Application.Users.Queries.GetUserProfile;
 using Microsoft.Extensions.DependencyInjection;
+using ContentHub.Application.Users.ExternalLogin;
 
 namespace ContentHub.Application
 {
@@ -51,6 +52,7 @@ namespace ContentHub.Application
             services.AddScoped<IValidator<DeleteContentCommand>, DeleteContentValidator>();
             services.AddScoped<IValidator<RestoreContentCommand>, RestoreContentValidator>();
             services.AddScoped<IValidator<PublishContentCommand>, PublishContentValidator>();
+            services.AddScoped<IValidator<ExternalLoginCommand>, ExternalLoginValidator>();
 
             services.AddScoped<AuthenticateUserHandler>();
             services.AddScoped<CreateUserHandler>();
@@ -61,6 +63,7 @@ namespace ContentHub.Application
             services.AddScoped<ResendVerificationHandler>();
             services.AddScoped<SetUserStatusHandler>();
             services.AddScoped<VerifyEmailHandler>();
+            services.AddScoped<ExternalLoginHandler>();
             services.AddScoped<GetUsersHandler>();
             services.AddScoped<GetUserProfileHandler>();
 

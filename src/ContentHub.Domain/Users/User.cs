@@ -23,7 +23,8 @@ namespace ContentHub.Domain.Users
         public DateTime CreatedAtUtc { get; private set; }
         public DateTime? LastLoginAtUtc { get; private set; }
         public ICollection<RefreshToken> RefreshTokens { get; private set; } = new List<RefreshToken>();
-        
+        public ICollection<ExternalLogin> ExternalLogins { get; private set; } = new List<ExternalLogin>();
+
         private User(){}
         
         public User(string email, string displayName, UserRole role, string passwordHash, DateTime createdAtUtc)
@@ -82,6 +83,18 @@ namespace ContentHub.Domain.Users
             PasswordResetUsedAtUtc = usedAtUtc;
             PasswordResetTokenHash = null;
             PasswordResetExpiresAtUtc = null;
+        }
+
+        public void AddExternalLogin(string provider, string providerUserId, string? email, DateTime createdAtUtc)
+        {
+            if (ExternalLogins.Any(x =>
+                x.Provider.Equals(provider, StringComparison.OrdinalIgnoreCase) &&
+                x.ProviderUserId.Equals(providerUserId, StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            ExternalLogins.Add(new ExternalLogin(Id, provider, providerUserId, email, createdAtUtc));
         }
     }
 }

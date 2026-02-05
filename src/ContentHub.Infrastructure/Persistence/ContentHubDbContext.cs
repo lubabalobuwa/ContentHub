@@ -18,6 +18,7 @@ namespace ContentHub.Infrastructure.Persistence
         public DbSet<ContentItem> ContentItems => Set<ContentItem>();
         public DbSet<User> Users => Set<User>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

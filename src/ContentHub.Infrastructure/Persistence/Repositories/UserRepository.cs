@@ -36,6 +36,14 @@ namespace ContentHub.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(x => x.EmailVerificationTokenHash == tokenHash);
         }
 
+        public async Task<User?> GetByExternalLoginAsync(string provider, string providerUserId)
+        {
+            return await _dbContext.Users
+                .Include(x => x.ExternalLogins)
+                .FirstOrDefaultAsync(x => x.ExternalLogins.Any(l =>
+                    l.Provider == provider && l.ProviderUserId == providerUserId));
+        }
+
         public async Task<User?> GetByPasswordResetTokenHashAsync(string tokenHash)
         {
             return await _dbContext.Users

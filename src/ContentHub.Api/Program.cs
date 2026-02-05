@@ -17,6 +17,7 @@ using Serilog.Events;
 using System.Net;
 using System.Text;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,17 @@ builder.Services.AddHsts(options =>
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, _) =>
+    {
+        context.HttpContext.Response.ContentType = "application/problem+json";
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            title = "Too many requests",
+            status = StatusCodes.Status429TooManyRequests,
+            detail = "Too many requests. Please wait a minute and try again."
+        });
+    };
     options.AddPolicy("auth", context =>
     {
         var ip = context.Connection.RemoteIpAddress ?? IPAddress.None;
@@ -39,6 +51,18 @@ builder.Services.AddRateLimiter(options =>
             {
                 Window = TimeSpan.FromMinutes(1),
                 PermitLimit = 5,
+                QueueLimit = 0
+            });
+    });
+    options.AddPolicy("external_auth", context =>
+    {
+        var ip = context.Connection.RemoteIpAddress ?? IPAddress.None;
+        return RateLimitPartition.GetFixedWindowLimiter(
+            ip,
+            _ => new FixedWindowRateLimiterOptions
+            {
+                Window = TimeSpan.FromMinutes(1),
+                PermitLimit = 10,
                 QueueLimit = 0
             });
     });
@@ -106,6 +130,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IExternalAuthCodeStore, MemoryExternalAuthCodeStore>();
 builder.Services.AddSingleton<LoginThrottle>();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -113,20 +138,43 @@ var jwtKey = jwtSection["Key"] ?? string.Empty;
 if (string.IsNullOrWhiteSpace(jwtKey))
     throw new InvalidOperationException("Jwt:Key is not configured.");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+var authBuilder = builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSection["Issuer"],
-            ValidAudience = jwtSection["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-        };
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSection["Issuer"],
+        ValidAudience = jwtSection["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+})
+.AddCookie("External");
+
+var googleSection = builder.Configuration.GetSection("Auth:External:Google");
+var googleClientId = googleSection["ClientId"];
+var googleSecret = googleSection["ClientSecret"];
+
+if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(googleSecret))
+{
+    authBuilder.AddGoogle("Google", options =>
+    {
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleSecret;
+        options.SignInScheme = "External";
+        options.CallbackPath = "/api/auth/external/google/callback";
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
     });
+}
 
 builder.Services.AddAuthorization();
 

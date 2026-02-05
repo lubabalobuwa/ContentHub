@@ -8,6 +8,7 @@ import { VerifyEmailPage } from './features/auth/pages/verify-email/verify-email
 import { VerifyEmailSentPage } from './features/auth/pages/verify-email-sent/verify-email-sent.page';
 import { ForgotPasswordPage } from './features/auth/pages/forgot-password/forgot-password.page';
 import { ResetPasswordPage } from './features/auth/pages/reset-password/reset-password.page';
+import { ExternalAuthPage } from './features/auth/pages/external-auth/external-auth.page';
 import { authGuard } from './core/guards/auth.guard';
 import { ContentDraftsPage } from './features/content/pages/drafts/content-drafts.page';
 import { ContentArchivedPage } from './features/content/pages/archived/content-archived.page';
@@ -25,6 +26,7 @@ export const routes: Routes = [
     { path: 'verify-email-sent', component: VerifyEmailSentPage },
     { path: 'forgot-password', component: ForgotPasswordPage },
     { path: 'reset-password', component: ResetPasswordPage },
+    { path: 'external-auth', component: ExternalAuthPage },
     { path: 'account', component: AccountSettingsPage, canActivate: [authGuard] },
     { path: 'admin', component: AdminPage, canActivate: [authGuard] },
     { path: 'privacy', component: PrivacyPage },

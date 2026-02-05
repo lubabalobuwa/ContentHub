@@ -28,6 +28,21 @@ export class AuthService {
       }));
   }
 
+  externalLogin(provider: 'google') {
+    window.location.href = `${this.baseUrl}/auth/external/${provider}`;
+  }
+
+  exchangeExternalLogin(code: string): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.baseUrl}/auth/external/exchange`, { code })
+      .pipe(tap(response => {
+        this.setToken(response.token);
+        this.setRefreshToken(response.refreshToken);
+        this.setRole(response.role);
+        this.authState.next(true);
+      }));
+  }
+
   refresh(): Observable<AuthResponse> {
     if (this.refreshInFlight$) return this.refreshInFlight$;
     const refreshToken = this.getRefreshToken();

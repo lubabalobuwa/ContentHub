@@ -62,6 +62,10 @@ export class LoginPage {
       });
   }
 
+  loginWithGoogle() {
+    this.auth.externalLogin('google');
+  }
+
   private getErrorMessage(error: any, fallback: string) {
     const detail = error?.error?.detail as string | undefined;
     if (error?.status === 403) {

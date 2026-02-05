@@ -60,6 +60,10 @@ export class RegisterPage {
       });
   }
 
+  registerWithGoogle() {
+    this.auth.externalLogin('google');
+  }
+
   private getErrorMessage(error: any, fallback: string) {
     return error?.error?.detail
       ?? error?.error?.errors?.error?.[0]
