@@ -1,4 +1,5 @@
 using ContentHub.Application.Common;
+using ContentHub.Application.Common.Interfaces;
 
 namespace ContentHub.Application.Content.Commands.SetContentImage
 {
