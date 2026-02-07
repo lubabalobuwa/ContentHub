@@ -28,7 +28,7 @@ export class ContentService {
     }
 
     create(payload: { title: string; body: string }) {
-        return this.http.post(this.baseUrl, payload);
+        return this.http.post<{ id: string }>(this.baseUrl, payload);
     }
 
     getDraftsByAuthor(authorId: string, page = 1, pageSize = 20): Observable<PagedResponse<Content>> {
