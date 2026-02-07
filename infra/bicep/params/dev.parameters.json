@@ -49,7 +49,7 @@
     "staticWebAppAppLocation": { "value": "frontend/content-web" },
     "staticWebAppArtifactLocation": { "value": "dist/content-web/browser" },
     "staticWebAppApiLocation": { "value": "" },
-    "storageAccountName": { "value": "stcontenthubdev" },
+    "storageAccountName": { "value": "stcontenthubdev001" },
     "blobContainerName": { "value": "contenthub" },
     "blobCorsAllowedOrigins": {
       "value": [
