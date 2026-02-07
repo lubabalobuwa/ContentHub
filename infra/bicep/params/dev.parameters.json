@@ -48,6 +48,16 @@
     "staticWebAppProvider": { "value": "GitHub" },
     "staticWebAppAppLocation": { "value": "frontend/content-web" },
     "staticWebAppArtifactLocation": { "value": "dist/content-web/browser" },
-    "staticWebAppApiLocation": { "value": "" }
+    "staticWebAppApiLocation": { "value": "" },
+    "storageAccountName": { "value": "stcontenthubdev" },
+    "blobContainerName": { "value": "contenthub" },
+    "blobCorsAllowedOrigins": {
+      "value": [
+        "http://localhost:4200",
+        "https://yellow-moss-0baf47510.6.azurestaticapps.net",
+        "https://www.techcontenthub.live",
+        "https://techcontenthub.live"
+      ]
+    }
   }
 }
