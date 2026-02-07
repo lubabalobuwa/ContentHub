@@ -3,6 +3,7 @@ using ContentHub.Application.Content.Commands.CreateContent;
 using ContentHub.Application.Content.Commands.DeleteContent;
 using ContentHub.Application.Content.Commands.PublishContent;
 using ContentHub.Application.Content.Commands.RestoreContent;
+using ContentHub.Application.Content.Commands.SetContentImage;
 using ContentHub.Application.Content.Commands.UpdateContent;
 using ContentHub.Application.Content.Queries.GetArchivedContent;
 using ContentHub.Application.Content.Queries.GetArchivedContentByAuthor;
@@ -19,6 +20,7 @@ using ContentHub.Application.Users.Commands.RefreshToken;
 using ContentHub.Application.Users.Commands.ResetPassword;
 using ContentHub.Application.Users.Commands.ResetPasswordWithToken;
 using ContentHub.Application.Users.Commands.ResendVerification;
+using ContentHub.Application.Users.Commands.SetUserProfileImage;
 using ContentHub.Application.Users.Commands.SetUserStatus;
 using ContentHub.Application.Users.Commands.VerifyEmail;
 using ContentHub.Application.Users.Queries.GetUsers;
@@ -44,6 +46,7 @@ namespace ContentHub.Application
             services.AddScoped<GetPublishedContentByAuthorHandler>();
             services.AddScoped<PublishContentHandler>();
             services.AddScoped<RestoreContentHandler>();
+            services.AddScoped<SetContentImageHandler>();
             services.AddScoped<UpdateContentHandler>();
             
             services.AddScoped<IValidator<CreateContentCommand>, CreateContentValidator>();
@@ -52,6 +55,7 @@ namespace ContentHub.Application
             services.AddScoped<IValidator<DeleteContentCommand>, DeleteContentValidator>();
             services.AddScoped<IValidator<RestoreContentCommand>, RestoreContentValidator>();
             services.AddScoped<IValidator<PublishContentCommand>, PublishContentValidator>();
+            services.AddScoped<IValidator<SetContentImageCommand>, SetContentImageValidator>();
             services.AddScoped<IValidator<ExternalLoginCommand>, ExternalLoginValidator>();
 
             services.AddScoped<AuthenticateUserHandler>();
@@ -61,6 +65,7 @@ namespace ContentHub.Application
             services.AddScoped<ResetPasswordHandler>();
             services.AddScoped<ResetPasswordWithTokenHandler>();
             services.AddScoped<ResendVerificationHandler>();
+            services.AddScoped<SetUserProfileImageHandler>();
             services.AddScoped<SetUserStatusHandler>();
             services.AddScoped<VerifyEmailHandler>();
             services.AddScoped<ExternalLoginHandler>();

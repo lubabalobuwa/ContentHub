@@ -25,11 +25,18 @@ namespace ContentHub.Infrastructure.Persistence.Configuration
             builder.Property(x => x.Status)
                 .IsRequired();
 
+            builder.Property(x => x.ImageUrl)
+                .HasMaxLength(2048)
+                .IsRequired(false);
+
             builder.Property(x => x.CreatedAtUtc)
                 .IsRequired();
 
             builder.Property(x => x.UpdatedAtUtc)
                 .IsRequired();
+
+            builder.Property(x => x.PublishedAtUtc)
+                .IsRequired(false);
 
             builder.Property(x => x.ArchivedAtUtc)
                 .IsRequired(false);

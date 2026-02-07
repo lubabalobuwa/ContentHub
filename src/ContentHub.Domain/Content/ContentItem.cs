@@ -13,8 +13,10 @@ namespace ContentHub.Domain.Content
         public string Body { get; private set; }
         public Guid AuthorId { get; private set; }
         public ContentStatus Status { get; private set; }
+        public string? ImageUrl { get; private set; }
         public DateTime CreatedAtUtc { get; private set; }
         public DateTime UpdatedAtUtc { get; private set; }
+        public DateTime? PublishedAtUtc { get; private set; }
         public DateTime? ArchivedAtUtc { get; private set; }
         public byte[] RowVersion { get; private set; } = Array.Empty<byte>();
 
@@ -40,12 +42,22 @@ namespace ContentHub.Domain.Content
             UpdatedAtUtc = updatedAtUtc;
         }
 
+        public void SetImageUrl(string? imageUrl, DateTime updatedAtUtc)
+        {
+            if (Status == ContentStatus.Archived)
+                throw new InvalidOperationException("Archived content cannot be updated");
+
+            ImageUrl = imageUrl;
+            UpdatedAtUtc = updatedAtUtc;
+        }
+
         public void Publish(DateTime publishedAtUtc)
         {
             if (Status != ContentStatus.Draft)
                 throw new InvalidOperationException("Only draft content can be published");
 
             Status = ContentStatus.Published;
+            PublishedAtUtc = publishedAtUtc;
             UpdatedAtUtc = publishedAtUtc;
         }
 
@@ -66,6 +78,7 @@ namespace ContentHub.Domain.Content
 
             Status = ContentStatus.Draft;
             ArchivedAtUtc = null;
+            PublishedAtUtc = null;
             UpdatedAtUtc = restoredAtUtc;
         }
     }

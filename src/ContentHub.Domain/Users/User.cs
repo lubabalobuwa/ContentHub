@@ -13,6 +13,7 @@ namespace ContentHub.Domain.Users
         public string DisplayName { get; private set; }
         public UserRole Role { get; private set; }
         public string PasswordHash { get; private set; }
+        public string? ProfileImageUrl { get; private set; }
         public bool IsDisabled { get; private set; }
         public bool EmailConfirmed { get; private set; }
         public string? EmailVerificationTokenHash { get; private set; }
@@ -41,6 +42,11 @@ namespace ContentHub.Domain.Users
         public void SetPasswordHash(string passwordHash)
         {
             PasswordHash = passwordHash;
+        }
+
+        public void SetProfileImageUrl(string? profileImageUrl)
+        {
+            ProfileImageUrl = profileImageUrl;
         }
 
         public void Disable()

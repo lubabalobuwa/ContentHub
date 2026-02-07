@@ -6,6 +6,7 @@ using ContentHub.Infrastructure.Email;
 using ContentHub.Infrastructure.Messaging;
 using ContentHub.Infrastructure.Persistence;
 using ContentHub.Infrastructure.Persistence.Repositories;
+using ContentHub.Infrastructure.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,7 +57,9 @@ namespace ContentHub.Infrastructure
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
             services.Configure<AuthSettings>(configuration.GetSection("Auth"));
             services.Configure<SmtpSettings>(configuration.GetSection("Smtp"));
+            services.Configure<BlobStorageSettings>(configuration.GetSection("BlobStorage"));
             services.AddTransient<IEmailSender, SmtpEmailSender>();
+            services.AddSingleton<IBlobStorageService, BlobStorageService>();
 
             return services;
         }

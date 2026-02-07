@@ -1,10 +1,12 @@
 using ContentHub.Domain.Content;
 
-namespace ContentHub.Application.Content.Queries
+namespace ContentHub.Application.Content.Queries.GetContentById
 {
-    public record ContentSummaryDto(
+    public record ContentDetailDto(
         Guid Id,
         Guid AuthorId,
+        string AuthorDisplayName,
+        string? AuthorProfileImageUrl,
         string Title,
         string Body,
         ContentStatus Status,

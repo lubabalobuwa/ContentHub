@@ -268,6 +268,7 @@ namespace ContentHub.Api.Endpoints
                     profile.Id,
                     profile.Email,
                     profile.DisplayName,
+                    profile.ProfileImageUrl,
                     profile.Role,
                     profile.CreatedAtUtc,
                     profile.LastLoginAtUtc));

@@ -6,6 +6,7 @@ namespace ContentHub.Api.Contracts.Responses
         Guid Id,
         string Email,
         string DisplayName,
+        string? ProfileImageUrl,
         string Role,
         DateTime CreatedAtUtc,
         DateTime? LastLoginAtUtc);

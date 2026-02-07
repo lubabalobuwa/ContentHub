@@ -32,23 +32,23 @@ namespace ContentHub.Application.Content.Commands.CreateContent
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result> HandleAsync(CreateContentCommand command)
+        public async Task<Result<Guid>> HandleAsync(CreateContentCommand command)
         {
             var validation = _validator.Validate(command);
             if (!validation.IsSuccess)
-                return validation;
+                return Result<Guid>.Failure(validation.Error);
 
             if (!_currentUserService.IsAuthenticated || _currentUserService.UserId is null)
-                return Result.Failure("Unauthorized.");
+                return Result<Guid>.Failure("Unauthorized.");
 
             if (_currentUserService.Role != UserRole.Admin &&
                 _currentUserService.UserId.Value != command.AuthorId)
-                return Result.Failure("Forbidden.");
+                return Result<Guid>.Failure("Forbidden.");
 
             var user = await _userRepository.GetByIdAsync(command.AuthorId);
 
             if (user is null)
-                return Result.Failure("Author not found.");
+                return Result<Guid>.Failure("Author not found.");
 
             var content = new ContentItem(
                 command.Title, command.Body, command.AuthorId, DateTime.UtcNow);
@@ -56,7 +56,7 @@ namespace ContentHub.Application.Content.Commands.CreateContent
             await _contentRepository.AddAsync(content);
             await _unitOfWork.CommitAsync();
 
-            return Result.Success();
+            return Result<Guid>.Success(content.Id);
         }
     }
 }

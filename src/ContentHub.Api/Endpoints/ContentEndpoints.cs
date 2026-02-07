@@ -43,7 +43,7 @@ namespace ContentHub.Api.Endpoints
                 var result = await handler.HandleAsync(command);
 
                 return result.IsSuccess
-                    ? Results.Created("/api/content", new { message = "Content created successfully" })
+                    ? Results.Created($"/api/content/{result.Value}", new CreateContentResponse(result.Value))
                     : MapFailure(result.Error);
             }).RequireAuthorization();
 
@@ -76,12 +76,17 @@ namespace ContentHub.Api.Endpoints
                         return ApiResults.Forbidden();
                 }
 
-                return Results.Ok(new ContentSummaryResponse(
+                return Results.Ok(new ContentDetailResponse(
                     content.Id,
                     content.AuthorId,
+                    content.AuthorDisplayName,
+                    content.AuthorProfileImageUrl,
                     content.Title,
                     content.Body,
                     content.Status.ToString(),
+                    content.ImageUrl,
+                    content.CreatedAtUtc,
+                    content.PublishedAtUtc,
                     Convert.ToBase64String(content.RowVersion)
                 ));
             });
@@ -321,6 +326,9 @@ namespace ContentHub.Api.Endpoints
                     x.Title,
                     x.Body,
                     x.Status.ToString(),
+                    x.ImageUrl,
+                    x.CreatedAtUtc,
+                    x.PublishedAtUtc,
                     Convert.ToBase64String(x.RowVersion)))
                 .ToList();
 

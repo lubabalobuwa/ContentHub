@@ -27,6 +27,10 @@ namespace ContentHub.Infrastructure.Persistence.Configuration
             builder.Property(x => x.PasswordHash)
                 .IsRequired();
 
+            builder.Property(x => x.ProfileImageUrl)
+                .HasMaxLength(2048)
+                .IsRequired(false);
+
             builder.Property(x => x.IsDisabled)
                 .IsRequired();
 

@@ -22,6 +22,7 @@ namespace ContentHub.Application.Users.Queries.GetUserProfile
                 user.Id,
                 user.Email,
                 user.DisplayName,
+                user.ProfileImageUrl,
                 user.Role.ToString(),
                 user.CreatedAtUtc,
                 user.LastLoginAtUtc);

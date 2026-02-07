@@ -24,6 +24,9 @@ namespace ContentHub.Application.Content.Queries.GetPublishedContent
                     x.Title,
                     x.Body,
                     x.Status,
+                    x.ImageUrl,
+                    x.CreatedAtUtc,
+                    x.PublishedAtUtc,
                     x.RowVersion))
                 .ToList();
 

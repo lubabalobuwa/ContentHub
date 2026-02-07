@@ -4,6 +4,7 @@ using ContentHub.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ContentHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ContentHubDbContext))]
-    partial class ContentHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260207141453_AddContentPublishedAtUtc")]
+    partial class AddContentPublishedAtUtc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,10 +43,6 @@ namespace ContentHub.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
 
                     b.Property<DateTime?>("PublishedAtUtc")
                         .HasColumnType("datetime2");
@@ -191,10 +190,6 @@ namespace ContentHub.Infrastructure.Migrations
 
                     b.Property<DateTime?>("PasswordResetUsedAtUtc")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ProfileImageUrl")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
