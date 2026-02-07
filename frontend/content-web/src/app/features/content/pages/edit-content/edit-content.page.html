@@ -21,9 +21,18 @@
       <textarea class="textarea" [(ngModel)]="body" rows="5"></textarea>
     </label>
 
+    <label class="label">
+      Cover image (optional)
+      <input class="input" type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" />
+    </label>
+
+    <button class="ghost-link" type="button" (click)="uploadImage()" [disabled]="isUploading">
+      {{ isUploading ? 'Uploading…' : 'Upload image' }}
+    </button>
+
     <p class="error" *ngIf="error">{{ error }}</p>
 
-    <button class="btn" (click)="submit()" [disabled]="isSubmitting">
+    <button class="btn" (click)="submit()" [disabled]="isSubmitting || isUploading">
       {{ isSubmitting ? 'Saving…' : 'Update' }}
     </button>
   </div>

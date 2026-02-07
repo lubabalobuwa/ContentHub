@@ -49,6 +49,11 @@
   gap: 12px;
 }
 
+.upload {
+  display: grid;
+  gap: 6px;
+}
+
 .row {
   display: flex;
   align-items: baseline;
@@ -73,6 +78,20 @@
 .value {
   font-weight: 700;
   color: var(--ink);
+}
+
+.profile-image {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.error {
+  color: #b91c1c;
+  margin: 0;
 }
 
 .muted-text {

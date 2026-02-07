@@ -13,6 +13,23 @@
   <ng-container *ngIf="profile$ | async as profile">
     <div class="card" *ngIf="profile; else missing">
       <div class="row">
+        <span class="label">Profile image</span>
+        <span class="value">
+          <img
+            *ngIf="profile.profileImageUrl"
+            class="profile-image"
+            [src]="profile.profileImageUrl"
+            alt="Profile image" />
+        </span>
+      </div>
+      <label class="label upload">
+        Upload new image
+        <input class="input" type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" />
+      </label>
+      <button class="ghost-link" type="button" (click)="uploadProfileImage()" [disabled]="isUploading">
+        {{ isUploading ? 'Uploading…' : 'Upload image' }}
+      </button>
+      <div class="row">
         <span class="label">Display name</span>
         <span class="value">{{ profile.displayName }}</span>
       </div>
@@ -24,6 +41,7 @@
         <span class="label">Role</span>
         <span class="value">{{ profile.role }}</span>
       </div>
+      <p class="error" *ngIf="error">{{ error }}</p>
     </div>
   </ng-container>
 

@@ -23,10 +23,15 @@
       <textarea class="textarea" [(ngModel)]="body" rows="5" placeholder="Write something..."></textarea>
     </label>
 
+    <label class="label">
+      Cover image (optional)
+      <input class="input" type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" />
+    </label>
+
     <p class="error" *ngIf="error">{{ error }}</p>
 
-    <button class="btn" (click)="submit()" [disabled]="isSubmitting">
-      {{ isSubmitting ? 'Saving…' : 'Create' }}
+    <button class="btn" (click)="submit()" [disabled]="isSubmitting || isUploading">
+      {{ isSubmitting ? 'Saving…' : isUploading ? 'Uploading…' : 'Create' }}
     </button>
   </div>
 </section>

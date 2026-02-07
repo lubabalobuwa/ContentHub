@@ -14,6 +14,27 @@
           <span class="status-pill">{{ content.status }}</span>
         </div>
 
+        <div class="meta-row">
+          <div class="author-avatar">
+            <img
+              *ngIf="content.authorProfileImageUrl; else avatarFallback"
+              class="avatar-img"
+              [src]="content.authorProfileImageUrl"
+              alt="Author avatar" />
+            <ng-template #avatarFallback>
+              <span class="avatar-fallback">{{ content.authorDisplayName?.charAt(0) || '?' }}</span>
+            </ng-template>
+          </div>
+          <div class="meta-text">
+            <div class="author-name">{{ content.authorDisplayName || 'Unknown author' }}</div>
+            <div class="meta-line">
+              {{ content.publishedAtUtc ? 'Published' : 'Created' }}
+              ·
+              {{ (content.publishedAtUtc || content.createdAtUtc) | date:'mediumDate' }}
+            </div>
+          </div>
+        </div>
+
         <ng-container *ngIf="me$ | async as me">
           <div class="actions" *ngIf="auth.isAuthenticated() && me?.id === content.authorId">
             <a class="ghost-link" [routerLink]="['/edit', content.id]" [queryParams]="{ from: 'published' }">Edit</a>

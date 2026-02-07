@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserProfile } from '../../../../core/models/user-profile.model';
+import { UploadService } from '../../../../core/services/upload.service';
 
 @Component({
   selector: 'app-account-settings-page',
@@ -15,9 +16,44 @@ import { UserProfile } from '../../../../core/models/user-profile.model';
 })
 export class AccountSettingsPage {
   profile$;
+  selectedImage: File | null = null;
+  isUploading = false;
+  error: string | null = null;
 
-  constructor(private auth: AuthService) {
-    this.profile$ = this.auth.me().pipe(
+  constructor(
+    private auth: AuthService,
+    private uploadService: UploadService
+  ) {
+    this.profile$ = this.loadProfile();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    this.selectedImage = file ?? null;
+  }
+
+  async uploadProfileImage() {
+    this.error = null;
+    if (!this.selectedImage) {
+      this.error = 'Select an image first.';
+      return;
+    }
+
+    try {
+      this.isUploading = true;
+      await this.uploadService.uploadProfileImage(this.selectedImage);
+      this.selectedImage = null;
+      this.profile$ = this.loadProfile();
+    } catch {
+      this.error = 'Failed to upload profile image.';
+    } finally {
+      this.isUploading = false;
+    }
+  }
+
+  private loadProfile() {
+    return this.auth.me().pipe(
       catchError(() => of(null as UserProfile | null))
     );
   }

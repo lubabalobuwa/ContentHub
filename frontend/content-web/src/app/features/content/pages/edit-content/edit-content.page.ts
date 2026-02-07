@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { of, switchMap } from 'rxjs';
 import { ContentService } from '../../../../core/services/content.service';
-import { Content } from '../../../../core/models/content.model';
+import { UploadService } from '../../../../core/services/upload.service';
 
 @Component({
   selector: 'app-edit-content-page',
@@ -19,12 +19,15 @@ export class EditContentPage {
   body = '';
   rowVersion = '';
   isSubmitting = false;
+  isUploading = false;
+  selectedImage: File | null = null;
   error: string | null = null;
   returnUrl = '/drafts';
 
   constructor(
     private route: ActivatedRoute,
     private contentService: ContentService,
+    private uploadService: UploadService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
@@ -46,6 +49,49 @@ export class EditContentPage {
       this.rowVersion = content.rowVersion ?? '';
       this.cdr.markForCheck();
     });
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    this.selectedImage = file ?? null;
+  }
+
+  async uploadImage() {
+    this.error = null;
+
+    if (!this.selectedImage) {
+      this.error = 'Select an image first.';
+      return;
+    }
+
+    if (!this.rowVersion) {
+      this.error = 'RowVersion is required to update image.';
+      return;
+    }
+
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    try {
+      this.isUploading = true;
+      await this.uploadService.uploadContentImage(id, this.selectedImage, this.rowVersion);
+      this.contentService.getById(id).subscribe({
+        next: content => {
+          this.rowVersion = content.rowVersion ?? this.rowVersion;
+          this.selectedImage = null;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.error = 'Image uploaded, but failed to refresh content.';
+        }
+      });
+    } catch {
+      this.error = 'Failed to upload image.';
+    } finally {
+      this.isUploading = false;
+      this.cdr.markForCheck();
+    }
   }
 
   submit() {
