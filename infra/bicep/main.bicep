@@ -135,6 +135,15 @@ param staticWebAppArtifactLocation string
 @description('Static Web App API location (relative to repo root).')
 param staticWebAppApiLocation string = ''
 
+@description('Storage account name for blob uploads (must be globally unique).')
+param storageAccountName string
+
+@description('Blob container name for uploads.')
+param blobContainerName string = 'contenthub'
+
+@description('Allowed CORS origins for Blob Storage uploads.')
+param blobCorsAllowedOrigins array = []
+
 var corsAppSettings = [for (origin, i) in corsAllowedOrigins: {
   name: 'Cors__AllowedOrigins__${i}'
   value: origin
@@ -146,6 +155,9 @@ var jwtKeySecretName = 'jwt-key'
 var sqlConnectionSecretName = 'sql-connection-string'
 var rabbitMqSecretName = 'rabbitmq-connection-string'
 var smtpPasswordSecretName = 'smtp-password'
+var blobConnectionSecretName = 'blob-connection-string'
+var blobPublicBaseUrl = '${storageAccount.properties.primaryEndpoints.blob}${blobContainerName}'
+var blobConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
@@ -258,6 +270,18 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
           value: string(smtpUseStartTls)
         }
         {
+          name: 'BlobStorage__ConnectionString'
+          value: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/${blobConnectionSecretName}/)'
+        }
+        {
+          name: 'BlobStorage__ContainerName'
+          value: blobContainerName
+        }
+        {
+          name: 'BlobStorage__PublicBaseUrl'
+          value: blobPublicBaseUrl
+        }
+        {
           name: 'AllowedHosts'
           value: allowedHosts
         }
@@ -349,6 +373,13 @@ resource keyVaultSmtpPassword 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   }
 }
 
+resource keyVaultBlobConnection 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: '${keyVault.name}/${blobConnectionSecretName}'
+  properties: {
+    value: blobConnectionString
+  }
+}
+
 resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
   name: sqlServerName
   location: location
@@ -416,6 +447,54 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
       apiLocation: staticWebAppApiLocation
       skipGithubActionWorkflowGeneration: true
     }
+  }
+}
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+  name: storageAccountName
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    allowBlobPublicAccess: true
+    minimumTlsVersion: 'TLS1_2'
+  }
+}
+
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
+  name: 'default'
+  parent: storageAccount
+  properties: {
+    cors: {
+      corsRules: [
+        {
+          allowedOrigins: blobCorsAllowedOrigins
+          allowedMethods: [
+            'GET'
+            'PUT'
+            'POST'
+            'HEAD'
+          ]
+          allowedHeaders: [
+            '*'
+          ]
+          exposedHeaders: [
+            '*'
+          ]
+          maxAgeInSeconds: 3600
+        }
+      ]
+    }
+  }
+}
+
+resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
+  name: blobContainerName
+  parent: blobService
+  properties: {
+    publicAccess: 'Blob'
   }
 }
 

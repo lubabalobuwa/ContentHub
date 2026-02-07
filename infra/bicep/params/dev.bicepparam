@@ -43,3 +43,12 @@ param serviceBusNamespaceName = 'sb-contenthub-dev'
 param serviceBusQueueName = 'content-published'
 
 param staticWebAppName = 'swa-contenthub-dev'
+
+param storageAccountName = 'stcontenthubdev'
+param blobContainerName = 'contenthub'
+param blobCorsAllowedOrigins = [
+  'http://localhost:4200'
+  'https://yellow-moss-0baf47510.6.azurestaticapps.net'
+  'https://www.techcontenthub.live'
+  'https://techcontenthub.live'
+]
