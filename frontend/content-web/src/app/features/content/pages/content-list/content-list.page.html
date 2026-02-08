@@ -33,7 +33,13 @@
           <a class="cta" [routerLink]="['/', view.featured.id]">Read more</a>
         </div>
         <div class="featured-image">
-          <div class="glow"></div>
+          <img
+            *ngIf="view.featured.imageUrl; else featuredFallback"
+            [src]="view.featured.imageUrl"
+            alt="Featured article cover image" />
+          <ng-template #featuredFallback>
+            <div class="glow"></div>
+          </ng-template>
         </div>
       </div>
     </section>

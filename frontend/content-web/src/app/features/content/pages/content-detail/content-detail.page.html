@@ -14,6 +14,10 @@
           <span class="status-pill">{{ content.status }}</span>
         </div>
 
+        <div class="cover-image" *ngIf="content.imageUrl">
+          <img [src]="content.imageUrl" alt="Article cover image" />
+        </div>
+
         <div class="meta-row">
           <div class="author-avatar">
             <img

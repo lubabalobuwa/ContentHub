@@ -123,6 +123,13 @@
   background: linear-gradient(140deg, #e0e7ff, #f8fafc 60%);
   min-height: 180px;
   overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 }
 
 .glow {
