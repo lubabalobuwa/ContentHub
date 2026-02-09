@@ -39,6 +39,7 @@
     "smtpFromAddress": { "value": "noreply@techcontenthub.live" },
     "smtpFromName": { "value": "TechContentHub" },
     "smtpUseStartTls": { "value": true },
+    "turnstileSecretKey": { "value": "" },
     "authEnableResetPassword": { "value": false },
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },

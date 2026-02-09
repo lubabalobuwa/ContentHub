@@ -37,6 +37,7 @@ jobs:
           --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
           --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
           --parameters smtpUsername="${{ secrets.SMTP_USERNAME_DEV }}"
+          --parameters turnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY_DEV }}"
 
       - name: Deploy infra (bicep)
         run: >
@@ -49,3 +50,4 @@ jobs:
           --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
           --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
           --parameters smtpUsername="${{ secrets.SMTP_USERNAME_DEV }}"
+          --parameters turnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY_DEV }}"

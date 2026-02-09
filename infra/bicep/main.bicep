@@ -86,6 +86,10 @@ param smtpUsername string
 @description('SMTP password or API key.')
 param smtpPassword string
 
+@secure()
+@description('Turnstile secret key.')
+param turnstileSecretKey string
+
 @description('SMTP from address.')
 param smtpFromAddress string
 
@@ -155,6 +159,7 @@ var jwtKeySecretName = 'jwt-key'
 var sqlConnectionSecretName = 'sql-connection-string'
 var rabbitMqSecretName = 'rabbitmq-connection-string'
 var smtpPasswordSecretName = 'smtp-password'
+var turnstileSecretName = 'turnstile-secret-key'
 var blobConnectionSecretName = 'blob-connection-string'
 var blobPublicBaseUrl = '${storageAccount.properties.primaryEndpoints.blob}${blobContainerName}'
 var blobConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
@@ -270,6 +275,10 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
           value: string(smtpUseStartTls)
         }
         {
+          name: 'Turnstile__SecretKey'
+          value: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/${turnstileSecretName}/)'
+        }
+        {
           name: 'BlobStorage__ConnectionString'
           value: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/${blobConnectionSecretName}/)'
         }
@@ -370,6 +379,13 @@ resource keyVaultSmtpPassword 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   name: '${keyVault.name}/${smtpPasswordSecretName}'
   properties: {
     value: smtpPassword
+  }
+}
+
+resource keyVaultTurnstileSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: '${keyVault.name}/${turnstileSecretName}'
+  properties: {
+    value: turnstileSecretKey
   }
 }
 
