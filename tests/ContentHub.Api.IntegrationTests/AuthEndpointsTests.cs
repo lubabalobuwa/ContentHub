@@ -72,9 +72,10 @@ namespace ContentHub.Api.IntegrationTests
         {
             var email = $"{Guid.NewGuid()}@test.local";
             const string password = "Passw0rd!";
+            const string turnstileToken = "test-turnstile-token";
 
             var createResponse = await client.PostAsJsonAsync("/api/users",
-                new CreateUserRequest(email, "Test User", password));
+                new CreateUserRequest(email, "Test User", password, turnstileToken));
             createResponse.EnsureSuccessStatusCode();
 
             var loginResponse = await client.PostAsJsonAsync("/api/auth/login",

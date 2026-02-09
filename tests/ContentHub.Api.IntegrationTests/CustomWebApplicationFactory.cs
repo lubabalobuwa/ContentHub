@@ -1,3 +1,4 @@
+using ContentHub.Api.Services;
 using ContentHub.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -12,8 +13,11 @@ using Moq;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ContentHub.Application.Common.Interfaces;
 
 namespace ContentHub.Api.IntegrationTests
@@ -40,7 +44,8 @@ namespace ContentHub.Api.IntegrationTests
                     ["Auth:RequireEmailVerification"] = "false",
                     ["Auth:BaseUrl"] = "http://localhost:4200",
                     ["RabbitMq:ConnectionString"] = "amqp://guest:guest@localhost:5672",
-                    ["ConnectionStrings:DefaultConnection"] = "DataSource=:memory:"
+                    ["ConnectionStrings:DefaultConnection"] = "DataSource=:memory:",
+                    ["Turnstile:SecretKey"] = "test-turnstile-secret"
                 });
             });
 
@@ -66,6 +71,10 @@ namespace ContentHub.Api.IntegrationTests
 
                 services.RemoveAll<IEmailSender>();
                 services.AddSingleton<IEmailSender>(new NoOpEmailSender());
+
+                services.RemoveAll<TurnstileVerifier>();
+                services.AddHttpClient<TurnstileVerifier>()
+                    .ConfigurePrimaryHttpMessageHandler(() => new TurnstileSuccessHandler());
 
                 using var scope = services.BuildServiceProvider().CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<ContentHubDbContext>();
@@ -100,6 +109,18 @@ namespace ContentHub.Api.IntegrationTests
             public Task SendAsync(string to, string subject, string htmlBody)
             {
                 return Task.CompletedTask;
+            }
+        }
+
+        private sealed class TurnstileSuccessHandler : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"success\":true}", Encoding.UTF8, "application/json")
+                };
+                return Task.FromResult(response);
             }
         }
     }
