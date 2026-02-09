@@ -264,6 +264,19 @@
   color: #8ab4ff;
 }
 
+.cookie-banner .btn {
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.cookie-banner .btn:hover {
+  background: var(--accent-dark);
+}
+
 @media (max-width: 720px) {
   .topbar-inner {
     padding: 14px 18px;
