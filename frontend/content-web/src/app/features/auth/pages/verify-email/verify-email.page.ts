@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -16,11 +16,16 @@ export class VerifyEmailPage {
   success = false;
   error: string | null = null;
 
-  constructor(private route: ActivatedRoute, private auth: AuthService) {
+  constructor(
+    private route: ActivatedRoute,
+    private auth: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {
     const token = this.route.snapshot.queryParamMap.get('token');
     if (!token) {
       this.isSubmitting = false;
       this.error = 'Verification token is missing.';
+      this.cdr.markForCheck();
       return;
     }
 
@@ -28,10 +33,12 @@ export class VerifyEmailPage {
       next: () => {
         this.isSubmitting = false;
         this.success = true;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isSubmitting = false;
         this.error = 'Verification link is invalid or expired.';
+        this.cdr.markForCheck();
       }
     });
   }

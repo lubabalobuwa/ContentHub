@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
@@ -22,7 +22,8 @@ export class AccountSettingsPage {
 
   constructor(
     private auth: AuthService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
+    private cdr: ChangeDetectorRef
   ) {
     this.profile$ = this.loadProfile();
   }
@@ -37,6 +38,7 @@ export class AccountSettingsPage {
     this.error = null;
     if (!this.selectedImage) {
       this.error = 'Select an image first.';
+      this.cdr.markForCheck();
       return;
     }
 
@@ -49,6 +51,7 @@ export class AccountSettingsPage {
       this.error = 'Failed to upload profile image.';
     } finally {
       this.isUploading = false;
+      this.cdr.markForCheck();
     }
   }
 

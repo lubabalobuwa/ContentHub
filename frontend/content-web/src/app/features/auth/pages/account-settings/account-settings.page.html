@@ -24,11 +24,13 @@
       </div>
       <label class="label upload">
         Upload new image
-        <input class="input" type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" />
+        <div class="upload-row">
+          <input class="input file-input" type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" />
+          <button class="upload-btn" type="button" (click)="uploadProfileImage()" [disabled]="isUploading">
+            {{ isUploading ? 'Uploading…' : 'Upload image' }}
+          </button>
+        </div>
       </label>
-      <button class="ghost-link" type="button" (click)="uploadProfileImage()" [disabled]="isUploading">
-        {{ isUploading ? 'Uploading…' : 'Upload image' }}
-      </button>
       <div class="row">
         <span class="label">Display name</span>
         <span class="value">{{ profile.displayName }}</span>
