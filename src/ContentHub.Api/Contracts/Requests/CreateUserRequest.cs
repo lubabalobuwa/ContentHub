@@ -3,6 +3,7 @@
     public record CreateUserRequest(
         string Email, 
         string DisplayName,
-        string Password
+        string Password,
+        string TurnstileToken
     );
 }

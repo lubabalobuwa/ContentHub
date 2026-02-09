@@ -34,8 +34,15 @@ namespace ContentHub.Api.Endpoints
 
             group.MapPost("/users", async (
                 [FromBody] CreateUserRequest request,
-                [FromServices] CreateUserHandler handler) =>
+                [FromServices] CreateUserHandler handler,
+                [FromServices] TurnstileVerifier turnstile,
+                HttpContext httpContext) =>
             {
+                var remoteIp = httpContext.Connection.RemoteIpAddress?.ToString();
+                var turnstileResult = await turnstile.VerifyAsync(request.TurnstileToken, remoteIp);
+                if (!turnstileResult.IsSuccess)
+                    return ApiResults.ValidationProblem(turnstileResult.Error);
+
                 var result = await handler.HandleAsync(
                     new CreateUserCommand(request.Email, request.DisplayName, request.Password));
 

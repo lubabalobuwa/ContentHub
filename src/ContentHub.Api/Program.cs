@@ -126,6 +126,9 @@ builder.Services.AddHealthChecks()
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddHttpClient();
+builder.Services.Configure<ContentHub.Api.Services.TurnstileSettings>(builder.Configuration.GetSection("Turnstile"));
+builder.Services.AddTransient<ContentHub.Api.Services.TurnstileVerifier>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
