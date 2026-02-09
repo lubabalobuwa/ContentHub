@@ -23,12 +23,13 @@
 
     <label class="label">
       Cover image (optional)
-      <input class="input" type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" />
+      <div class="upload-row">
+        <input class="input file-input" type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" />
+        <button class="upload-btn" type="button" (click)="uploadImage()" [disabled]="isUploading">
+          {{ isUploading ? 'Uploading…' : 'Upload image' }}
+        </button>
+      </div>
     </label>
-
-    <button class="ghost-link" type="button" (click)="uploadImage()" [disabled]="isUploading">
-      {{ isUploading ? 'Uploading…' : 'Upload image' }}
-    </button>
 
     <p class="error" *ngIf="error">{{ error }}</p>
 
