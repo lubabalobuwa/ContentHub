@@ -16,6 +16,9 @@ import { catchError, finalize, throwError, timeout } from 'rxjs';
 export class LoginPage {
   error: string | null = null;
   isSubmitting = false;
+  isResending = false;
+  showResend = false;
+  resendMessage: string | null = null;
   private readonly requestTimeoutMs = 15000;
 
   form!: FormGroup;
@@ -34,6 +37,8 @@ export class LoginPage {
 
   submit() {
     this.error = null;
+    this.resendMessage = null;
+    this.showResend = false;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -66,6 +71,31 @@ export class LoginPage {
     this.auth.externalLogin('google');
   }
 
+  resendVerification() {
+    const email = this.form.get('email')?.value;
+    if (!email) {
+      this.error = 'Enter your email first.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.isResending = true;
+    this.resendMessage = null;
+    this.auth.resendVerification(email)
+      .pipe(finalize(() => {
+        this.isResending = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => {
+          this.resendMessage = 'Verification email sent. Please check your inbox.';
+        },
+        error: () => {
+          this.error = 'Failed to resend verification email.';
+        }
+      });
+  }
+
   private getErrorMessage(error: any, fallback: string) {
     const detail = error?.error?.detail as string | undefined;
     if (error?.status === 403) {
@@ -73,6 +103,7 @@ export class LoginPage {
         return 'User disabled. Contact support.';
       }
       if (detail?.toLowerCase().includes('not verified')) {
+        this.showResend = true;
         return 'Email not verified. Check your inbox.';
       }
       return 'Access denied.';

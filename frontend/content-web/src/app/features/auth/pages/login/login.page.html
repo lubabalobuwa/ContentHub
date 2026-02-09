@@ -4,7 +4,18 @@
     <p class="muted">Login to manage your content.</p>
 
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <div class="banner banner--error" *ngIf="error">{{ error }}</div>
+      <div class="banner banner--error" *ngIf="error">
+        <span>{{ error }}</span>
+        <button
+          class="link-button"
+          type="button"
+          *ngIf="showResend"
+          (click)="resendVerification()"
+          [disabled]="isResending">
+          {{ isResending ? 'Resending…' : 'Resend verification email' }}
+        </button>
+      </div>
+      <div class="banner banner--success" *ngIf="resendMessage">{{ resendMessage }}</div>
 
       <label class="field">
         <span>Email</span>
