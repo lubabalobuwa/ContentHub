@@ -74,8 +74,8 @@ export class AuthService {
     return this.refreshInFlight$;
   }
 
-  register(email: string, displayName: string, password: string) {
-    return this.http.post(`${this.baseUrl}/users`, { email, displayName, password });
+  register(email: string, displayName: string, password: string, turnstileToken: string) {
+    return this.http.post(`${this.baseUrl}/users`, { email, displayName, password, turnstileToken });
   }
 
   resendVerification(email: string) {

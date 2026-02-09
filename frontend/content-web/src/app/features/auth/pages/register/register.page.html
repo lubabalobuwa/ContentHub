@@ -30,6 +30,13 @@
         Password must be at least 8 characters.
       </p>
 
+      <div class="turnstile" *ngIf="turnstileSiteKey">
+        <div #turnstileContainer></div>
+      </div>
+      <p class="error" *ngIf="form.controls['turnstileToken'].touched && form.controls['turnstileToken'].invalid">
+        Please complete the captcha check.
+      </p>
+
       <button class="btn" type="submit" [disabled]="isSubmitting">
         {{ isSubmitting ? 'Creating…' : 'Create account' }}
       </button>
