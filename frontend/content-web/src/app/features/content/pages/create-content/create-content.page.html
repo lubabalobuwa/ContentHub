@@ -20,7 +20,7 @@
 
     <label class="label">
       Body
-      <textarea class="textarea" [(ngModel)]="body" rows="5" placeholder="Write something..."></textarea>
+      <div class="quill-editor" #editor></div>
     </label>
 
     <label class="label">
@@ -28,10 +28,28 @@
       <input class="input" type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" />
     </label>
 
+    <div class="image-preview" *ngIf="croppedPreviewUrl">
+      <img [src]="croppedPreviewUrl" alt="Cropped cover preview" />
+    </div>
+
     <p class="error" *ngIf="error">{{ error }}</p>
 
     <button class="btn" (click)="submit()" [disabled]="isSubmitting || isUploading">
       {{ isSubmitting ? 'Saving…' : isUploading ? 'Uploading…' : 'Create' }}
     </button>
+  </div>
+
+  <div class="modal" *ngIf="isCropping">
+    <div class="modal__backdrop" (click)="cancelCrop()"></div>
+    <div class="modal__content">
+      <h3>Crop cover image</h3>
+      <div class="cropper-frame">
+        <img #cropperImage alt="Cropper preview" />
+      </div>
+      <div class="modal__actions">
+        <button class="btn ghost" type="button" (click)="cancelCrop()">Cancel</button>
+        <button class="btn" type="button" (click)="applyCrop()">Use crop</button>
+      </div>
+    </div>
   </div>
 </section>

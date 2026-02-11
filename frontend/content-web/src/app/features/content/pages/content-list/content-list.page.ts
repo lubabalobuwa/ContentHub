@@ -7,11 +7,12 @@ import { ContentService } from '../../../../../app/core/services/content.service
 import { AuthService } from '../../../../core/services/auth.service';
 import { Content } from '../../../../core/models/content.model';
 import { PagedResponse } from '../../../../core/models/paged-response.model';
+import { StripHtmlPipe } from '../../../../core/pipes/strip-html.pipe';
 
 @Component({
   selector: 'app-content-list-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, StripHtmlPipe],
   templateUrl: './content-list.page.html',
   styleUrl: './content-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

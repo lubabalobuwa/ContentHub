@@ -18,7 +18,7 @@
           <span class="pill">Published</span>
         </div>
         <p class="body">
-          {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+          {{ (item.body | stripHtml).length > 140 ? (item.body | stripHtml | slice:0:140) + '…' : (item.body | stripHtml) }}
         </p>
         <div class="actions">
           <a class="ghost" [routerLink]="['/edit', item.id]" [queryParams]="{ from: 'published' }">Edit</a>

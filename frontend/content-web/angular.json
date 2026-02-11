@@ -30,7 +30,10 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/quill/dist/quill.snow.css",
+              "node_modules/cropperjs/dist/cropper.css",
+              "node_modules/highlight.js/styles/github-dark.css"
             ]
           },
           "configurations": {

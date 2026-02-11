@@ -48,13 +48,14 @@
   overflow: hidden;
   border: 1px solid var(--line);
   background: rgba(15, 23, 42, 0.08);
-  max-height: 360px;
+  aspect-ratio: 16 / 9;
+  max-height: none;
 
   img {
     width: 100%;
     height: 100%;
     display: block;
-    object-fit: cover;
+    object-fit: contain;
   }
 }
 
@@ -122,8 +123,71 @@
 
 .body {
   margin: 0;
-  white-space: pre-wrap;
+  white-space: normal;
   color: var(--ink);
+
+  p {
+    margin: 0 0 16px;
+  }
+}
+
+:host ::ng-deep .body pre,
+:host ::ng-deep .body code,
+:host ::ng-deep .body .ql-syntax,
+:host ::ng-deep .body .ql-code-block,
+:host ::ng-deep .body .ql-code-block-container {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 13px;
+}
+
+:host ::ng-deep .body pre,
+:host ::ng-deep .body .ql-syntax,
+:host ::ng-deep .body .ql-code-block-container {
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 16px 0 20px;
+  white-space: pre;
+}
+
+:root.theme-dark :host ::ng-deep .body pre,
+:root.theme-dark :host ::ng-deep .body .ql-syntax,
+:root.theme-dark :host ::ng-deep .body .ql-code-block-container {
+  background: #0b1220;
+  border-color: #1f2a44;
+}
+
+:host ::ng-deep .body code {
+  background: rgba(148, 163, 184, 0.14);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+:host ::ng-deep .body .ql-code-block-container {
+  white-space: normal;
+  display: block;
+}
+
+:host ::ng-deep .body .ql-code-block {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  line-height: 1.6;
+  white-space: pre;
+  display: block;
+}
+
+:host ::ng-deep .body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 16px auto;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
 }
 
 .ghost-link {

@@ -53,9 +53,7 @@
 
         <p class="error" *ngIf="error">{{ error }}</p>
 
-        <article class="body">
-          {{ content.body }}
-        </article>
+        <article #contentBody class="body" [innerHTML]="content.body | safeHtml"></article>
       </div>
     </ng-container>
   </ng-container>

@@ -6,11 +6,12 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { ContentService } from '../../../../core/services/content.service';
 import { Content } from '../../../../core/models/content.model';
 import { PagedResponse } from '../../../../core/models/paged-response.model';
+import { StripHtmlPipe } from '../../../../core/pipes/strip-html.pipe';
 
 @Component({
   selector: 'app-content-archived-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, StripHtmlPipe],
   templateUrl: './content-archived.page.html',
   styleUrl: './content-archived.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -28,7 +28,7 @@
           <h2>{{ view.featured.title }}</h2>
           <p class="meta">Status: {{ view.featured.status }}</p>
           <p class="body">
-            {{ view.featured.body.length > 220 ? (view.featured.body | slice:0:220) + '…' : view.featured.body }}
+            {{ (view.featured.body | stripHtml).length > 220 ? (view.featured.body | stripHtml | slice:0:220) + '…' : (view.featured.body | stripHtml) }}
           </p>
           <a class="cta" [routerLink]="['/', view.featured.id]">Read more</a>
         </div>
@@ -65,7 +65,7 @@
             </h3>
             <p class="meta">Status: {{ item.status }}</p>
             <p class="body">
-              {{ item.body.length > 140 ? (item.body | slice:0:140) + '…' : item.body }}
+              {{ (item.body | stripHtml).length > 140 ? (item.body | stripHtml | slice:0:140) + '…' : (item.body | stripHtml) }}
             </p>
             <a class="ghost" [routerLink]="['/', item.id]">Read article</a>
           </article>
