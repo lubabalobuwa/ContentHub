@@ -55,6 +55,95 @@
 
         <article #contentBody class="body" [innerHTML]="content.body | safeHtml"></article>
       </div>
+
+      <div class="card comments-card" *ngIf="comments$ | async as comments">
+        <div class="comments-header">
+          <div>
+            <p class="eyebrow">Responses</p>
+            <h2>Comments</h2>
+          </div>
+          <span class="comments-count">{{ comments.length }} responses</span>
+        </div>
+
+        <ng-container *ngIf="auth.isAuthenticated(); else signInPrompt">
+          <ng-container *ngIf="me$ | async as me">
+            <div class="comment-form">
+              <div class="comment-avatar">
+                <img
+                  *ngIf="me.profileImageUrl; else meAvatarFallback"
+                  class="avatar-img"
+                  [src]="me.profileImageUrl"
+                  alt="Your avatar" />
+                <ng-template #meAvatarFallback>
+                  <span class="avatar-fallback">{{ me.displayName.charAt(0) || '?' }}</span>
+                </ng-template>
+              </div>
+              <div class="comment-field">
+                <textarea
+                  [(ngModel)]="newComment"
+                  rows="4"
+                  placeholder="Share your thoughts…"></textarea>
+                <div class="comment-form-actions">
+                  <button class="btn comment-submit" [disabled]="isSubmittingComment" (click)="submitComment()">
+                    {{ isSubmittingComment ? 'Posting…' : 'Post comment' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <ng-template #signInPrompt>
+          <p class="muted">Sign in to join the conversation.</p>
+        </ng-template>
+
+        <p class="error" *ngIf="commentError">{{ commentError }}</p>
+
+        <div class="comment-list">
+          <p class="muted" *ngIf="comments.length === 0">No comments yet. Be the first to reply.</p>
+          <div class="comment" *ngFor="let comment of getVisibleComments(comments)">
+            <div class="comment-header">
+              <div class="comment-meta">
+                <div class="comment-avatar">
+                  <img
+                    *ngIf="comment.userProfileImageUrl; else commentAvatarFallback"
+                    class="avatar-img"
+                    [src]="comment.userProfileImageUrl"
+                    alt="Comment author avatar" />
+                  <ng-template #commentAvatarFallback>
+                    <span class="avatar-fallback">{{ comment.userDisplayName.charAt(0) || '?' }}</span>
+                  </ng-template>
+                </div>
+                <div>
+                  <div class="comment-author">{{ comment.userDisplayName }}</div>
+                  <div class="comment-date">{{ comment.createdAtUtc | date:'mediumDate' }}</div>
+                </div>
+              </div>
+            </div>
+            <p class="comment-text">
+              <ng-container *ngIf="isCommentExpanded(comment.id); else commentPreview">
+                {{ comment.text }}
+              </ng-container>
+              <ng-template #commentPreview>
+                {{ getCommentPreview(comment.text) }}
+              </ng-template>
+              <button
+                *ngIf="isCommentTruncated(comment.text)"
+                type="button"
+                class="comment-more"
+                (click)="toggleComment(comment.id)">
+                {{ isCommentExpanded(comment.id) ? 'less' : '...more' }}
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <div class="comment-pagination" *ngIf="hasHiddenComments(comments)">
+          <button type="button" class="comment-pagination-btn" (click)="toggleAllComments()">
+            {{ showAllComments ? 'Show fewer responses' : 'See all responses' }}
+          </button>
+        </div>
+      </div>
     </ng-container>
   </ng-container>
 
