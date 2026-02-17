@@ -2,3 +2,84 @@
   color: #22c55e;
   margin-top: 10px;
 }
+.page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px 60px;
+}
+
+.card {
+  width: min(560px, 100%);
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  padding: 28px 26px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: 30px;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.muted {
+  margin: 0 0 16px;
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+
+.btn {
+  margin-top: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 26px var(--glow);
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.success {
+  color: #22c55e;
+  margin-top: 10px;
+}
+
+.error {
+  color: #ef4444;
+  margin-top: 10px;
+}
+
+.muted a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.muted a:hover {
+  text-decoration: underline;
+}
+
+.muted:last-child {
+  margin-top: 14px;
+}
+
+:host-context(.theme-dark) .card {
+  background: var(--surface);
+}
+
+:host-context(.theme-dark) .btn {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+}

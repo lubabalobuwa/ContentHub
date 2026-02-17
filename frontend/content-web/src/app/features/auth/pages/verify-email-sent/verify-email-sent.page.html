@@ -11,7 +11,7 @@
 
     <p class="muted">Click the link in that email to activate your account.</p>
 
-    <button class="btn ghost" type="button" (click)="resend()" [disabled]="isSubmitting">
+    <button class="btn" type="button" (click)="resend()" [disabled]="isSubmitting">
       {{ isSubmitting ? 'Sending…' : 'Resend verification email' }}
     </button>
 
