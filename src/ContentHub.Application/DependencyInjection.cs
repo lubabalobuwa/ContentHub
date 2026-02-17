@@ -13,6 +13,8 @@ using ContentHub.Application.Content.Queries.GetDraftContentByAuthor;
 using ContentHub.Application.Content.Queries.GetPublishedContentByAuthor;
 using ContentHub.Application.Content.Queries.GetPublishedContent;
 using ContentHub.Application.Common.Interfaces;
+using ContentHub.Application.Comments.Commands.CreateComment;
+using ContentHub.Application.Comments.Queries.GetCommentsByContentId;
 using ContentHub.Application.Users.Commands.AuthenticateUser;
 using ContentHub.Application.Users.Commands.CreateUser;
 using ContentHub.Application.Users.Commands.ForgotPassword;
@@ -48,6 +50,8 @@ namespace ContentHub.Application
             services.AddScoped<RestoreContentHandler>();
             services.AddScoped<SetContentImageHandler>();
             services.AddScoped<UpdateContentHandler>();
+            services.AddScoped<CreateCommentHandler>();
+            services.AddScoped<GetCommentsByContentIdHandler>();
             
             services.AddScoped<IValidator<CreateContentCommand>, CreateContentValidator>();
             services.AddScoped<IValidator<UpdateContentCommand>, UpdateContentValidator>();
@@ -57,6 +61,7 @@ namespace ContentHub.Application
             services.AddScoped<IValidator<PublishContentCommand>, PublishContentValidator>();
             services.AddScoped<IValidator<SetContentImageCommand>, SetContentImageValidator>();
             services.AddScoped<IValidator<ExternalLoginCommand>, ExternalLoginValidator>();
+            services.AddScoped<IValidator<CreateCommentCommand>, CreateCommentValidator>();
 
             services.AddScoped<AuthenticateUserHandler>();
             services.AddScoped<CreateUserHandler>();

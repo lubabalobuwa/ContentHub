@@ -40,6 +40,8 @@ namespace ContentHub.Infrastructure
 
             services.AddScoped<IContentRepository, ContentRepository>();
             services.AddScoped<IContentReadRepository, ContentReadRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<ICommentReadRepository, CommentReadRepository>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();

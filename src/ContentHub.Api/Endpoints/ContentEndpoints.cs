@@ -1,5 +1,7 @@
 using ContentHub.Api.Contracts.Requests;
 using ContentHub.Api.Contracts.Responses;
+using ContentHub.Application.Comments.Commands.CreateComment;
+using ContentHub.Application.Comments.Queries.GetCommentsByContentId;
 using ContentHub.Application.Common.Interfaces;
 using ContentHub.Application.Content.Commands.ArchiveContent;
 using ContentHub.Application.Content.Commands.CreateContent;
@@ -90,6 +92,61 @@ namespace ContentHub.Api.Endpoints
                     Convert.ToBase64String(content.RowVersion)
                 ));
             });
+
+            group.MapGet("/{id:guid}/comments", async (
+                Guid id,
+                [FromServices] GetCommentsByContentIdHandler handler,
+                [FromServices] IContentReadRepository contentReadRepository,
+                [FromServices] ICurrentUserService currentUser) =>
+            {
+                var content = await contentReadRepository.GetByIdAsync(id);
+                if (content is null)
+                    return ApiResults.NotFound("Content not found.");
+
+                if (content.Status != ContentStatus.Published)
+                {
+                    if (!currentUser.IsAuthenticated || currentUser.UserId is null)
+                        return ApiResults.NotFound("Content not found.");
+
+                    if (currentUser.Role != UserRole.Admin && currentUser.UserId.Value != content.AuthorId)
+                        return ApiResults.Forbidden();
+                }
+
+                var comments = await handler.HandleAsync(new GetCommentsByContentIdQuery(id));
+                var response = comments.Select(x =>
+                    new CommentResponse(
+                        x.Id,
+                        x.ContentItemId,
+                        x.UserId,
+                        x.UserDisplayName,
+                        x.UserProfileImageUrl,
+                        x.Text,
+                        x.CreatedAtUtc))
+                    .ToList();
+
+                return Results.Ok(response);
+            });
+
+            group.MapPost("/{id:guid}/comments", async (
+                Guid id,
+                [FromBody] CreateCommentRequest request,
+                [FromServices] CreateCommentHandler handler) =>
+            {
+                var result = await handler.HandleAsync(new CreateCommentCommand(id, request.Text));
+
+                return result.IsSuccess
+                    ? Results.Created(
+                        $"/api/content/{id}/comments/{result.Value.Id}",
+                        new CommentResponse(
+                            result.Value.Id,
+                            result.Value.ContentItemId,
+                            result.Value.UserId,
+                            result.Value.UserDisplayName,
+                            result.Value.UserProfileImageUrl,
+                            result.Value.Text,
+                            result.Value.CreatedAtUtc))
+                    : MapFailure(result.Error);
+            }).RequireAuthorization();
 
             group.MapGet("", async (
                 int? page,
@@ -282,6 +339,8 @@ namespace ContentHub.Api.Endpoints
                 "Forbidden." => ApiResults.Forbidden(),
                 "Content not found." => ApiResults.NotFound("Content not found."),
                 "Author not found." => ApiResults.NotFound("Author not found."),
+                "User not found." => ApiResults.NotFound("User not found."),
+                "Content is not published." => ApiResults.ValidationProblem("Content is not published."),
                 _ => ApiResults.ValidationProblem(error)
             };
         }
