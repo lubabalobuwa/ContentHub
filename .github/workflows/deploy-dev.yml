@@ -24,9 +24,9 @@ jobs:
 
       - uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -38,7 +38,7 @@ jobs:
       - name: Deploy API to App Service
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ secrets.API_APP_NAME_DEV }}
+          app-name: ${{ vars.API_APP_NAME_DEV }}
           package: ${{ env.WEBAPP_PACKAGE }}
 
       - name: Deploy Static Web App

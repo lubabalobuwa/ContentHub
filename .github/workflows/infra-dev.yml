@@ -22,32 +22,33 @@ jobs:
 
       - uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Validate infra (bicep)
         run: >
           az deployment group validate
-          --resource-group "${{ secrets.AZURE_RG_DEV }}"
+          --resource-group "${{ vars.AZURE_RG_DEV }}"
           --template-file "${{ env.BICEP_FILE }}"
           --parameters @"${{ env.BICEP_PARAMS }}"
           --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"
           --parameters jwtKey="${{ secrets.JWT_KEY_DEV }}"
           --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
           --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
-          --parameters smtpUsername="${{ secrets.SMTP_USERNAME_DEV }}"
+          --parameters smtpUsername="${{ vars.SMTP_USERNAME_DEV }}"
           --parameters turnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY_DEV }}"
 
       - name: Deploy infra (bicep)
         run: >
           az deployment group create
-          --resource-group "${{ secrets.AZURE_RG_DEV }}"
+          --resource-group "${{ vars.AZURE_RG_DEV }}"
           --template-file "${{ env.BICEP_FILE }}"
+          --mode Incremental
           --parameters @"${{ env.BICEP_PARAMS }}"
           --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"
           --parameters jwtKey="${{ secrets.JWT_KEY_DEV }}"
           --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
           --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
-          --parameters smtpUsername="${{ secrets.SMTP_USERNAME_DEV }}"
+          --parameters smtpUsername="${{ vars.SMTP_USERNAME_DEV }}"
           --parameters turnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY_DEV }}"

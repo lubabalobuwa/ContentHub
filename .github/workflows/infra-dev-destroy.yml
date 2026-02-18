@@ -1,0 +1,116 @@
+name: infra-dev-destroy
+
+on:
+  schedule:
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  BICEP_FILE: infra/bicep/main.bicep
+  BICEP_PARAMS: infra/bicep/params/dev.parameters.json
+
+jobs:
+  destroy_infra_dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Ensure backup container exists
+        run: >
+          az storage container create
+          --account-name "${{ vars.BACKUP_STORAGE_ACCOUNT }}"
+          --account-key "${{ secrets.BACKUP_STORAGE_KEY }}"
+          --name "${{ vars.BACKUP_CONTAINER }}"
+
+      - name: Export SQL DB to BACPAC
+        shell: bash
+        run: |
+          set -euo pipefail
+          timestamp="$(date -u +"%Y%m%d-%H%M%S")"
+          bacpac="contenthub-dev-${timestamp}.bacpac"
+          storage_uri="https://${{ vars.BACKUP_STORAGE_ACCOUNT }}.blob.core.windows.net/${{ vars.BACKUP_CONTAINER }}/${bacpac}"
+
+          request_id="$(az sql db export \
+            --admin-user "${{ vars.SQL_ADMIN_LOGIN_DEV }}" \
+            --admin-password "${{ secrets.SQL_ADMIN_PASSWORD_DEV }}" \
+            --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
+            --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
+            --resource-group "${{ vars.AZURE_RG_DEV }}" \
+            --storage-key-type "StorageAccessKey" \
+            --storage-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
+            --storage-uri "$storage_uri" \
+            --query "requestId" -o tsv)"
+
+          if [[ -z "$request_id" || "$request_id" == "null" ]]; then
+            echo "Failed to start export or missing requestId."
+            exit 1
+          fi
+
+          echo "Export requestId: $request_id"
+
+          for i in {1..60}; do
+            status="$(az sql db import-export status \
+              --name "$request_id" \
+              --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
+              --resource-group "${{ vars.AZURE_RG_DEV }}" \
+              --query "status" -o tsv)"
+
+            echo "Export status: $status"
+
+            if [[ "$status" == "Succeeded" ]]; then
+              break
+            fi
+            if [[ "$status" == "Failed" || "$status" == "Canceled" ]]; then
+              echo "Export failed."
+              exit 1
+            fi
+
+            sleep 30
+          done
+
+          status_final="$(az sql db import-export status \
+            --name "$request_id" \
+            --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
+            --resource-group "${{ vars.AZURE_RG_DEV }}" \
+            --query "status" -o tsv)"
+
+          if [[ "$status_final" != "Succeeded" ]]; then
+            echo "Export did not succeed within the expected time."
+            exit 1
+          fi
+
+          exists="$(az storage blob exists \
+            --account-name "${{ vars.BACKUP_STORAGE_ACCOUNT }}" \
+            --account-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
+            --container-name "${{ vars.BACKUP_CONTAINER }}" \
+            --name "$bacpac" \
+            --query "exists" -o tsv)"
+
+          if [[ "$exists" != "true" ]]; then
+            echo "BACPAC not found in storage after export."
+            exit 1
+          fi
+
+      - name: Delete infra resources (bicep)
+        run: >
+          az deployment group delete
+          --resource-group "${{ vars.AZURE_RG_DEV }}"
+          --template-file "${{ env.BICEP_FILE }}"
+          --parameters @"${{ env.BICEP_PARAMS }}"
+          --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"
+          --parameters jwtKey="${{ secrets.JWT_KEY_DEV }}"
+          --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
+          --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
+          --parameters smtpUsername="${{ vars.SMTP_USERNAME_DEV }}"
+          --parameters turnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY_DEV }}"
