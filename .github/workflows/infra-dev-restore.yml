@@ -2,6 +2,15 @@ name: infra-dev-restore
 
 on:
   workflow_dispatch:
+    inputs:
+      db_edition:
+        description: "SQL DB edition (e.g., Basic, Standard, Premium)"
+        required: false
+        default: "Basic"
+      db_service_objective:
+        description: "SQL DB service objective (e.g., Basic, S0, P1)"
+        required: false
+        default: "Basic"
 
 permissions:
   contents: read
@@ -58,6 +67,8 @@ jobs:
             --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
             --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
             --resource-group "${{ vars.AZURE_RG_DEV }}" \
+            --edition "${{ inputs.db_edition }}" \
+            --service-objective "${{ inputs.db_service_objective }}" \
             --storage-key-type "StorageAccessKey" \
             --storage-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
             --storage-uri "$storage_uri" \
