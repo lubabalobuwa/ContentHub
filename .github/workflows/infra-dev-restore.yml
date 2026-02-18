@@ -61,17 +61,21 @@ jobs:
           bacpac="${{ steps.latest_backup.outputs.backup_name }}"
           storage_uri="https://${{ vars.BACKUP_STORAGE_ACCOUNT }}.blob.core.windows.net/${{ vars.BACKUP_CONTAINER }}/${bacpac}"
 
-          import_json="$(az sql db import \
-            --admin-user "${{ vars.SQL_ADMIN_LOGIN_DEV }}" \
-            --admin-password "${{ secrets.SQL_ADMIN_PASSWORD_DEV }}" \
-            --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
-            --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
-            --resource-group "${{ vars.AZURE_RG_DEV }}" \
-            --edition "${{ inputs.db_edition }}" \
-            --service-objective "${{ inputs.db_service_objective }}" \
-            --storage-key-type "StorageAccessKey" \
-            --storage-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
-            --storage-uri "$storage_uri" \
+          import_url="https://management.azure.com/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RG_DEV }}/providers/Microsoft.Sql/servers/${{ vars.AZURE_SQL_SERVER_NAME_DEV }}/databases/${{ vars.AZURE_SQL_DB_NAME_DEV }}/import?api-version=2021-11-01"
+
+          import_json="$(az rest \
+            --method post \
+            --url "$import_url" \
+            --body '{
+              "storageKeyType": "StorageAccessKey",
+              "storageKey": "'"${{ secrets.BACKUP_STORAGE_KEY }}"'",
+              "storageUri": "'"$storage_uri"'",
+              "administratorLogin": "'"${{ vars.SQL_ADMIN_LOGIN_DEV }}"'",
+              "administratorLoginPassword": "'"${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"'",
+              "databaseName": "'"${{ vars.AZURE_SQL_DB_NAME_DEV }}"'",
+              "edition": "'"${{ inputs.db_edition }}"'",
+              "serviceObjective": "'"${{ inputs.db_service_objective }}"'"
+            }' \
             -o json)"
 
           request_id="$(echo "$import_json" | jq -r '.requestId')"
