@@ -66,56 +66,49 @@ jobs:
 
           echo "Export requestId: $request_id"
 
-          # Give the export a moment to register before polling.
-          sleep 15
-
+          # Wait for blob to appear and stop growing.
+          last_size=""
+          stable_count=0
           for i in {1..60}; do
-            resp="$(az rest --method get --url "$operation_link" -o json 2>/dev/null || true)"
-            if [[ -z "$resp" ]]; then
-              echo "Export status not available yet. Retrying..."
+            exists="$(az storage blob exists \
+              --account-name "${{ vars.BACKUP_STORAGE_ACCOUNT }}" \
+              --account-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
+              --container-name "${{ vars.BACKUP_CONTAINER }}" \
+              --name "$bacpac" \
+              --query "exists" -o tsv)"
+
+            if [[ "$exists" != "true" ]]; then
+              echo "BACPAC not found yet. Retrying..."
               sleep 30
               continue
             fi
 
-            status="$(echo "$resp" | jq -r '.status // empty')"
-            if [[ -z "$status" || "$status" == "null" ]]; then
-              echo "Export status missing. Retrying..."
-              sleep 30
-              continue
+            size="$(az storage blob show \
+              --account-name "${{ vars.BACKUP_STORAGE_ACCOUNT }}" \
+              --account-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
+              --container-name "${{ vars.BACKUP_CONTAINER }}" \
+              --name "$bacpac" \
+              --query "properties.contentLength" -o tsv)"
+
+            if [[ -n "$last_size" && "$size" == "$last_size" ]]; then
+              stable_count=$((stable_count + 1))
+            else
+              stable_count=0
             fi
 
-            echo "Export status: $status"
+            echo "BACPAC size: $size bytes (stable checks: $stable_count)"
 
-            if [[ "$status" == "Succeeded" ]]; then
+            if [[ "$stable_count" -ge 2 ]]; then
+              echo "BACPAC size stabilized."
               break
             fi
-            if [[ "$status" == "Failed" || "$status" == "Canceled" ]]; then
-              echo "Export failed."
-              exit 1
-            fi
 
+            last_size="$size"
             sleep 30
           done
 
-          status_final="$(az rest \
-            --method get \
-            --url "$operation_link" \
-            --query "status" -o tsv)"
-
-          if [[ "$status_final" != "Succeeded" ]]; then
-            echo "Export did not succeed within the expected time."
-            exit 1
-          fi
-
-          exists="$(az storage blob exists \
-            --account-name "${{ vars.BACKUP_STORAGE_ACCOUNT }}" \
-            --account-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
-            --container-name "${{ vars.BACKUP_CONTAINER }}" \
-            --name "$bacpac" \
-            --query "exists" -o tsv)"
-
-          if [[ "$exists" != "true" ]]; then
-            echo "BACPAC not found in storage after export."
+          if [[ "$stable_count" -lt 2 ]]; then
+            echo "BACPAC did not stabilize within the expected time."
             exit 1
           fi
 
