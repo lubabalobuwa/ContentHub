@@ -61,7 +61,7 @@ jobs:
           bacpac="${{ steps.latest_backup.outputs.backup_name }}"
           storage_uri="https://${{ vars.BACKUP_STORAGE_ACCOUNT }}.blob.core.windows.net/${{ vars.BACKUP_CONTAINER }}/${bacpac}"
 
-          import_url="https://management.azure.com/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RG_DEV }}/providers/Microsoft.Sql/servers/${{ vars.AZURE_SQL_SERVER_NAME_DEV }}/databases/${{ vars.AZURE_SQL_DB_NAME_DEV }}/import?api-version=2021-11-01"
+          import_url="https://management.azure.com/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RG_DEV }}/providers/Microsoft.Sql/servers/${{ vars.AZURE_SQL_SERVER_NAME_DEV }}/import?api-version=2021-11-01"
 
           import_json="$(az rest \
             --method post \
