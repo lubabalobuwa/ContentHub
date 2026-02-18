@@ -1,0 +1,117 @@
+name: infra-dev-restore
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  restore_sql_dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Select latest BACPAC
+        id: latest_backup
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(az storage blob list \
+            --account-name "${{ vars.BACKUP_STORAGE_ACCOUNT }}" \
+            --account-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
+            --container-name "${{ vars.BACKUP_CONTAINER }}" \
+            --query "sort_by([?ends_with(name, '.bacpac')], &name)[-1].name" -o tsv)"
+
+          if [[ -z "$latest" || "$latest" == "null" ]]; then
+            echo "No BACPAC backups found."
+            exit 1
+          fi
+
+          echo "Latest backup: $latest"
+          echo "backup_name=$latest" >> "$GITHUB_OUTPUT"
+
+      - name: Delete existing DB
+        run: >
+          az sql db delete
+          --resource-group "${{ vars.AZURE_RG_DEV }}"
+          --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}"
+          --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}"
+          --yes
+
+      - name: Import BACPAC into SQL DB
+        shell: bash
+        run: |
+          set -euo pipefail
+          bacpac="${{ steps.latest_backup.outputs.backup_name }}"
+          storage_uri="https://${{ vars.BACKUP_STORAGE_ACCOUNT }}.blob.core.windows.net/${{ vars.BACKUP_CONTAINER }}/${bacpac}"
+
+          import_json="$(az sql db import \
+            --admin-user "${{ vars.SQL_ADMIN_LOGIN_DEV }}" \
+            --admin-password "${{ secrets.SQL_ADMIN_PASSWORD_DEV }}" \
+            --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
+            --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
+            --resource-group "${{ vars.AZURE_RG_DEV }}" \
+            --storage-key-type "StorageAccessKey" \
+            --storage-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
+            --storage-uri "$storage_uri" \
+            -o json)"
+
+          request_id="$(echo "$import_json" | jq -r '.requestId')"
+          operation_link="$(echo "$import_json" | jq -r '.operationStatusLink')"
+
+          if [[ -z "$request_id" || "$request_id" == "null" ]]; then
+            echo "Failed to start import or missing requestId."
+            exit 1
+          fi
+
+          if [[ -z "$operation_link" || "$operation_link" == "null" ]]; then
+            operation_link="https://management.azure.com/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RG_DEV }}/providers/Microsoft.Sql/servers/${{ vars.AZURE_SQL_SERVER_NAME_DEV }}/databases/${{ vars.AZURE_SQL_DB_NAME_DEV }}/importExportStatus/${request_id}?api-version=2021-11-01"
+          fi
+
+          echo "Import requestId: $request_id"
+
+          sleep 15
+          for i in {1..60}; do
+            resp="$(az rest --method get --url "$operation_link" -o json 2>/dev/null || true)"
+            if [[ -z "$resp" ]]; then
+              echo "Import status not available yet. Retrying..."
+              sleep 30
+              continue
+            fi
+
+            status="$(echo "$resp" | jq -r '.status // empty')"
+            if [[ -z "$status" || "$status" == "null" ]]; then
+              echo "Import status missing. Retrying..."
+              sleep 30
+              continue
+            fi
+
+            echo "Import status: $status"
+
+            if [[ "$status" == "Succeeded" ]]; then
+              break
+            fi
+            if [[ "$status" == "Failed" || "$status" == "Canceled" ]]; then
+              echo "Import failed."
+              exit 1
+            fi
+
+            sleep 30
+          done
+
+          status_final="$(az rest \
+            --method get \
+            --url "$operation_link" \
+            --query "status" -o tsv)"
+
+          if [[ "$status_final" != "Succeeded" ]]; then
+            echo "Import did not succeed within the expected time."
+            exit 1
+          fi
