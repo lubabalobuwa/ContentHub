@@ -2,7 +2,7 @@ name: infra-dev-destroy
 
 on:
   schedule:
-    - cron: "0 20 * * *"
+    - cron: "0 18 * * *"
   workflow_dispatch:
 
 permissions:
@@ -52,18 +52,32 @@ jobs:
             --storage-uri "$storage_uri" \
             --query "requestId" -o tsv)"
 
+          operation_link="$(az sql db export \
+            --admin-user "${{ vars.SQL_ADMIN_LOGIN_DEV }}" \
+            --admin-password "${{ secrets.SQL_ADMIN_PASSWORD_DEV }}" \
+            --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
+            --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
+            --resource-group "${{ vars.AZURE_RG_DEV }}" \
+            --storage-key-type "StorageAccessKey" \
+            --storage-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
+            --storage-uri "$storage_uri" \
+            --query "operationStatusLink" -o tsv)"
+
           if [[ -z "$request_id" || "$request_id" == "null" ]]; then
             echo "Failed to start export or missing requestId."
+            exit 1
+          fi
+          if [[ -z "$operation_link" || "$operation_link" == "null" ]]; then
+            echo "Failed to start export or missing operationStatusLink."
             exit 1
           fi
 
           echo "Export requestId: $request_id"
 
           for i in {1..60}; do
-            status="$(az sql db import-export status \
-              --name "$request_id" \
-              --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
-              --resource-group "${{ vars.AZURE_RG_DEV }}" \
+            status="$(az rest \
+              --method get \
+              --url "$operation_link" \
               --query "status" -o tsv)"
 
             echo "Export status: $status"
@@ -79,10 +93,9 @@ jobs:
             sleep 30
           done
 
-          status_final="$(az sql db import-export status \
-            --name "$request_id" \
-            --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
-            --resource-group "${{ vars.AZURE_RG_DEV }}" \
+          status_final="$(az rest \
+            --method get \
+            --url "$operation_link" \
             --query "status" -o tsv)"
 
           if [[ "$status_final" != "Succeeded" ]]; then
