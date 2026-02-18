@@ -1,0 +1,72 @@
+<section class="page contact">
+  <div class="contact-container">
+    <header class="header">
+      <p class="eyebrow">Support</p>
+      <h1>Contact</h1>
+      <p class="subtitle">Start with the FAQs, then reach us if you need help.</p>
+    </header>
+
+    <div class="card contact-card faq-card">
+      <h2>FAQs</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>How do I verify my email?</summary>
+          <p>Check your inbox for the verification link. If it is missing, resend it from the Verify Email page.</p>
+        </details>
+        <details class="faq-item">
+          <summary>I forgot my password. What should I do?</summary>
+          <p>Use the “Forgot password” link on the login page to request a reset.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Why can’t I publish my content?</summary>
+          <p>Only drafts can be published. Check that your content is in Draft status.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How do comments work?</summary>
+          <p>Comments are available on published posts. If you cannot see them, refresh and try again.</p>
+        </details>
+      </div>
+    </div>
+
+    <div class="card contact-card">
+      <h2>Email Support</h2>
+      <p class="muted">
+        If you could not find help above, send us a message. We reply to
+        <strong>support@techcontenthub.live</strong>.
+      </p>
+
+      <form class="contact-form" (ngSubmit)="submit()">
+        <div class="banner banner--error" *ngIf="error">{{ error }}</div>
+        <div class="banner banner--success" *ngIf="success">{{ success }}</div>
+
+        <label class="field">
+          <span>Your name</span>
+          <input type="text" [(ngModel)]="name" name="name" placeholder="Jane Doe" />
+        </label>
+
+        <label class="field">
+          <span>Email address</span>
+          <input type="email" [(ngModel)]="email" name="email" placeholder="you@example.com" />
+        </label>
+
+        <label class="field">
+          <span>Topic</span>
+          <input type="text" [(ngModel)]="topic" name="topic" placeholder="Account support" />
+        </label>
+
+        <label class="field">
+          <span>Message</span>
+          <textarea [(ngModel)]="message" name="message" rows="6" placeholder="Tell us what you need help with."></textarea>
+        </label>
+
+        <div class="turnstile" *ngIf="turnstileSiteKey">
+          <div #turnstileContainer></div>
+        </div>
+
+        <button class="btn" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Preparing…' : 'Send email' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

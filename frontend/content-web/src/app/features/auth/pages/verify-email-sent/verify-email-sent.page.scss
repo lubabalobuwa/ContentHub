@@ -2,6 +2,24 @@
   color: #22c55e;
   margin-top: 10px;
 }
+
+.warning {
+  color: #f59e0b;
+  margin-top: 10px;
+}
+
+.banner {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid transparent;
+}
+
+.banner--warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.4);
+}
 .page {
   min-height: calc(100vh - 120px);
   display: flex;

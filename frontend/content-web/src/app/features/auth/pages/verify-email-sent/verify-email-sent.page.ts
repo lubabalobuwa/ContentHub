@@ -16,9 +16,11 @@ export class VerifyEmailSentPage {
   isSubmitting = false;
   message: string | null = null;
   error: string | null = null;
+  warning: string | null = null;
 
   constructor(private route: ActivatedRoute, private auth: AuthService) {
     this.email = this.route.snapshot.queryParamMap.get('email') ?? '';
+    this.warning = this.route.snapshot.queryParamMap.get('warning');
   }
 
   resend() {

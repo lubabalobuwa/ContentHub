@@ -233,6 +233,7 @@ app.MapHealthChecks("/health");
 app.MapContentEndpoints();
 app.MapUserEndpoints();
 app.MapUploadEndpoints();
+app.MapSupportEndpoints();
 
 app.Run();
 

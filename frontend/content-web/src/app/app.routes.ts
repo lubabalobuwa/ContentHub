@@ -17,6 +17,7 @@ import { ContentPublishedPage } from './features/content/pages/published/content
 import { AccountSettingsPage } from './features/auth/pages/account-settings/account-settings.page';
 import { PrivacyPage } from './features/misc/pages/privacy/privacy.page';
 import { AboutPage } from './features/misc/pages/about/about.page';
+import { ContactPage } from './features/misc/pages/contact/contact.page';
 import { AdminPage } from './features/admin/pages/admin/admin.page';
 
 export const routes: Routes = [
@@ -32,6 +33,7 @@ export const routes: Routes = [
     { path: 'admin', component: AdminPage, canActivate: [authGuard] },
     { path: 'privacy', component: PrivacyPage },
     { path: 'about', component: AboutPage },
+    { path: 'contact', component: ContactPage },
     { path: 'create', component: CreateContentPage, canActivate: [authGuard] },
     { path: 'drafts', component: ContentDraftsPage, canActivate: [authGuard] },
     { path: 'published', component: ContentPublishedPage, canActivate: [authGuard] },

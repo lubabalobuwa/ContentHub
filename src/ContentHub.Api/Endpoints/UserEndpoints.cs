@@ -47,7 +47,14 @@ namespace ContentHub.Api.Endpoints
                     new CreateUserCommand(request.Email, request.DisplayName, request.Password));
 
                 return result.IsSuccess
-                    ? Results.Created($"/api/users/{result.Value}", new { id = result.Value })
+                    ? Results.Created($"/api/users/{result.Value!.UserId}", new
+                    {
+                        id = result.Value.UserId,
+                        emailSent = result.Value.EmailSent,
+                        warning = result.Value.EmailSendFailed
+                            ? "Account created, but verification email could not be sent. Please try resending."
+                            : null
+                    })
                     : ApiResults.ValidationProblem(result.Error);
             });
 

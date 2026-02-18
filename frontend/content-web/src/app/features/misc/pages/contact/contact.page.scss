@@ -1,0 +1,148 @@
+.contact {
+  padding: 48px 0 64px;
+}
+
+.contact-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header {
+  display: block;
+  margin-bottom: 22px;
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 30px;
+    letter-spacing: -0.02em;
+  }
+}
+
+.eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ink-muted);
+  margin: 0 0 6px;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--ink-muted);
+}
+
+.contact-card {
+  padding: 28px;
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  margin-bottom: 18px;
+}
+
+.faq-card h2,
+.contact-card h2 {
+  margin-top: 0;
+  font-size: 22px;
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.faq-list {
+  display: grid;
+  gap: 12px;
+}
+
+.faq-item {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: var(--surface-alt);
+}
+
+.faq-item summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.faq-item p {
+  margin: 10px 0 0;
+  color: var(--ink-muted);
+}
+
+.muted {
+  color: var(--ink-muted);
+  margin: 0 0 16px;
+}
+
+.contact-form {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.field input,
+.field textarea {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  background: #fff;
+  color: var(--ink);
+}
+
+.btn {
+  justify-self: flex-start;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.banner {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid transparent;
+}
+
+.banner--error {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.banner--success {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.turnstile {
+  margin-top: 4px;
+}
+
+:host-context(.theme-dark) .contact-card {
+  background: var(--surface);
+}
+
+:host-context(.theme-dark) .field input,
+:host-context(.theme-dark) .field textarea {
+  background: var(--surface-alt);
+}
+
+:host-context(.theme-dark) .btn {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+}

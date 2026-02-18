@@ -1,41 +1,39 @@
-import { Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
-import { catchError, finalize, throwError, timeout } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 import { environment } from '../../../../../environments/environments';
+import { HttpClient } from '@angular/common/http';
+import { catchError, finalize, throwError, timeout } from 'rxjs';
 
 @Component({
-  selector: 'app-register-page',
+  selector: 'app-contact-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './register.page.html',
-  styleUrl: './register.page.scss',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './contact.page.html',
+  styleUrl: './contact.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RegisterPage implements AfterViewInit, OnDestroy {
+export class ContactPage implements AfterViewInit, OnDestroy {
+  name = '';
+  email = '';
+  topic = '';
+  message = '';
   error: string | null = null;
+  success: string | null = null;
+  private successTimeoutId: number | null = null;
   isSubmitting = false;
-  private readonly requestTimeoutMs = 15000;
   readonly turnstileSiteKey = environment.turnstileSiteKey;
   private turnstileWidgetId: string | null = null;
+  turnstileToken = '';
 
-  form!: FormGroup;
   @ViewChild('turnstileContainer', { static: false }) turnstileContainer?: ElementRef<HTMLDivElement>;
 
+  private readonly requestTimeoutMs = 15000;
+
   constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router
-  ) {
-    this.form = this.fb.nonNullable.group({
-      email: ['', [Validators.required, Validators.email]],
-      displayName: ['', [Validators.required, Validators.minLength(2)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      turnstileToken: ['', [Validators.required]]
-    });
-  }
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
+  ) {}
 
   ngAfterViewInit() {
     if (!this.turnstileSiteKey) {
@@ -46,6 +44,7 @@ export class RegisterPage implements AfterViewInit, OnDestroy {
       .then(() => this.renderTurnstile())
       .catch(() => {
         this.error = 'Captcha failed to load. Please refresh.';
+        this.cdr.markForCheck();
       });
   }
 
@@ -58,48 +57,64 @@ export class RegisterPage implements AfterViewInit, OnDestroy {
 
   submit() {
     this.error = null;
+    this.success = null;
+    if (this.successTimeoutId) {
+      window.clearTimeout(this.successTimeoutId);
+      this.successTimeoutId = null;
+    }
     this.syncTurnstileToken();
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+
+    if (!this.turnstileToken) {
+      this.error = 'Please complete the captcha check.';
+      this.cdr.markForCheck();
       return;
     }
 
-    const { email, displayName, password, turnstileToken } = this.form.getRawValue();
+    if (!this.message.trim()) {
+      this.error = 'Please add a message before sending.';
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.isSubmitting = true;
-
-    this.auth.register(email, displayName, password, turnstileToken)
-      .pipe(
-        timeout(this.requestTimeoutMs),
-        catchError(err => {
-          this.error = this.getErrorMessage(err, 'Registration failed. Try a different email.');
-          return throwError(() => err);
-        }),
-        finalize(() => {
-          this.isSubmitting = false;
-          this.resetTurnstile();
-        })
-      )
-      .subscribe({
-        next: (response: any) => {
-          const warning = response?.warning as string | undefined;
-          if (warning) {
-            this.router.navigate(['/verify-email-sent'], { queryParams: { email, warning } });
-            return;
-          }
-
-          this.router.navigate(['/verify-email-sent'], { queryParams: { email } });
+    const subject = this.topic?.trim() || 'Support request';
+    this.http.post<{ message: string; warning?: string }>(`${environment.apiBaseUrl}/support/contact`, {
+      name: this.name.trim(),
+      email: this.email.trim(),
+      topic: subject,
+      message: this.message.trim(),
+      turnstileToken: this.turnstileToken
+    }).pipe(
+      timeout(this.requestTimeoutMs),
+      catchError(err => {
+        this.error = err?.error?.detail ?? 'Failed to send support request.';
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this.isSubmitting = false;
+        this.resetTurnstile();
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
+      next: (response) => {
+        this.name = '';
+        this.email = '';
+        this.topic = '';
+        this.message = '';
+        this.success = response?.message ?? 'Support request sent.';
+        if (response?.warning) {
+          this.error = response.warning;
         }
-      });
-  }
-
-  registerWithGoogle() {
-    this.auth.externalLogin('google');
-  }
-
-  private getErrorMessage(error: any, fallback: string) {
-    return error?.error?.detail
-      ?? error?.error?.errors?.error?.[0]
-      ?? fallback;
+        if (this.success) {
+          this.successTimeoutId = window.setTimeout(() => {
+            this.success = null;
+            this.cdr.markForCheck();
+            this.successTimeoutId = null;
+          }, 4000);
+        }
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   private renderTurnstile() {
@@ -111,7 +126,8 @@ export class RegisterPage implements AfterViewInit, OnDestroy {
     this.turnstileWidgetId = turnstile.render(container, {
       sitekey: this.turnstileSiteKey,
       callback: (token: string) => {
-        this.form.patchValue({ turnstileToken: token });
+        this.turnstileToken = token;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -122,7 +138,7 @@ export class RegisterPage implements AfterViewInit, OnDestroy {
     if (!turnstile?.getResponse) return;
     const token = turnstile.getResponse(this.turnstileWidgetId);
     if (token) {
-      this.form.patchValue({ turnstileToken: token });
+      this.turnstileToken = token;
     }
   }
 
@@ -131,7 +147,7 @@ export class RegisterPage implements AfterViewInit, OnDestroy {
     const turnstile = (window as any).turnstile;
     if (!turnstile?.reset) return;
     turnstile.reset(this.turnstileWidgetId);
-    this.form.patchValue({ turnstileToken: '' });
+    this.turnstileToken = '';
   }
 
   private loadTurnstileScript(): Promise<void> {

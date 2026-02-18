@@ -15,6 +15,7 @@
       {{ isSubmitting ? 'Sending…' : 'Resend verification email' }}
     </button>
 
+    <div class="banner banner--warning" *ngIf="warning">{{ warning }}</div>
     <p class="success" *ngIf="message">{{ message }}</p>
     <p class="error" *ngIf="error">{{ error }}</p>
 
