@@ -63,7 +63,7 @@ jobs:
 
           import_url="https://management.azure.com/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RG_DEV }}/providers/Microsoft.Sql/servers/${{ vars.AZURE_SQL_SERVER_NAME_DEV }}/import?api-version=2021-11-01"
 
-          import_json="$(az rest \
+          az rest \
             --method post \
             --url "$import_url" \
             --body '{
@@ -76,57 +76,34 @@ jobs:
               "edition": "'"${{ inputs.db_edition }}"'",
               "serviceObjective": "'"${{ inputs.db_service_objective }}"'"
             }' \
-            -o json)"
+            -o none
 
-          request_id="$(echo "$import_json" | jq -r '.requestId')"
-          operation_link="$(echo "$import_json" | jq -r '.operationStatusLink')"
+          # Wait for DB to appear and become Online.
+          for i in {1..120}; do
+            db_json="$(az sql db show \
+              --resource-group "${{ vars.AZURE_RG_DEV }}" \
+              --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
+              --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
+              -o json 2>/dev/null || true)"
 
-          if [[ -z "$request_id" || "$request_id" == "null" ]]; then
-            echo "Failed to start import or missing requestId."
-            exit 1
-          fi
-
-          if [[ -z "$operation_link" || "$operation_link" == "null" ]]; then
-            operation_link="https://management.azure.com/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RG_DEV }}/providers/Microsoft.Sql/servers/${{ vars.AZURE_SQL_SERVER_NAME_DEV }}/databases/${{ vars.AZURE_SQL_DB_NAME_DEV }}/importExportStatus/${request_id}?api-version=2021-11-01"
-          fi
-
-          echo "Import requestId: $request_id"
-
-          sleep 15
-          for i in {1..60}; do
-            resp="$(az rest --method get --url "$operation_link" -o json 2>/dev/null || true)"
-            if [[ -z "$resp" ]]; then
-              echo "Import status not available yet. Retrying..."
+            if [[ -z "$db_json" ]]; then
+              echo "Database not available yet. Retrying..."
               sleep 30
               continue
             fi
 
-            status="$(echo "$resp" | jq -r '.status // empty')"
-            if [[ -z "$status" || "$status" == "null" ]]; then
-              echo "Import status missing. Retrying..."
-              sleep 30
-              continue
-            fi
+            status="$(echo "$db_json" | jq -r '.status // empty')"
+            echo "Database status: $status"
 
-            echo "Import status: $status"
-
-            if [[ "$status" == "Succeeded" ]]; then
+            if [[ "$status" == "Online" ]]; then
+              echo "Database import completed."
               break
-            fi
-            if [[ "$status" == "Failed" || "$status" == "Canceled" ]]; then
-              echo "Import failed."
-              exit 1
             fi
 
             sleep 30
           done
 
-          status_final="$(az rest \
-            --method get \
-            --url "$operation_link" \
-            --query "status" -o tsv)"
-
-          if [[ "$status_final" != "Succeeded" ]]; then
-            echo "Import did not succeed within the expected time."
+          if [[ "$status" != "Online" ]]; then
+            echo "Database did not reach Online state within the expected time."
             exit 1
           fi
