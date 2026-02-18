@@ -154,6 +154,10 @@ param storageResourceGroupName string = resourceGroup().name
 @description('Use an existing storage account instead of creating one.')
 param useExistingStorage bool = false
 
+@secure()
+@description('Storage account key (required when using an existing storage account).')
+param storageAccountKey string = ''
+
 @description('Blob container name for uploads.')
 param blobContainerName string = 'contenthub'
 
@@ -185,8 +189,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = if (!useExistingKeyVa
   }
 }
 
-var keyVaultRef = useExistingKeyVault ? existingKeyVault : keyVault
-var keyVaultUri = 'https://${keyVaultRef.name}.vault.azure.net/'
+var keyVaultUri = 'https://${keyVaultName}.vault.azure.net/'
 var jwtKeySecretName = 'jwt-key'
 var sqlConnectionSecretName = 'sql-connection-string'
 var rabbitMqSecretName = 'rabbitmq-connection-string'
@@ -213,9 +216,11 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = if (!us
   }
 }
 
-var storageAccountRef = useExistingStorage ? existingStorageAccount : storageAccount
-var blobPublicBaseUrl = '${storageAccountRef.properties.primaryEndpoints.blob}${blobContainerName}'
-var blobConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccountRef.name};AccountKey=${listKeys(storageAccountRef.id, storageAccountRef.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+var blobPublicBaseUrl = 'https://${storageAccountName}.blob.${environment().suffixes.storage}/${blobContainerName}'
+var storageAccountKeyValue = useExistingStorage
+  ? storageAccountKey
+  : listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value
+var blobConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccountKeyValue};EndpointSuffix=${environment().suffixes.storage}'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
@@ -383,9 +388,28 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = {
+resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = if (!useExistingKeyVault) {
   name: 'add'
-  parent: keyVaultRef
+  parent: keyVault
+  properties: {
+    accessPolicies: [
+      {
+        tenantId: subscription().tenantId
+        objectId: apiApp.identity.principalId
+        permissions: {
+          secrets: [
+            'get'
+            'list'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource existingKeyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = if (useExistingKeyVault) {
+  name: 'add'
+  parent: existingKeyVault
   properties: {
     accessPolicies: [
       {
@@ -403,42 +427,42 @@ resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-
 }
 
 resource keyVaultJwtKey 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultRef.name}/${jwtKeySecretName}'
+  name: '${keyVaultName}/${jwtKeySecretName}'
   properties: {
     value: jwtKey
   }
 }
 
 resource keyVaultSqlConnection 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultRef.name}/${sqlConnectionSecretName}'
+  name: '${keyVaultName}/${sqlConnectionSecretName}'
   properties: {
     value: sqlConnectionString
   }
 }
 
 resource keyVaultRabbitMq 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultRef.name}/${rabbitMqSecretName}'
+  name: '${keyVaultName}/${rabbitMqSecretName}'
   properties: {
     value: rabbitMqConnectionString
   }
 }
 
 resource keyVaultSmtpPassword 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultRef.name}/${smtpPasswordSecretName}'
+  name: '${keyVaultName}/${smtpPasswordSecretName}'
   properties: {
     value: smtpPassword
   }
 }
 
 resource keyVaultTurnstileSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultRef.name}/${turnstileSecretName}'
+  name: '${keyVaultName}/${turnstileSecretName}'
   properties: {
     value: turnstileSecretKey
   }
 }
 
 resource keyVaultBlobConnection 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultRef.name}/${blobConnectionSecretName}'
+  name: '${keyVaultName}/${blobConnectionSecretName}'
   properties: {
     value: blobConnectionString
   }
@@ -514,9 +538,9 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
   }
 }
 
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = if (!useExistingStorage) {
   name: 'default'
-  parent: storageAccountRef
+  parent: storageAccount
   properties: {
     cors: {
       corsRules: [
@@ -541,12 +565,22 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01'
   }
 }
 
-resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
+resource existingBlobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' existing = if (useExistingStorage) {
+  name: 'default'
+  parent: existingStorageAccount
+}
+
+resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = if (!useExistingStorage) {
   name: blobContainerName
   parent: blobService
   properties: {
     publicAccess: 'Blob'
   }
+}
+
+resource existingBlobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = if (useExistingStorage) {
+  name: blobContainerName
+  parent: existingBlobService
 }
 
 output apiAppName string = apiApp.name

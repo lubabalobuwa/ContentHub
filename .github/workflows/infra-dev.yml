@@ -38,6 +38,7 @@ jobs:
           --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
           --parameters smtpUsername="${{ vars.SMTP_USERNAME_DEV }}"
           --parameters turnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY_DEV }}"
+          --parameters storageAccountKey="${{ secrets.BACKUP_STORAGE_KEY }}"
 
       - name: Deploy infra (bicep)
         run: >
@@ -52,3 +53,4 @@ jobs:
           --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
           --parameters smtpUsername="${{ vars.SMTP_USERNAME_DEV }}"
           --parameters turnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY_DEV }}"
+          --parameters storageAccountKey="${{ secrets.BACKUP_STORAGE_KEY }}"
