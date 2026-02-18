@@ -41,7 +41,7 @@ jobs:
           bacpac="contenthub-dev-${timestamp}.bacpac"
           storage_uri="https://${{ vars.BACKUP_STORAGE_ACCOUNT }}.blob.core.windows.net/${{ vars.BACKUP_CONTAINER }}/${bacpac}"
 
-          request_id="$(az sql db export \
+          export_json="$(az sql db export \
             --admin-user "${{ vars.SQL_ADMIN_LOGIN_DEV }}" \
             --admin-password "${{ secrets.SQL_ADMIN_PASSWORD_DEV }}" \
             --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
@@ -50,18 +50,10 @@ jobs:
             --storage-key-type "StorageAccessKey" \
             --storage-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
             --storage-uri "$storage_uri" \
-            --query "requestId" -o tsv)"
+            -o json)"
 
-          operation_link="$(az sql db export \
-            --admin-user "${{ vars.SQL_ADMIN_LOGIN_DEV }}" \
-            --admin-password "${{ secrets.SQL_ADMIN_PASSWORD_DEV }}" \
-            --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
-            --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
-            --resource-group "${{ vars.AZURE_RG_DEV }}" \
-            --storage-key-type "StorageAccessKey" \
-            --storage-key "${{ secrets.BACKUP_STORAGE_KEY }}" \
-            --storage-uri "$storage_uri" \
-            --query "operationStatusLink" -o tsv)"
+          request_id="$(echo "$export_json" | jq -r '.requestId')"
+          operation_link="$(echo "$export_json" | jq -r '.operationStatusLink')"
 
           if [[ -z "$request_id" || "$request_id" == "null" ]]; then
             echo "Failed to start export or missing requestId."
