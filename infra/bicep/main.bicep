@@ -170,12 +170,6 @@ var corsAppSettings = [for (origin, i) in corsAllowedOrigins: {
 }]
 
 var sqlConnectionString = 'Server=tcp:${sqlServerName}.database.windows.net,1433;Initial Catalog=${sqlDbName};Persist Security Info=False;User ID=${sqlAdminLogin};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-var keyVaultScope = resourceGroup(keyVaultResourceGroupName)
-
-resource existingKeyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = if (useExistingKeyVault) {
-  name: keyVaultName
-  scope: keyVaultScope
-}
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = if (!useExistingKeyVault) {
   name: keyVaultName
@@ -196,13 +190,6 @@ var rabbitMqSecretName = 'rabbitmq-connection-string'
 var smtpPasswordSecretName = 'smtp-password'
 var turnstileSecretName = 'turnstile-secret-key'
 var blobConnectionSecretName = 'blob-connection-string'
-var storageAccountScope = resourceGroup(storageResourceGroupName)
-
-resource existingStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = if (useExistingStorage) {
-  name: storageAccountName
-  scope: storageAccountScope
-}
-
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = if (!useExistingStorage) {
   name: storageAccountName
   location: location
@@ -388,84 +375,21 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = if (!useExistingKeyVault) {
-  name: 'add'
-  parent: keyVault
-  properties: {
-    accessPolicies: [
-      {
-        tenantId: subscription().tenantId
-        objectId: apiApp.identity.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-    ]
+module keyVaultSecrets 'modules/keyvault-secrets.bicep' = {
+  name: 'kv-secrets'
+  scope: resourceGroup(keyVaultResourceGroupName)
+  params: {
+    keyVaultName: keyVaultName
+    tenantId: subscription().tenantId
+    apiPrincipalId: apiApp.identity.principalId
+    jwtKey: jwtKey
+    sqlConnectionString: sqlConnectionString
+    rabbitMqConnectionString: rabbitMqConnectionString
+    smtpPassword: smtpPassword
+    turnstileSecretKey: turnstileSecretKey
+    blobConnectionString: blobConnectionString
   }
-}
-
-resource existingKeyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = if (useExistingKeyVault) {
-  name: 'add'
-  parent: existingKeyVault
-  properties: {
-    accessPolicies: [
-      {
-        tenantId: subscription().tenantId
-        objectId: apiApp.identity.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource keyVaultJwtKey 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultName}/${jwtKeySecretName}'
-  properties: {
-    value: jwtKey
-  }
-}
-
-resource keyVaultSqlConnection 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultName}/${sqlConnectionSecretName}'
-  properties: {
-    value: sqlConnectionString
-  }
-}
-
-resource keyVaultRabbitMq 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultName}/${rabbitMqSecretName}'
-  properties: {
-    value: rabbitMqConnectionString
-  }
-}
-
-resource keyVaultSmtpPassword 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultName}/${smtpPasswordSecretName}'
-  properties: {
-    value: smtpPassword
-  }
-}
-
-resource keyVaultTurnstileSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultName}/${turnstileSecretName}'
-  properties: {
-    value: turnstileSecretKey
-  }
-}
-
-resource keyVaultBlobConnection 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultName}/${blobConnectionSecretName}'
-  properties: {
-    value: blobConnectionString
-  }
+  dependsOn: useExistingKeyVault ? [] : [keyVault]
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
@@ -565,22 +489,12 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01'
   }
 }
 
-resource existingBlobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' existing = if (useExistingStorage) {
-  name: 'default'
-  parent: existingStorageAccount
-}
-
 resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = if (!useExistingStorage) {
   name: blobContainerName
   parent: blobService
   properties: {
     publicAccess: 'Blob'
   }
-}
-
-resource existingBlobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = if (useExistingStorage) {
-  name: blobContainerName
-  parent: existingBlobService
 }
 
 output apiAppName string = apiApp.name
