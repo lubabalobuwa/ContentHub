@@ -59,9 +59,9 @@ jobs:
             echo "Failed to start export or missing requestId."
             exit 1
           fi
+
           if [[ -z "$operation_link" || "$operation_link" == "null" ]]; then
-            echo "Failed to start export or missing operationStatusLink."
-            exit 1
+            operation_link="https://management.azure.com/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RG_DEV }}/providers/Microsoft.Sql/servers/${{ vars.AZURE_SQL_SERVER_NAME_DEV }}/databases/${{ vars.AZURE_SQL_DB_NAME_DEV }}/importExportStatus/${request_id}?api-version=2021-11-01"
           fi
 
           echo "Export requestId: $request_id"
