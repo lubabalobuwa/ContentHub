@@ -66,11 +66,23 @@ jobs:
 
           echo "Export requestId: $request_id"
 
+          # Give the export a moment to register before polling.
+          sleep 15
+
           for i in {1..60}; do
-            status="$(az rest \
-              --method get \
-              --url "$operation_link" \
-              --query "status" -o tsv)"
+            resp="$(az rest --method get --url "$operation_link" -o json 2>/dev/null || true)"
+            if [[ -z "$resp" ]]; then
+              echo "Export status not available yet. Retrying..."
+              sleep 30
+              continue
+            fi
+
+            status="$(echo "$resp" | jq -r '.status // empty')"
+            if [[ -z "$status" || "$status" == "null" ]]; then
+              echo "Export status missing. Retrying..."
+              sleep 30
+              continue
+            fi
 
             echo "Export status: $status"
 
