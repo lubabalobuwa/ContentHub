@@ -114,13 +114,23 @@ jobs:
 
       - name: Delete infra resources (bicep)
         run: >
-          az deployment group delete
-          --resource-group "${{ vars.AZURE_RG_DEV }}"
-          --template-file "${{ env.BICEP_FILE }}"
-          --parameters @"${{ env.BICEP_PARAMS }}"
-          --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_DEV }}"
-          --parameters jwtKey="${{ secrets.JWT_KEY_DEV }}"
-          --parameters rabbitMqConnectionString="${{ secrets.RABBITMQ_CONNECTION_STRING_DEV }}"
-          --parameters smtpPassword="${{ secrets.SMTP_PASSWORD_DEV }}"
-          --parameters smtpUsername="${{ vars.SMTP_USERNAME_DEV }}"
-          --parameters turnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY_DEV }}"
+          az group delete
+          --name "${{ vars.AZURE_RG_DEV }}"
+          --yes
+
+      - name: Wait for resource group deletion
+        run: >
+          az group wait
+          --name "${{ vars.AZURE_RG_DEV }}"
+          --deleted
+
+      - name: Recreate resource group
+        shell: bash
+        run: |
+          set -euo pipefail
+          location="$(jq -r '.parameters.location.value' "${{ env.BICEP_PARAMS }}")"
+          if [[ -z "$location" || "$location" == "null" ]]; then
+            echo "Could not read location from parameters."
+            exit 1
+          fi
+          az group create --name "${{ vars.AZURE_RG_DEV }}" --location "$location"
