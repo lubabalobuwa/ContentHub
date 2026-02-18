@@ -46,6 +46,8 @@
     "serviceBusNamespaceName": { "value": "sb-contenthub-dev" },
     "serviceBusQueueName": { "value": "content-published" },
     "staticWebAppName": { "value": "swa-contenthub-dev" },
+    "staticWebAppResourceGroupName": { "value": "rg-tech-content-hub-dev-shared" },
+    "useExistingStaticWebApp": { "value": true },
     "staticWebAppRepositoryUrl": { "value": "https://github.com/lubabalobuwa/ContentHub" },
     "staticWebAppBranch": { "value": "main" },
     "staticWebAppProvider": { "value": "GitHub" },

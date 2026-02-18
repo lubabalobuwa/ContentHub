@@ -127,6 +127,12 @@ param serviceBusQueueName string = 'content-published'
 @description('Static Web App name.')
 param staticWebAppName string
 
+@description('Resource group name for Static Web App (defaults to current RG).')
+param staticWebAppResourceGroupName string = resourceGroup().name
+
+@description('Use an existing Static Web App instead of creating one.')
+param useExistingStaticWebApp bool = false
+
 @description('Static Web App repository URL.')
 param staticWebAppRepositoryUrl string
 
@@ -441,7 +447,7 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-prev
   }
 }
 
-resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
+resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = if (!useExistingStaticWebApp) {
   name: staticWebAppName
   location: staticWebAppLocation
   sku: {
@@ -498,4 +504,4 @@ resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/container
 }
 
 output apiAppName string = apiApp.name
-output staticWebAppName string = staticWebApp.name
+output staticWebAppName string = staticWebAppName
