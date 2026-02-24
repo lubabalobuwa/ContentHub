@@ -37,6 +37,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if ! az sql db show \
+            --resource-group "${{ vars.AZURE_RG_DEV }}" \
+            --server "${{ vars.AZURE_SQL_SERVER_NAME_DEV }}" \
+            --name "${{ vars.AZURE_SQL_DB_NAME_DEV }}" \
+            -o none 2>/dev/null; then
+            echo "SQL DB not found. Skipping backup."
+            exit 0
+          fi
+
           timestamp="$(date -u +"%Y%m%d-%H%M%S")"
           bacpac="contenthub-dev-${timestamp}.bacpac"
           storage_uri="https://${{ vars.BACKUP_STORAGE_ACCOUNT }}.blob.core.windows.net/${{ vars.BACKUP_CONTAINER }}/${bacpac}"
