@@ -15,6 +15,12 @@ param appServiceSkuName string = 'F1'
 @description('App Service plan SKU tier (e.g., Free, Basic).')
 param appServiceSkuTier string = 'Free'
 
+@description('Azure Functions consumption plan name.')
+param functionAppPlanName string
+
+@description('Azure Function app name.')
+param functionAppName string
+
 @description('API App Service name.')
 param apiAppName string
 
@@ -228,6 +234,19 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   }
 }
 
+resource functionAppPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+  name: functionAppPlanName
+  location: location
+  kind: 'functionapp'
+  sku: {
+    name: 'Y1'
+    tier: 'Dynamic'
+  }
+  properties: {
+    reserved: true
+  }
+}
+
 resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
   name: apiAppName
   location: location
@@ -346,6 +365,52 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
           value: allowedHosts
         }
       ], corsAppSettings)
+    }
+  }
+}
+
+resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
+  name: functionAppName
+  location: location
+  kind: 'functionapp,linux'
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    serverFarmId: functionAppPlan.id
+    httpsOnly: true
+    siteConfig: {
+      linuxFxVersion: 'DOTNET-ISOLATED|8.0'
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: blobConnectionString
+        }
+        {
+          name: 'WEBSITE_RUN_FROM_PACKAGE'
+          value: '1'
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'dotnet-isolated'
+        }
+        {
+          name: 'ApiBaseUrl'
+          value: 'https://${apiAppName}.azurewebsites.net'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
+      ]
     }
   }
 }

@@ -6,6 +6,8 @@ param staticWebAppLocation = 'Central US'
 param appServicePlanName = 'asp-contenthub-dev'
 param appServiceSkuName = 'F1'
 param appServiceSkuTier = 'Free'
+param functionAppPlanName = 'plan-contenthub-warmup-dev'
+param functionAppName = 'func-contenthub-warmup-dev'
 param apiAppName = 'app-contenthub-api-dev'
 
 param sqlServerName = 'sql-contenthub-dev'

@@ -230,6 +230,7 @@ app.UseAuthorization();
 app.UseCors("FrontendPolicy");
 
 app.MapHealthChecks("/health");
+app.MapHealthEndpoints();
 app.MapContentEndpoints();
 app.MapUserEndpoints();
 app.MapUploadEndpoints();

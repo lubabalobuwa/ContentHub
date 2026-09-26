@@ -422,3 +422,4 @@ bin/
 obj/
 .vs/
 appsettings.json
+local.settings.json
