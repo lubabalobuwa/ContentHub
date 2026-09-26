@@ -40,6 +40,7 @@ jobs:
 
       - name: Publish Function App
         run: |
+          mkdir -p "artifacts"
           dotnet publish "${{ env.FUNCTION_PROJECT }}" -c Release -o "${{ env.FUNCTION_PACKAGE }}"
           cd "${{ env.FUNCTION_PACKAGE }}"
           zip -r "../${{ env.FUNCTION_ZIP }}" .
