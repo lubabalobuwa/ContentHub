@@ -7,6 +7,8 @@
     "appServicePlanName": { "value": "asp-contenthub-dev" },
     "appServiceSkuName": { "value": "F1" },
     "appServiceSkuTier": { "value": "Free" },
+    "functionAppPlanName": { "value": "plan-contenthub-warmup-dev" },
+    "functionAppName": { "value": "func-contenthub-warmup-dev" },
     "apiAppName": { "value": "app-contenthub-api-dev" },
     "sqlServerName": { "value": "sql-contenthub-dev" },
     "sqlDbName": { "value": "contenthub" },
