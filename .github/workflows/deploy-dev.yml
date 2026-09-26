@@ -42,8 +42,7 @@ jobs:
         run: |
           mkdir -p "artifacts"
           dotnet publish "${{ env.FUNCTION_PROJECT }}" -c Release -o "${{ env.FUNCTION_PACKAGE }}"
-          cd "${{ env.FUNCTION_PACKAGE }}"
-          zip -r "../${{ env.FUNCTION_ZIP }}" .
+          zip -r "${{ env.FUNCTION_ZIP }}" "${{ env.FUNCTION_PACKAGE }}"
 
       - name: Deploy API to App Service
         uses: azure/webapps-deploy@v3
