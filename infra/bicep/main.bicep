@@ -422,11 +422,18 @@ resource sqlDb 'Microsoft.Sql/servers/databases@2023-05-01-preview' = {
   parent: sqlServer
   location: location
   sku: {
-    name: 'Basic'
-    tier: 'Basic'
+    name: 'GP_S_Gen5'
+    tier: 'GeneralPurpose'
+    family: 'Gen5'
+    capacity: 1          // 1 vCore max; serverless will scale down to minCapacity when idle
   }
   properties: {
     collation: 'SQL_Latin1_General_CP1_CI_AS'
+    autoPauseDelay: 15           // minutes of inactivity before auto-pause (60 is typical/default)
+    minCapacity: json('0.5')     // vCores used when active-but-idle; must be a fraction, hence json()
+    useFreeLimit: true
+    freeLimitExhaustionBehavior: 'AutoPause'   // or 'BillOverUsage' if you'd rather pay once you exceed the free amount
+    maxSizeBytes: 34359738368    // 32 GB, matching the free storage limit
   }
 }
 
