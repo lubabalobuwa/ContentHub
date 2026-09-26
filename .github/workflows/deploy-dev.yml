@@ -13,7 +13,9 @@ permissions:
 
 env:
   API_PROJECT: src/ContentHub.Api/ContentHub.Api.csproj
+  FUNCTION_PROJECT: src/ContentHub.Functions/ContentHub.Functions.csproj
   WEBAPP_PACKAGE: artifacts/api
+  FUNCTION_PACKAGE: artifacts/functions
 
 jobs:
   deploy_dev:
@@ -35,11 +37,20 @@ jobs:
       - name: Publish API
         run: dotnet publish "${{ env.API_PROJECT }}" -c Release -o "${{ env.WEBAPP_PACKAGE }}"
 
+      - name: Publish Function App
+        run: dotnet publish "${{ env.FUNCTION_PROJECT }}" -c Release -o "${{ env.FUNCTION_PACKAGE }}"
+
       - name: Deploy API to App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ vars.API_APP_NAME_DEV }}
           package: ${{ env.WEBAPP_PACKAGE }}
+
+      - name: Deploy Function App to Azure Functions
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.FUNCTION_APP_NAME_DEV }}
+          package: ${{ env.FUNCTION_PACKAGE }}
 
       - name: Deploy Static Web App
         uses: Azure/static-web-apps-deploy@v1
