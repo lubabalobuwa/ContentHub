@@ -5,6 +5,7 @@ export interface Content {
   authorProfileImageUrl?: string | null;
   title: string;
   body: string;
+  htmlBody?: string;
   status: string;
   imageUrl?: string | null;
   createdAtUtc?: string;

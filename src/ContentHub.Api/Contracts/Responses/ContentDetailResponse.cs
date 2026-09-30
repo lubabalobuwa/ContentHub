@@ -7,6 +7,7 @@ namespace ContentHub.Api.Contracts.Responses
         string? AuthorProfileImageUrl,
         string Title,
         string Body,
+        string HtmlBody,
         string Status,
         string? ImageUrl,
         DateTime CreatedAtUtc,

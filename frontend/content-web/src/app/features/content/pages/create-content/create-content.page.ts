@@ -1,11 +1,11 @@
-import { Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ContentService } from '../../../../core/services/content.service';
 import { UploadService } from '../../../../core/services/upload.service';
 import { Content } from '../../../../core/models/content.model';
-import Quill from 'quill';
+import { marked } from 'marked';
 import Cropper from 'cropperjs';
 
 @Component({
@@ -16,13 +16,11 @@ import Cropper from 'cropperjs';
   styleUrl: './create-content.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateContentPage implements AfterViewInit, OnDestroy {
-  @ViewChild('editor', { static: true }) editorRef!: ElementRef<HTMLDivElement>;
+export class CreateContentPage {
   @ViewChild('cropperImage') cropperImageRef?: ElementRef<HTMLImageElement>;
 
   title = '';
   body = '';
-  private quill?: Quill;
   selectedImage: File | null = null;
   croppedPreviewUrl: string | null = null;
   isCropping = false;
@@ -41,30 +39,14 @@ export class CreateContentPage implements AfterViewInit, OnDestroy {
   ) {
   }
 
-  ngAfterViewInit() {
-    this.quill = new Quill(this.editorRef.nativeElement, {
-      theme: 'snow',
-      modules: {
-        syntax: false,
-        toolbar: [
-          [{ header: [1, 2, 3, false] }],
-          ['bold', 'italic', 'underline', 'strike'],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          ['blockquote', 'code-block'],
-          ['link', 'image'],
-          ['clean']
-        ]
-      }
-    });
-
-    this.quill.on('text-change', () => {
-      this.body = this.quill?.root.innerHTML ?? '';
-    });
+  get markdownPreview(): string {
+    return marked.parse(this.body || '', { breaks: true, gfm: true }) as string;
   }
 
-  ngOnDestroy() {
-    this.quill = undefined;
-    this.cleanupCropper();
+  insertSyntax(before: string, after = '') {
+    const selectionStart = this.body.length;
+    const insertion = `${before}${after}`;
+    this.body = `${this.body.slice(0, selectionStart)}${insertion}${this.body.slice(selectionStart)}`;
   }
 
   onFileSelected(event: Event) {
@@ -81,11 +63,7 @@ export class CreateContentPage implements AfterViewInit, OnDestroy {
 
   submit() {
     this.error = null;
-    if (this.quill) {
-      this.body = this.quill.root.innerHTML ?? this.body;
-    } else {
-      this.body = this.getEditorHtml() ?? this.body;
-    }
+    this.body = this.body.trim();
 
     if (!this.title.trim()) {
       this.error = 'Title is required.';
@@ -95,7 +73,7 @@ export class CreateContentPage implements AfterViewInit, OnDestroy {
       this.error = 'Title must be under 200 characters.';
       return;
     }
-    if (!this.getEditorText().trim()) {
+    if (!this.body.trim()) {
       this.error = 'Body is required.';
       return;
     }
@@ -137,24 +115,6 @@ export class CreateContentPage implements AfterViewInit, OnDestroy {
         error: () => resolve(null)
       });
     });
-  }
-
-  private getEditorText(): string {
-    const quillText = this.quill?.getText() ?? '';
-    if (quillText.trim()) return quillText.trim();
-    const fallbackText = this.getEditorTextFromDom();
-    if (fallbackText.trim()) return fallbackText.trim();
-    return this.body.replace(/<[^>]*>/g, '').trim();
-  }
-
-  private getEditorTextFromDom(): string {
-    const editor = this.editorRef?.nativeElement.querySelector('.ql-editor');
-    return editor?.textContent ?? '';
-  }
-
-  private getEditorHtml(): string | null {
-    const editor = this.editorRef?.nativeElement.querySelector('.ql-editor');
-    return editor?.innerHTML ?? null;
   }
 
   private startCrop(file: File) {

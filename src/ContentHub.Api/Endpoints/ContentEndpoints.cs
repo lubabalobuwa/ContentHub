@@ -19,6 +19,7 @@ using ContentHub.Application.Content.Queries.GetPublishedContent;
 using ContentHub.Application.Content.Queries.GetPublishedContentByAuthor;
 using ContentHub.Domain.Content;
 using ContentHub.Domain.Users;
+using ContentHub.Infrastructure.Rendering;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentHub.Api.Endpoints
@@ -62,7 +63,8 @@ namespace ContentHub.Api.Endpoints
             group.MapGet("/{id:guid}", async (
                 Guid id,
                 [FromServices] GetContentByIdHandler handler,
-                [FromServices] ICurrentUserService currentUser) =>
+                [FromServices] ICurrentUserService currentUser,
+                [FromServices] MarkdownRenderService markdownRenderService) =>
             {
                 var content = await handler.HandleAsync(new GetContentByIdQuery(id));
 
@@ -78,6 +80,8 @@ namespace ContentHub.Api.Endpoints
                         return ApiResults.Forbidden();
                 }
 
+                var htmlBody = markdownRenderService.ToSafeHtml(content.Body);
+
                 return Results.Ok(new ContentDetailResponse(
                     content.Id,
                     content.AuthorId,
@@ -85,6 +89,7 @@ namespace ContentHub.Api.Endpoints
                     content.AuthorProfileImageUrl,
                     content.Title,
                     content.Body,
+                    htmlBody,
                     content.Status.ToString(),
                     content.ImageUrl,
                     content.CreatedAtUtc,

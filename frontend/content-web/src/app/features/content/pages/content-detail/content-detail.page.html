@@ -53,7 +53,7 @@
 
         <p class="error" *ngIf="error">{{ error }}</p>
 
-        <article #contentBody class="body" [innerHTML]="content.body | safeHtml"></article>
+        <article #contentBody class="body" [innerHTML]="(content.htmlBody || content.body) | safeHtml"></article>
       </div>
 
       <div class="card comments-card" *ngIf="comments$ | async as comments">

@@ -18,7 +18,16 @@
 
     <label class="label">
       Body
-      <div class="quill-editor" #editor></div>
+      <div class="editor-toolbar">
+        <button type="button" (click)="insertSyntax('**', '**')">Bold</button>
+        <button type="button" (click)="insertSyntax('_', '_')">Italic</button>
+        <button type="button" (click)="insertSyntax('[', '](url)')">Link</button>
+        <button type="button" (click)="insertSyntax('\n```\n', '\n```\n')">Code block</button>
+      </div>
+      <div class="editor-split">
+        <textarea class="textarea" rows="16" [(ngModel)]="body" placeholder="Write in Markdown..."></textarea>
+        <div class="preview-panel" [innerHTML]="markdownPreview"></div>
+      </div>
     </label>
 
     <label class="label">

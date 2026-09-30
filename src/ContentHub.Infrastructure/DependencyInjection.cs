@@ -6,6 +6,7 @@ using ContentHub.Infrastructure.Email;
 using ContentHub.Infrastructure.Messaging;
 using ContentHub.Infrastructure.Persistence;
 using ContentHub.Infrastructure.Persistence.Repositories;
+using ContentHub.Infrastructure.Rendering;
 using ContentHub.Infrastructure.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,8 @@ namespace ContentHub.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSingleton<MarkdownRenderService>();
+
             services.AddDbContext<ContentHubDbContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection"),

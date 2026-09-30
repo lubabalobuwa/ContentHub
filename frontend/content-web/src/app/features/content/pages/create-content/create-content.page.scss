@@ -60,28 +60,36 @@
   resize: vertical;
 }
 
-.quill-editor {
-  display: block;
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 12px;
+
+  button {
+    border: 1px solid var(--line);
+    background: var(--surface-alt);
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+}
+
+.editor-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
   margin-top: 6px;
 }
 
-:host ::ng-deep .ql-toolbar {
-  border-color: var(--line);
-  border-radius: 12px 12px 0 0;
-}
-
-:host ::ng-deep .ql-container {
-  border-color: var(--line);
-  border-radius: 0 0 12px 12px;
+.preview-panel {
   min-height: 240px;
-  font-family: inherit;
-  font-size: 14px;
-}
-
-:host-context(.theme-dark) ::ng-deep .ql-editor mark,
-:host-context(.theme-dark) ::ng-deep .ql-editor .ql-bg-yellow {
-  background: #facc15;
-  color: #0b1221;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: var(--surface-alt);
+  overflow: auto;
 }
 
 .btn {

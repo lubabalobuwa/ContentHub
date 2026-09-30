@@ -20,6 +20,9 @@ namespace ContentHub.Application.Content.Commands.UpdateContent
             if (string.IsNullOrWhiteSpace(command.Body))
                 return Result.Failure("Body is required.");
 
+            if (command.Body.Length > 200_000)
+                return Result.Failure("Body must be under 200,000 characters.");
+
             if (ContainsDangerousHtml(command.Title) || ContainsDangerousHtml(command.Body))
                 return Result.Failure("Content contains disallowed markup.");
 

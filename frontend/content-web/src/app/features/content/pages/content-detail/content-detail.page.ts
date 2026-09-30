@@ -172,22 +172,45 @@ export class ContentDetailPage implements AfterViewInit, OnDestroy {
     const host = this.contentBodyRef?.nativeElement;
     if (!host) return;
 
-    const containers = host.querySelectorAll('.ql-code-block-container');
-    containers.forEach(container => {
-      if ((container as HTMLElement).dataset['highlighted'] === 'true') return;
-      const lines = Array.from(container.querySelectorAll('.ql-code-block'))
-        .map(line => line.textContent ?? '');
-      const codeText = lines.join('\n');
-      const highlighted = hljs.highlight(codeText, { language: 'csharp' }).value;
+    const wrappers = host.querySelectorAll('.code-block-wrapper');
+    wrappers.forEach((wrapper: Element) => {
+      const codeEl = wrapper.querySelector('code');
+      if (!codeEl || (wrapper as HTMLElement).dataset['highlighted'] === 'true') return;
 
-      const pre = document.createElement('pre');
-      const code = document.createElement('code');
-      code.className = 'language-csharp';
-      code.innerHTML = highlighted;
-      pre.appendChild(code);
+      const language = (wrapper as HTMLElement).dataset['language'] || codeEl.className.replace('language-', '').trim();
+      const source = codeEl.textContent ?? '';
+      if (!source) return;
 
-      (container as HTMLElement).dataset['highlighted'] = 'true';
-      container.replaceWith(pre);
+      try {
+        const normalizedLanguage = language || 'plaintext';
+        const result = hljs.highlight(source, { language: normalizedLanguage }).value;
+        codeEl.innerHTML = result;
+        codeEl.classList.add('hljs');
+      } catch {
+        codeEl.innerHTML = source;
+      }
+
+      (wrapper as HTMLElement).dataset['highlighted'] = 'true';
+
+      const button = wrapper.querySelector('.copy-code-btn') as HTMLButtonElement | null;
+      if (!button) return;
+
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(codeEl.textContent ?? '');
+          const previous = button.innerHTML;
+          button.classList.add('copied');
+          button.title = 'Copied';
+          button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.55 15.15 4.7 10.3l1.4-1.4 3.45 3.45 8.85-8.85 1.4 1.4-10.25 10.25Z" fill="currentColor"/></svg>';
+          setTimeout(() => {
+            button.classList.remove('copied');
+            button.title = 'Copy code';
+            button.innerHTML = previous;
+          }, 1400);
+        } catch {
+          button.title = 'Copy failed';
+        }
+      }, { once: true });
     });
   }
 
