@@ -17,6 +17,7 @@ import { environment } from '../../../../../environments/environments';
 export class RegisterPage implements AfterViewInit, OnDestroy {
   error: string | null = null;
   isSubmitting = false;
+  showPassword = false;
   private readonly requestTimeoutMs = 15000;
   readonly turnstileSiteKey = environment.turnstileSiteKey;
   private turnstileWidgetId: string | null = null;
@@ -94,6 +95,10 @@ export class RegisterPage implements AfterViewInit, OnDestroy {
 
   registerWithGoogle() {
     this.auth.externalLogin('google');
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   private getErrorMessage(error: any, fallback: string) {

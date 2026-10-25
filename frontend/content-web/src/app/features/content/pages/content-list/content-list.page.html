@@ -1,21 +1,22 @@
 <section class="page">
   <header class="hero">
     <div class="hero-copy">
-      <p class="eyebrow">Insightful stories, product reviews, and guides</p>
-      <h1>Build and share ideas with a modern publishing space.</h1>
-      <p class="subtitle">
-        Curated developer articles, tools, and deep dives. Stay sharp with weekly editor picks.
-      </p>
+      <p class="eyebrow"><span></span> Ideas worth building on</p>
+      <h1>Practical thinking for <em>modern builders.</em></h1>
+      <p class="subtitle">Developer stories, field notes, and deep dives from people doing the work.</p>
       <div class="hero-actions">
-        <a class="cta" routerLink="/create">Start writing</a>
+        <a class="cta" routerLink="/create">Start writing <span aria-hidden="true">&rarr;</span></a>
         <a class="ghost" routerLink="/register" *ngIf="(isAuthenticated$ | async) === false">Join the community</a>
       </div>
     </div>
     <div class="hero-card">
       <div class="hero-card-inner">
-        <span class="pill">Featured</span>
-        <h3>Emerging trends in developer tooling</h3>
-        <p>Explore the latest build tools, AI assistants, and workflows shaping 2026.</p>
+        <span class="hero-index">01 / FIELD NOTES</span>
+        <div>
+          <span class="pill">Editor's desk</span>
+          <h3>Better software starts with better conversations.</h3>
+          <p>Fresh perspectives on the craft, delivered without the noise.</p>
+        </div>
       </div>
     </div>
   </header>
@@ -24,21 +25,20 @@
     <section class="featured" *ngIf="view.featured">
       <div class="featured-card">
         <div class="featured-content">
-          <span class="pill">Latest</span>
+          <span class="pill pill--accent">Latest story</span>
           <h2>{{ view.featured.title }}</h2>
-          <p class="meta">Status: {{ view.featured.status }}</p>
-          <p class="body">
-            {{ (view.featured.body | stripHtml).length > 220 ? (view.featured.body | stripHtml | slice:0:220) + '…' : (view.featured.body | stripHtml) }}
-          </p>
-          <a class="cta" [routerLink]="['/', view.featured.id]">Read more</a>
+          <p class="meta">{{ (view.featured.publishedAtUtc || view.featured.createdAtUtc) | date:'longDate' }} <span>&bull;</span> {{ view.featured.status }}</p>
+          <p class="body">{{ (view.featured.body | stripHtml).length > 220 ? (view.featured.body | stripHtml | slice:0:220) + '...' : (view.featured.body | stripHtml) }}</p>
+          <a class="text-link" [routerLink]="['/', view.featured.id]">Read the story <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="featured-image">
-          <img
-            *ngIf="view.featured.imageUrl; else featuredFallback"
-            [src]="view.featured.imageUrl"
-            alt="Featured article cover image" />
+          <img *ngIf="view.featured.imageUrl; else featuredFallback" [src]="view.featured.imageUrl" alt="Featured article cover image" />
           <ng-template #featuredFallback>
-            <div class="glow"></div>
+            <div class="article-cover article-cover--featured" aria-hidden="true">
+              <span class="cover-kicker">CONTENT / HUB</span>
+              <strong>{{ view.featured.title }}</strong>
+              <span class="cover-mark">CH</span>
+            </div>
           </ng-template>
         </div>
       </div>
@@ -46,58 +46,46 @@
 
     <section class="content-grid">
       <div class="main">
-        <h3 class="section-title">Latest Articles</h3>
+        <div class="section-heading">
+          <div><p class="eyebrow"><span></span> The latest</p><h2 class="section-title">Recent articles</h2></div>
+          <span class="article-count">{{ view.paged.totalCount }} stories</span>
+        </div>
         <div class="toolbar">
-          <input
-            class="input"
-            type="search"
-            placeholder="Search articles"
-            [(ngModel)]="searchTerm"
-            (keyup.enter)="search()" />
+          <input class="input" type="search" placeholder="Search articles" [(ngModel)]="searchTerm" (keyup.enter)="search()" />
           <button class="ghost" type="button" (click)="search()">Search</button>
           <button class="ghost" type="button" *ngIf="searchTerm" (click)="clearSearch()">Clear</button>
         </div>
-
         <div class="cards">
           <article class="card" *ngFor="let item of view.rest">
-            <h3>
-              <a [routerLink]="['/', item.id]">{{ item.title }}</a>
-            </h3>
-            <p class="meta">Status: {{ item.status }}</p>
-            <p class="body">
-              {{ (item.body | stripHtml).length > 140 ? (item.body | stripHtml | slice:0:140) + '…' : (item.body | stripHtml) }}
-            </p>
-            <a class="ghost" [routerLink]="['/', item.id]">Read article</a>
+            <a class="card-media" [routerLink]="['/', item.id]" [attr.aria-label]="'Read ' + item.title">
+              <img *ngIf="item.imageUrl; else cardFallback" [src]="item.imageUrl" [alt]="item.title + ' cover image'" />
+              <ng-template #cardFallback>
+                <div class="article-cover" aria-hidden="true"><span class="cover-kicker">CONTENT / HUB</span><strong>{{ item.title }}</strong><span class="cover-mark">CH</span></div>
+              </ng-template>
+            </a>
+            <div class="card-copy">
+              <p class="meta">{{ (item.publishedAtUtc || item.createdAtUtc) | date:'mediumDate' }} <span>&bull;</span> {{ item.status }}</p>
+              <h3><a [routerLink]="['/', item.id]">{{ item.title }}</a></h3>
+              <p class="body">{{ (item.body | stripHtml).length > 140 ? (item.body | stripHtml | slice:0:140) + '...' : (item.body | stripHtml) }}</p>
+              <a class="text-link" [routerLink]="['/', item.id]">Read article <span aria-hidden="true">&rarr;</span></a>
+            </div>
           </article>
         </div>
-
-        <p class="empty" *ngIf="view.paged.items.length === 0">
-          No published content yet.
-        </p>
-
+        <p class="empty" *ngIf="view.paged.items.length === 0">No published content yet.</p>
         <div class="pagination" *ngIf="view.paged.totalPages > 1">
           <button class="btn" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
           <span class="page-info">Page {{ page }} of {{ view.paged.totalPages }}</span>
           <button class="btn" (click)="nextPage()" [disabled]="page >= view.paged.totalPages">Next</button>
         </div>
       </div>
-
       <aside class="sidebar">
         <div class="panel">
-          <h4>Trending Topics</h4>
-          <ul>
-            <li>AI &amp; Machine Learning</li>
-            <li>Backend Architecture</li>
-            <li>Frontend Performance</li>
-            <li>Security &amp; Privacy</li>
-          </ul>
+          <p class="panel-label">Explore</p><h4>Trending topics</h4>
+          <ul><li>AI &amp; Machine Learning <span>&rarr;</span></li><li>Backend Architecture <span>&rarr;</span></li><li>Frontend Performance <span>&rarr;</span></li><li>Security &amp; Privacy <span>&rarr;</span></li></ul>
         </div>
-
         <div class="panel newsletter">
-          <h4>Weekly Digest</h4>
-          <p>Get fresh content every Friday. No spam, unsubscribe anytime.</p>
-          <input type="email" placeholder="you@domain.com" />
-          <button class="cta">Subscribe</button>
+          <p class="panel-label">Stay curious</p><h4>Weekly digest</h4><p>Fresh content every Friday. No spam, unsubscribe anytime.</p>
+          <input type="email" placeholder="you@domain.com" /><button class="cta">Subscribe</button>
         </div>
       </aside>
     </section>

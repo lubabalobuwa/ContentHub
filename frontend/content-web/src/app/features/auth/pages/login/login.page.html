@@ -25,10 +25,32 @@
         Please enter a valid email.
       </p>
 
-      <label class="field">
-        <span>Password</span>
-        <input type="password" formControlName="password" placeholder="••••••••" />
-      </label>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <div class="password-input">
+          <input
+            id="login-password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="current-password" />
+          <button
+            class="password-toggle"
+            type="button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            [attr.aria-pressed]="showPassword"
+            aria-controls="login-password">
+            <svg *ngIf="!showPassword" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6S2.25 12 2.25 12Z" />
+              <circle cx="12" cy="12" r="2.75" />
+            </svg>
+            <svg *ngIf="showPassword" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m3 3 18 18M10.6 6.1A10.8 10.8 0 0 1 12 6c6.25 0 9.75 6 9.75 6a16.7 16.7 0 0 1-2.1 2.75M6.3 6.3C3.7 8.1 2.25 12 2.25 12S5.75 18 12 18a9.6 9.6 0 0 0 3.7-.75M9.9 9.9a2.75 2.75 0 0 0 3.9 3.9" />
+            </svg>
+          </button>
+        </div>
+      </div>
       <p class="error" *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
         Password must be at least 8 characters.
       </p>

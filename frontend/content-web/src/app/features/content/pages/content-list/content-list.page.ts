@@ -67,11 +67,30 @@ export class ContentListPage {
         this.totalPages = response.totalPages || 1;
         this.totalCount = response.totalCount;
       }),
-      map(response => ({
-        paged: response,
-        featured: response.items.length > 0 ? response.items[0] : null,
-        rest: response.items.slice(1)
-      }))
+      map(response => {
+        const items = response.items.map(item => ({
+          ...item,
+          status: `${this.getReadingTime(item.body)} min read`
+        }));
+
+        return {
+          paged: response,
+          featured: items.length > 0 ? items[0] : null,
+          rest: items.slice(1)
+        };
+      })
     );
+  }
+
+  private getReadingTime(body: string): number {
+    const wordCount = body
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/[`*_>#\[\]()~-]/g, ' ')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .length;
+
+    return Math.max(1, Math.ceil(wordCount / 225));
   }
 }

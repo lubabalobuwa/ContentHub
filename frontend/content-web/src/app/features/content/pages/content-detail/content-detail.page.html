@@ -11,11 +11,14 @@
             <p class="eyebrow">Article</p>
             <h1>{{ content.title }}</h1>
           </div>
-          <span class="status-pill">{{ content.status }}</span>
+          <span class="status-pill" *ngIf="content.status !== 'Published'">{{ content.status }}</span>
         </div>
 
-        <div class="cover-image" *ngIf="content.imageUrl">
-          <img [src]="content.imageUrl" alt="Article cover image" />
+        <div class="cover-image">
+          <img *ngIf="content.imageUrl; else coverFallback" [src]="content.imageUrl" alt="Article cover image" />
+          <ng-template #coverFallback>
+            <div class="article-cover" aria-hidden="true"><span class="cover-kicker">CONTENT / HUB</span><strong>{{ content.title }}</strong><span class="cover-mark">CH</span></div>
+          </ng-template>
         </div>
 
         <div class="meta-row">
@@ -32,9 +35,9 @@
           <div class="meta-text">
             <div class="author-name">{{ content.authorDisplayName || 'Unknown author' }}</div>
             <div class="meta-line">
-              {{ content.publishedAtUtc ? 'Published' : 'Created' }}
-              ·
               {{ (content.publishedAtUtc || content.createdAtUtc) | date:'mediumDate' }}
+              &bull;
+              {{ content.body | readingTime }} min read
             </div>
           </div>
         </div>

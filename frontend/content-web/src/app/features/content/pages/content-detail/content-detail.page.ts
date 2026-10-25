@@ -8,6 +8,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { Content } from '../../../../core/models/content.model';
 import { UserProfile } from '../../../../core/models/user-profile.model';
 import { SafeHtmlPipe } from '../../../../core/pipes/safe-html.pipe';
+import { ReadingTimePipe } from '../../../../core/pipes/reading-time.pipe';
 import { CommentService } from '../../../../core/services/comment.service';
 import { Comment } from '../../../../core/models/comment.model';
 import hljs from 'highlight.js/lib/common';
@@ -15,7 +16,7 @@ import hljs from 'highlight.js/lib/common';
 @Component({
   selector: 'app-content-detail-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, SafeHtmlPipe],
+  imports: [CommonModule, FormsModule, RouterLink, SafeHtmlPipe, ReadingTimePipe],
   templateUrl: './content-detail.page.html',
   styleUrl: './content-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

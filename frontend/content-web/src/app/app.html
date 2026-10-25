@@ -75,16 +75,29 @@
 
 <footer class="footer">
   <div class="footer-inner">
-    <div>
-      <p class="footer-brand">ContentHub</p>
-      <p class="footer-muted">A clean, modern publishing space for developers.</p>
+    <div class="footer-lead">
+      <p class="footer-kicker">Ideas worth building on</p>
+      <p class="footer-heading">Share what you know.<br />Shape what comes next.</p>
+      <a class="footer-cta" routerLink="/create">Start writing <span aria-hidden="true">&rarr;</span></a>
     </div>
-    <div class="footer-links">
-      <a routerLink="/about" class="footer-link">About</a>
-      <a href="#" class="footer-link">Docs</a>
-      <a routerLink="/contact" class="footer-link">Contact</a>
-      <a routerLink="/privacy" class="footer-link">Privacy</a>
+    <div class="footer-nav">
+      <div class="footer-column">
+        <p class="footer-label">Explore</p>
+        <a routerLink="/" class="footer-link">Latest articles</a>
+        <a routerLink="/about" class="footer-link">About</a>
+        <a routerLink="/create" class="footer-link">Write an article</a>
+      </div>
+      <div class="footer-column">
+        <p class="footer-label">Support</p>
+        <a routerLink="/contact" class="footer-link">Contact</a>
+        <a routerLink="/privacy" class="footer-link">Privacy</a>
+        <a href="mailto:support@techcontenthub.live" class="footer-link">Email us</a>
+      </div>
     </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-brand"><span>TECH</span> ContentHub</p>
+    <p class="footer-muted">A publishing space for people who build the web.</p>
   </div>
 </footer>
 

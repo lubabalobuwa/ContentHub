@@ -5,12 +5,12 @@
   --ink: #0b1221;
   --ink-muted: #5b6475;
   --surface: #ffffff;
-  --surface-alt: #f6f7fb;
-  --line: #e6e8ef;
-  --accent: #2f6cff;
-  --accent-dark: #1f4ccf;
-  --glow: rgba(47, 108, 255, 0.16);
-  --grad: radial-gradient(circle at 10% -10%, #e6edff 0%, #f7f9ff 40%, #f6f7fb 100%);
+  --surface-alt: #f3f4ef;
+  --line: #dedfd8;
+  --accent: #e6532f;
+  --accent-dark: #bc3c20;
+  --glow: rgba(230, 83, 47, 0.18);
+  --grad: radial-gradient(circle at 82% 0%, #fff0df 0%, transparent 31%), #f6f6f1;
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
 }
@@ -19,13 +19,13 @@
   color-scheme: dark;
   --ink: #e8ecf8;
   --ink-muted: #a9b1c7;
-  --surface: #0f172a;
-  --surface-alt: #0b1221;
-  --line: #1f2a44;
-  --accent: #5b8cff;
-  --accent-dark: #3f6fe0;
-  --glow: rgba(91, 140, 255, 0.2);
-  --grad: radial-gradient(circle at 10% -10%, #182544 0%, #0f172a 45%, #0b1221 100%);
+  --surface: #161a18;
+  --surface-alt: #101311;
+  --line: #303630;
+  --accent: #ff7956;
+  --accent-dark: #ff9a7e;
+  --glow: rgba(255, 121, 86, 0.2);
+  --grad: radial-gradient(circle at 82% 0%, #36251f 0%, transparent 34%), #101311;
 }
 
 * {
@@ -45,6 +45,26 @@ app-root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+button, input, textarea { font: inherit; }
+a, button { transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease; }
+::selection { color: #fff; background: var(--accent); }
+
+app-content-detail-page .cover-image { overflow: hidden; margin: 26px 0 22px; border-radius: 4px; min-height: 340px; background: #17231e; }
+app-content-detail-page .cover-image > img { display: block; width: 100%; min-height: 340px; max-height: 560px; object-fit: cover; }
+app-content-detail-page .article-cover { position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: space-between; width: 100%; min-height: 420px; overflow: hidden; padding: clamp(28px, 5vw, 52px); background: linear-gradient(135deg, #ef5c37 0 24%, #17231e 24% 100%); color: #fff; }
+app-content-detail-page .article-cover::before { content: ''; position: absolute; z-index: -1; width: 430px; height: 430px; right: -100px; bottom: -190px; border: 65px solid rgba(255,255,255,.06); border-radius: 50%; }
+app-content-detail-page .article-cover::after { content: ''; position: absolute; z-index: -1; inset: 0; background-image: radial-gradient(rgba(255,255,255,.2) 1px, transparent 1px); background-size: 12px 12px; mask-image: linear-gradient(90deg, transparent 50%, #000); }
+app-content-detail-page .article-cover strong { max-width: 72%; font: 700 clamp(2.25rem, 6vw, 5.5rem)/.95 var(--font-display); letter-spacing: -.055em; text-transform: uppercase; }
+app-content-detail-page .cover-kicker { font-size: 10px; font-weight: 700; letter-spacing: .22em; }
+app-content-detail-page .cover-mark { align-self: flex-end; padding: 8px; border: 2px solid #fff; font: 700 16px var(--font-display); }
+
+@media (max-width: 720px) {
+  app-content-detail-page .cover-image,
+  app-content-detail-page .cover-image > img { min-height: 260px; }
+  app-content-detail-page .article-cover { min-height: 300px; }
+  app-content-detail-page .article-cover strong { max-width: 88%; }
 }
 
 /* Dark theme safety overrides for common surfaces that were hard-coded to white. */

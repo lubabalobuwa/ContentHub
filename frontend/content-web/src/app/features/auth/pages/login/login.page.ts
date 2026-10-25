@@ -17,6 +17,7 @@ export class LoginPage {
   error: string | null = null;
   isSubmitting = false;
   isResending = false;
+  showPassword = false;
   showResend = false;
   resendMessage: string | null = null;
   private readonly requestTimeoutMs = 15000;
@@ -69,6 +70,10 @@ export class LoginPage {
 
   loginWithGoogle() {
     this.auth.externalLogin('google');
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   resendVerification() {
