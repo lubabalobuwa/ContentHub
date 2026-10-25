@@ -11,7 +11,7 @@ param functionAppName = 'func-contenthub-warmup-dev'
 param apiAppName = 'app-contenthub-api-dev'
 
 param sqlServerName = 'sql-contenthub-dev'
-param sqlDbName = 'contenthub'
+param sqlDbName = 'contenthub-free'
 param sqlAdminLogin = 'contenthubadmin'
 
 param jwtRefreshTokenDays = 7
@@ -30,6 +30,7 @@ param corsAllowedOrigins = [
 param messagingEnabled = true
 
 param migrationsEnabled = true
+param sqlUseFreeLimit = true
 
 param keyVaultName = 'kv-contenthub-dev'
 

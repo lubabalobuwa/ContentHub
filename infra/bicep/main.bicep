@@ -70,6 +70,9 @@ param messagingEnabled bool = false
 @description('Run EF Core migrations on API startup.')
 param migrationsEnabled bool = true
 
+@description('Apply the Azure SQL free offer when creating a new database. This cannot be enabled for an existing paid database.')
+param sqlUseFreeLimit bool = false
+
 @description('Key Vault name (must be globally unique).')
 param keyVaultName string
 
@@ -498,16 +501,17 @@ resource sqlDb 'Microsoft.Sql/servers/databases@2023-05-01-preview' = {
     name: 'GP_S_Gen5'
     tier: 'GeneralPurpose'
     family: 'Gen5'
-    capacity: 1          // 1 vCore max; serverless will scale down to minCapacity when idle
+    capacity: sqlUseFreeLimit ? 2 : 1
   }
-  properties: {
+  properties: union({
     collation: 'SQL_Latin1_General_CP1_CI_AS'
-    autoPauseDelay: 60          // default value required when using free-limit auto-pause exhaustion behavior
-    minCapacity: json('0.5')    // vCores used when active-but-idle; must be a fraction, hence json()
+    autoPauseDelay: 60
+    minCapacity: json('0.5')
+    maxSizeBytes: 34359738368
+  }, sqlUseFreeLimit ? {
     useFreeLimit: true
-    freeLimitExhaustionBehavior: 'AutoPause'   // allowed with the default auto-pause delay
-    maxSizeBytes: 34359738368   // 32 GB, matching the free storage limit
-  }
+    freeLimitExhaustionBehavior: 'AutoPause'
+  } : {})
 }
 
 resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
