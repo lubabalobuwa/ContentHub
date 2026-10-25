@@ -235,6 +235,7 @@ app.MapContentEndpoints();
 app.MapUserEndpoints();
 app.MapUploadEndpoints();
 app.MapSupportEndpoints();
+app.MapNewsletterEndpoints();
 
 app.Run();
 

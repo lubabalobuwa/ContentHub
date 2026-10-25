@@ -83,6 +83,10 @@ export class ContentService {
         return this.http.post(`${this.baseUrl}/${id}/publish`, { rowVersion });
     }
 
+    subscribeToNewsletter(email: string) {
+        return this.http.post<{ message: string }>(`${environment.apiBaseUrl}/newsletter/subscribe`, { email });
+    }
+
     archive(id: string, rowVersion: string) {
         return this.http.post(`${this.baseUrl}/${id}/archive`, { rowVersion });
     }

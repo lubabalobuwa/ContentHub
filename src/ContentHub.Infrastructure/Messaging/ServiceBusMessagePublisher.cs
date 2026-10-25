@@ -1,0 +1,35 @@
+using Azure.Messaging.ServiceBus;
+using ContentHub.Application.Messaging;
+using Microsoft.Extensions.Logging;
+
+namespace ContentHub.Infrastructure.Messaging;
+
+public sealed class ServiceBusMessagePublisher : IMessagePublisher
+{
+    private readonly ServiceBusClient _client;
+    private readonly ILogger<ServiceBusMessagePublisher> _logger;
+
+    public ServiceBusMessagePublisher(ServiceBusClient client, ILogger<ServiceBusMessagePublisher> logger)
+    {
+        _client = client;
+        _logger = logger;
+    }
+
+    public async Task PublishAsync(string queue, string message, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await using var sender = _client.CreateSender(queue);
+            await sender.SendMessageAsync(new ServiceBusMessage(message)
+            {
+                ContentType = "text/plain",
+                MessageId = message
+            }, cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            // Publishing content must not report failure after the database commit succeeds.
+            _logger.LogError(exception, "Failed to enqueue message. Queue={Queue} MessageId={MessageId}", queue, message);
+        }
+    }
+}

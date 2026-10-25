@@ -1,6 +1,7 @@
 ﻿using ContentHub.Domain.Content;
 using ContentHub.Domain.Users;
 using ContentHub.Domain.Comments;
+using ContentHub.Domain.Newsletter;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace ContentHub.Infrastructure.Persistence
         public DbSet<User> Users => Set<User>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
+        public DbSet<NewsletterSubscription> NewsletterSubscriptions => Set<NewsletterSubscription>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

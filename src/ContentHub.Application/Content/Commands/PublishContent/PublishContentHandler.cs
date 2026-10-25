@@ -13,14 +13,14 @@ namespace ContentHub.Application.Content.Commands.PublishContent
         private readonly ICurrentUserService _currentUserService;
         private readonly IValidator<PublishContentCommand> _validator;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRabbitMqPublisher _publisher;
+        private readonly IMessagePublisher _publisher;
 
         public PublishContentHandler(
         IContentRepository contentRepository,
         ICurrentUserService currentUserService,
         IValidator<PublishContentCommand> validator,
         IUnitOfWork unitOfWork,
-        IRabbitMqPublisher publisher)
+        IMessagePublisher publisher)
         {
             _contentRepository = contentRepository;
             _currentUserService = currentUserService;

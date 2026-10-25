@@ -185,9 +185,9 @@ namespace ContentHub.Application.Tests
             public bool IsAuthenticated { get; }
         }
 
-        private sealed class FakePublisher : IRabbitMqPublisher
+        private sealed class FakePublisher : IMessagePublisher
         {
-            public Task PublishAsync(string queue, string message)
+            public Task PublishAsync(string queue, string message, CancellationToken cancellationToken = default)
             {
                 return Task.CompletedTask;
             }

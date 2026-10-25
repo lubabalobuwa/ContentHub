@@ -99,6 +99,36 @@ namespace ContentHub.Infrastructure.Migrations
                     b.ToTable("ContentItems");
                 });
 
+            modelBuilder.Entity("ContentHub.Domain.Newsletter.NewsletterSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<DateTime>("SubscribedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .IsUnique();
+
+                    b.ToTable("NewsletterSubscriptions");
+                });
+
             modelBuilder.Entity("ContentHub.Domain.Users.ExternalLogin", b =>
                 {
                     b.Property<Guid>("Id")

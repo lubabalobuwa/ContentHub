@@ -64,7 +64,7 @@ param corsAllowedOrigins array = []
 @description('Enable reset password feature.')
 param authEnableResetPassword bool = false
 
-@description('Enable messaging (RabbitMQ).')
+@description('Enable Azure Service Bus publishing and newsletter processing.')
 param messagingEnabled bool = false
 
 @description('Run EF Core migrations on API startup.')
@@ -310,6 +310,18 @@ resource apiApp 'Microsoft.Web/sites@2022-09-01' = {
           value: string(messagingEnabled)
         }
         {
+          name: 'ServiceBus__FullyQualifiedNamespace'
+          value: '${serviceBusNamespace.name}.servicebus.windows.net'
+        }
+        {
+          name: 'ServiceBus__QueueName'
+          value: serviceBusQueue.name
+        }
+        {
+          name: 'Newsletter__FrontendBaseUrl'
+          value: authBaseUrl
+        }
+        {
           name: 'Migrations__Enabled'
           value: string(migrationsEnabled)
         }
@@ -512,6 +524,16 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-prev
   parent: serviceBusNamespace
   properties: {
     enablePartitioning: false
+  }
+}
+
+resource serviceBusDataOwnerRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (messagingEnabled) {
+  name: guid(serviceBusNamespace.id, apiApp.id, 'Azure Service Bus Data Owner')
+  scope: serviceBusNamespace
+  properties: {
+    principalId: apiApp.identity.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '090c5cfd-751d-490a-894a-3ce6f1109419')
   }
 }
 

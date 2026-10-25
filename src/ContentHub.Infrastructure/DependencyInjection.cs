@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using System;
 
 namespace ContentHub.Infrastructure
@@ -33,17 +35,9 @@ namespace ContentHub.Infrastructure
             var messagingEnabled = configuration.GetValue<bool>("Messaging:Enabled");
             if (messagingEnabled)
             {
-                services.AddSingleton<IConnection>(_ =>
-                {
-                    var connectionString = configuration.GetValue<string>("RabbitMq:ConnectionString")
-                        ?? "amqp://guest:guest@localhost:5672";
-                    var factory = new ConnectionFactory
-                    {
-                        Uri = new Uri(connectionString)
-                    };
-
-                    return factory.CreateConnectionAsync().GetAwaiter().GetResult();
-                });
+                var fullyQualifiedNamespace = configuration["ServiceBus:FullyQualifiedNamespace"]
+                    ?? throw new InvalidOperationException("ServiceBus:FullyQualifiedNamespace is required when messaging is enabled.");
+                services.AddSingleton(new ServiceBusClient(fullyQualifiedNamespace, new DefaultAzureCredential()));
             }
 
             services.AddScoped<IContentRepository, ContentRepository>();
@@ -57,17 +51,20 @@ namespace ContentHub.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             if (messagingEnabled)
             {
-                services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
+                services.AddScoped<IMessagePublisher, ServiceBusMessagePublisher>();
+                services.AddHostedService<ContentPublishedEmailWorker>();
             }
             else
             {
-                services.AddScoped<IRabbitMqPublisher, NoOpRabbitMqPublisher>();
+                services.AddScoped<IMessagePublisher, NoOpMessagePublisher>();
             }
 
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
             services.Configure<AuthSettings>(configuration.GetSection("Auth"));
             services.Configure<SmtpSettings>(configuration.GetSection("Smtp"));
             services.Configure<BlobStorageSettings>(configuration.GetSection("BlobStorage"));
+            services.Configure<ServiceBusSettings>(configuration.GetSection("ServiceBus"));
+            services.Configure<NewsletterSettings>(configuration.GetSection("Newsletter"));
             services.AddTransient<IEmailSender, SmtpEmailSender>();
             services.AddSingleton<IBlobStorageService, BlobStorageService>();
 

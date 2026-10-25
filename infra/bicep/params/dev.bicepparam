@@ -27,7 +27,7 @@ param corsAllowedOrigins = [
   'https://techcontenthub.live'
 ]
 
-param messagingEnabled = false
+param messagingEnabled = true
 
 param migrationsEnabled = true
 
