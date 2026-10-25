@@ -31,7 +31,7 @@
         "https://techcontenthub.live"
       ]
     },
-    "messagingEnabled": { "value": false },
+    "messagingEnabled": { "value": true },
     "migrationsEnabled": { "value": true },
     "keyVaultName": { "value": "kv-contenthub-dev" },
     "keyVaultResourceGroupName": { "value": "rg-tech-content-hub-dev-shared" },

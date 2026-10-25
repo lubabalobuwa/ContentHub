@@ -53,9 +53,7 @@ namespace ContentHub.Application.Content.Commands.PublishContent
 
             await _unitOfWork.CommitAsync();
 
-            await _publisher.PublishAsync(
-                queue: "content.published",
-                message: command.ContentId.ToString());
+            await _publisher.PublishAsync(command.ContentId.ToString());
 
             return Result.Success();
         }

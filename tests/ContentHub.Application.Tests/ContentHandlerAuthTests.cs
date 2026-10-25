@@ -187,7 +187,7 @@ namespace ContentHub.Application.Tests
 
         private sealed class FakePublisher : IMessagePublisher
         {
-            public Task PublishAsync(string queue, string message, CancellationToken cancellationToken = default)
+            public Task PublishAsync(string message, CancellationToken cancellationToken = default)
             {
                 return Task.CompletedTask;
             }
